@@ -46,13 +46,13 @@ const MenuLayout = function MenuLayout({
 
         { type: 'divider' },
 
-        getItem(<p onClick={() => router.push('/incident/blog')}>Incident</p>, 'sub1', <ReconciliationOutlined />, [
-            getItem(<p onClick={() => router.push('/incident/create')}>Create Incident</p>, '2'),
-            getItem(<p onClick={() => router.push('/incident/search')}>Incident List</p>, '3'),
+        getItem(<p onClick={() => router.push('/opd/blog')}>งานผู้ป่วยนอก</p>, 'sub1', <ReconciliationOutlined />, [
+            getItem(<p onClick={() => router.push('/opd/search')}>ค้นหารายการ OPD</p>, '2'),
+            getItem(<p onClick={() => router.push('/opd/transfer')}>ส่งข้อมูล OPD</p>, '3'),
         ]),
-        getItem(<p onClick={() => router.push('/bulletin/blog')}>Bulletin</p>, 'sub2', <BookOutlined />, [
-            getItem(<p onClick={() => router.push('/bulletin/create')}>Create Bulletin</p>, '4'),
-            getItem(<p onClick={() => router.push('/bulletin/search')}>Bulletin List</p>, '5'),
+        getItem(<p onClick={() => router.push('/ipd/blog')}>งานผู้ป่วยใน</p>, 'sub2', <BookOutlined />, [
+            getItem(<p onClick={() => router.push('/ipd/search')}>ค้นหารายการ IPD</p>, '4'),
+            getItem(<p onClick={() => router.push('/ipd/transfer')}>ส่งข้อมูล IPD</p>, '5'),
         ]),
 
         { type: 'divider' },

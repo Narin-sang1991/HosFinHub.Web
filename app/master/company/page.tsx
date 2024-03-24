@@ -88,8 +88,7 @@ const Company = function Company(props: CompanyProps) {
             width: 80,
         },
     ]
-    //#endregion
-
+    //#endregion 
     return (
         <>
             <Card bordered={true} style={{ borderBottomColor: "LightGray" }} className={"MasterBackground"} >
@@ -162,7 +161,6 @@ const Company = function Company(props: CompanyProps) {
         </>
     );
 }
-
 
 const CompanyPage = () => {
     return withTheme(<Company />);
