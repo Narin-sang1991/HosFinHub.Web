@@ -59,10 +59,11 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
             let patient = record.opd_pat[0];
             let idItems = Array.from(patient.person_id);
             let result: string = "";
+            let strSplitor: string = " ";
             let includeSplitor: number[] = [0, 5, 10, 12]
             idItems.forEach((idItem, index) => {
                 if (includeSplitor.includes(index)) {
-                    result = (result.trim().length === 0) ? `${idItem} ` : `${result} ${idItem}`;
+                    result = (result.trim().length === 0) ? `${idItem}${strSplitor}` : `${result}${strSplitor}${idItem}`;
                 }
                 else {
                     result = (result.trim().length === 0) ? `${idItem}` : `${result}${idItem}`;
