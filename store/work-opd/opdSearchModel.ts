@@ -14,6 +14,7 @@ export type OpdPatientModel = {
     hn: string,
     title: string,
     fname: string,
+    lname: string,
     person_id: string,
 }
 
