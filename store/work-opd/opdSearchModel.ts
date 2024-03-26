@@ -5,7 +5,7 @@ export type OpdSearchModel = {
     hn: string,
     seq: string,
     dateopd: Date,
-    opd_pat: OpdPatientModel[],
+    opd_pat: OpdPatientModel,
 
 }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, Card, Form, Table, Input, Select } from 'antd';
+import { Button, Card, Form, Table, Input, Select, } from 'antd';
 import type { TableProps, TableColumnsType } from 'antd';
 import { SearchOutlined, PlusCircleOutlined, } from '@ant-design/icons';
 import moment from "moment";
@@ -47,16 +47,16 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
     };
 
     function getPatientName(record: OpdSearchModel) {
-        if ((record.opd_pat || []).length > 0) {
-            let patient = record.opd_pat[0];
+        if (record.opd_pat !== undefined) {
+            let patient = record.opd_pat;
             return `${patient.title}${patient.fname}  ${patient.lname}`
         }
         return "";
     }
 
     function getPatientID(record: OpdSearchModel) {
-        if ((record.opd_pat || []).length > 0) {
-            let patient = record.opd_pat[0];
+        if (record.opd_pat !== undefined) {
+            let patient = record.opd_pat;
             let idItems = Array.from(patient.person_id);
             let result: string = "";
             let strSplitor: string = " ";
@@ -119,6 +119,14 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
             width: 80,
             render: (record) => (
                 <>{getPatientID(record)}</>
+            )
+        },
+        {
+            title: "Action",
+            key: "action",
+            width: 80,
+            render: (_: any, record: OpdSearchModel) => (
+                <a href={record.seq}>Edit </a>
             )
         },
     ]
