@@ -2,14 +2,17 @@ import { createAppSlice } from "@/store/createAppSlice";
 import { createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { fetchSearch } from "@/services/work.opd.provider";
 import type { OpdSearchModel } from "@/store/work-opd/opdSearchModel";
+import type { OpdEditorModel } from "@/store/work-opd/OpdEditorModel";
 
 export interface WorkOpdSliceState {
   searchResult: OpdSearchModel[];
+  getResult?: OpdEditorModel;
   status: "idle" | "loading" | "failed";
 }
 
 const initialState: WorkOpdSliceState = {
   searchResult: [],
+  getResult: undefined,
   status: "idle",
 };
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, Card, Form, Table, DatePicker, Select, } from 'antd';
+import { Button, Card, Form, Table, DatePicker, } from 'antd';
 import type { TableProps, TableColumnsType } from 'antd';
 import { SearchOutlined, PlusCircleOutlined, } from '@ant-design/icons';
 import moment from "moment";
@@ -14,7 +14,6 @@ import '@/app/globals.css';
 // moment.locale('th');
 const dateDisplayFormat: string = "DD MMM YYYY";
 const dateInterfaceFormat: string = "YYYYMMDD";
-const { Option } = Select;
 type OpdSearchProps = {}
 
 const OpdSearch = function OpdSearch(props: OpdSearchProps) {
