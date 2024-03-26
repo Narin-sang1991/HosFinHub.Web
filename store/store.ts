@@ -2,7 +2,6 @@ import type { Action, ThunkAction } from "@reduxjs/toolkit";
 import { combineSlices, configureStore } from "@reduxjs/toolkit";
 import { counterSlice } from "./counter/counterSlice";
 import { quotesApiSlice } from "./quotes/quotesApiSlice";
-import { companySlice } from "./company/companySlice";
 import { workOpdSlice } from "./work-opd/workOpdSlice";
 
 // `combineSlices` automatically combines the reducers using
@@ -10,7 +9,6 @@ import { workOpdSlice } from "./work-opd/workOpdSlice";
 const rootReducer = combineSlices(
   counterSlice,
   quotesApiSlice,
-  companySlice,
   workOpdSlice
 );
 // Infer the `RootState` type from the root reducer

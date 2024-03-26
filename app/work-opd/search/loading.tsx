@@ -1,6 +1,6 @@
 "use client";
 
-import LoadingMain from '@/gulf.client.component/loading.main';
+import LoadingMain from '@/client.component/loading.main';
 
 
 type Props = {}

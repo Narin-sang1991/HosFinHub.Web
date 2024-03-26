@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, Card, Form, Table, Input, Select, } from 'antd';
+import { Button, Card, Form, Table, DatePicker, Select, } from 'antd';
 import type { TableProps, TableColumnsType } from 'antd';
 import { SearchOutlined, PlusCircleOutlined, } from '@ant-design/icons';
 import moment from "moment";
@@ -9,9 +9,11 @@ import withTheme from '../../../theme';
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { searchAsync, selectResult, selectStatus } from "@/store/work-opd/workOpdSlice";
 import type { OpdSearchModel } from "@/store/work-opd/opdSearchModel";
-import '@/app/globals.css'
+import '@/app/globals.css';
 
 // moment.locale('th');
+const dateDisplayFormat: string = "DD MMM YYYY";
+const dateInterfaceFormat: string = "YYYYMMDD";
 const { Option } = Select;
 type OpdSearchProps = {}
 
@@ -27,16 +29,19 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
     //#region Search 
     async function onSearch(index?: number, sorter?: any) {
         // console.log("page-searchAsync-->");
-        setPageIndex(index ?? 1);
-        (async () => {
-            let criteria = packCriteria(index ?? 1, sorter);
-            await dispatch(searchAsync(criteria));
-        })();
+        formCriteria.validateFields()
+            .then((values: any) => { 
+                setPageIndex(index ?? 1);
+                (async () => {
+                    let criteria = packCriteria(index ?? 1, sorter, values); 
+                    await dispatch(searchAsync(criteria));
+                })();
+            });
     }
-    function packCriteria(index: number, sorter?: any) {
+    function packCriteria(index: number, sorter?: any, values: any) {
         return {
-            startDate: "2024/01/01",
-            endDate: "2024/01/02"
+            startDate: moment(new Date(values.DateFrom)).format(dateInterfaceFormat),
+            endDate: moment(new Date(values.DateTo)).format(dateInterfaceFormat),
         }
     }
     //#endregion
@@ -101,7 +106,7 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
                 return moment(new Date(date)).format("YYYY") === "1970" ? (
                     <></>
                 ) : (
-                    moment(date).format('DD MMM YYYY')
+                    moment(date).format(dateDisplayFormat)
                 );
             },
         },
@@ -126,7 +131,7 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
             key: "action",
             width: 80,
             render: (_: any, record: OpdSearchModel) => (
-                <a href={record.seq}>Edit </a>
+                <a href={record.seq}>Edit</a>
             )
         },
     ]
@@ -141,18 +146,18 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
                     onFinish={() => onSearch(1)}
                 >
                     <Form.Item
-                        // label="Text: "
-                        name="SearchText"
-                        rules={[{ required: false }]}
+                        label="OPD Date From: "
+                        name="DateFrom"
+                        rules={[{ required: true }]}
                     >
-                        <Input placeholder="Full Name" allowClear maxLength={100} />
+                        <DatePicker placeholder="Select Date" allowClear />
                     </Form.Item>
                     <Form.Item
-                        // label="Group: "
-                        name="OpdSearchGroupCode"
-                        rules={[{ required: false }]}
+                        label="To: "
+                        name="DateTo"
+                        rules={[{ required: true }]}
                     >
-                        <Input placeholder="OpdSearch Group" allowClear maxLength={10} />
+                        <DatePicker placeholder="Select Date" allowClear />
                     </Form.Item>
                     <Form.Item label="" name="load_data">
                         <Button

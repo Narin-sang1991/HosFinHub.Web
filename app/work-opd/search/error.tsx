@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ErrorMain } from '@/gulf.client.component/error.main';
+import { ErrorMain } from '@/client.component/error.main';
 
 type ErrorOpdSearchProps = { error: any }
 

@@ -46,21 +46,21 @@ const MenuLayout = function MenuLayout({
 
         { type: 'divider' },
 
-        getItem(<p onClick={() => router.push('/work-opd/blog')}>งานผู้ป่วยนอก</p>, 'sub1', <ReconciliationOutlined />, [
+        getItem("งานผู้ป่วยนอก", 'sub1', <ReconciliationOutlined />, [
             getItem(<p onClick={() => router.push('/work-opd/search')}>ค้นหารายการ OPD</p>, '2'),
             getItem(<p onClick={() => router.push('/work-opd/transfer')}>ส่งข้อมูล OPD</p>, '3'),
         ]),
-        getItem(<p onClick={() => router.push('/work-ipd/blog')}>งานผู้ป่วยใน</p>, 'sub2', <BookOutlined />, [
+        getItem("งานผู้ป่วยใน", 'sub2', <BookOutlined />, [
             getItem(<p onClick={() => router.push('/work-ipd/search')}>ค้นหารายการ IPD</p>, '4'),
             getItem(<p onClick={() => router.push('/work-ipd/transfer')}>ส่งข้อมูล IPD</p>, '5'),
         ]),
 
-        { type: 'divider' },
+        // { type: 'divider' },
 
-        getItem(<p onClick={() => router.push('/master')}>Master Data</p>, 'sub9', <AppstoreAddOutlined />, [
-            getItem(<p onClick={() => router.push('/master/company')}>Company </p>, 'm1'),
-            getItem(<p onClick={() => router.push('/master/category')}>Category </p>, 'm2'),
-        ]),
+        // getItem(<p onClick={() => router.push('/master')}>Master Data</p>, 'sub9', <AppstoreAddOutlined />, [
+        //     getItem(<p onClick={() => router.push('/master/company')}>Company </p>, 'm1'),
+        //     getItem(<p onClick={() => router.push('/master/category')}>Category </p>, 'm2'),
+        // ]),
     ];
 
     return (
@@ -91,8 +91,8 @@ const MenuLayout = function MenuLayout({
 
                 </Header>
                 <Breadcrumb style={{ margin: '0 0 5px 10px' }} separator=">" >
-                    <Breadcrumb.Item>User</Breadcrumb.Item>
-                    <Breadcrumb.Item>Bill</Breadcrumb.Item>
+                    <Breadcrumb.Item>IPD</Breadcrumb.Item>
+                    <Breadcrumb.Item>OPD</Breadcrumb.Item>
                 </Breadcrumb>
                 <Content
                     style={{
