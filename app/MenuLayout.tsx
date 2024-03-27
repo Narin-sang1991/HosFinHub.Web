@@ -91,8 +91,9 @@ const MenuLayout = function MenuLayout({
 
                 </Header>
                 <Breadcrumb style={{ margin: '0 0 5px 10px' }} separator=">" >
-                    <Breadcrumb.Item>IPD</Breadcrumb.Item>
                     <Breadcrumb.Item>OPD</Breadcrumb.Item>
+                    <Breadcrumb.Item>Search</Breadcrumb.Item>
+                    <Breadcrumb.Item>Edit</Breadcrumb.Item>
                 </Breadcrumb>
                 <Content
                     style={{

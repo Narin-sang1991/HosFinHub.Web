@@ -1,21 +1,17 @@
+import type { PatientModel } from "@/store/patient/patientModel";
+import type { InsureModel } from "@/store/financial/insureModel";
 
-
-export type OpdSearchModel = {
+export interface OpdSearchModel {
     id: string,
     hn: string,
-    seq: string,
+    seq: number,
     dateopd: Date,
     opd_pat: OpdPatientModel,
 
 }
 
-export type OpdPatientModel = {
-    id: string,
-    hn: string,
-    title: string,
-    fname: string,
-    lname: string,
-    person_id: string,
+export interface OpdPatientModel extends PatientModel {
+    pat_ins: InsureModel[]
 }
 
 export interface OpdSearchReponse {

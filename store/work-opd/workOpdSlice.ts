@@ -1,19 +1,21 @@
 import { createAppSlice } from "@/store/createAppSlice";
-import { createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { fetchSearch } from "@/services/work.opd.provider";
+import { PayloadAction } from "@reduxjs/toolkit";
+import { fetchSearch, fetchGet } from "@/services/work.opd.provider";
 import type { OpdSearchModel } from "@/store/work-opd/opdSearchModel";
-import type { OpdEditorModel } from "@/store/work-opd/OpdEditorModel";
+import type { OpdResponeModel } from "@/store/work-opd/opdEditorModel";
 
 export interface WorkOpdSliceState {
   searchResult: OpdSearchModel[];
-  getResult?: OpdEditorModel;
-  status: "idle" | "loading" | "failed";
+  searchStatus: "idle" | "loading" | "failed";
+  getResult?: OpdResponeModel;
+  getStatus: "idle" | "loading" | "failed";
 }
 
 const initialState: WorkOpdSliceState = {
   searchResult: [],
+  searchStatus: "idle",
   getResult: undefined,
-  status: "idle",
+  getStatus: "idle",
 };
 
 export const workOpdSlice = createAppSlice({
@@ -28,27 +30,48 @@ export const workOpdSlice = createAppSlice({
       },
       {
         pending: (state) => {
-          state.status = "loading";
+          state.searchStatus = "loading";
         },
         fulfilled: (state, action: PayloadAction<OpdSearchModel[]>) => {
-          state.status = "idle";
+          state.searchStatus = "idle";
           state.searchResult = action.payload;
         },
         rejected: (state) => {
-          state.status = "failed";
+          state.searchStatus = "failed";
         },
       },
-    )
+    ),
+
+    getAsync: create.asyncThunk(
+      async (body: any) => {
+        const response = await fetchGet(body);
+        return response;
+      },
+      {
+        pending: (state) => {
+          state.getStatus = "loading";
+        },
+        fulfilled: (state, action: PayloadAction<OpdResponeModel>) => {
+          state.getStatus = "idle";
+          state.getResult = action.payload;
+        },
+        rejected: (state) => {
+          state.getStatus = "failed";
+        },
+      },
+    ),
 
   }),
 
   selectors: {
     selectResult: (workOpd) => workOpd.searchResult,
-    selectStatus: (workOpd) => workOpd.status,
+    selectStatus: (workOpd) => workOpd.searchStatus,
+    getResult: (workOpd) => workOpd.getResult,
+    getStatus: (workOpd) => workOpd.getStatus,
   },
 
 });
 
-export const { searchAsync } = workOpdSlice.actions;
+export const { searchAsync, getAsync } = workOpdSlice.actions;
 
-export const { selectResult, selectStatus } = workOpdSlice.selectors;
+export const { selectResult, selectStatus, getResult, getStatus } = workOpdSlice.selectors;

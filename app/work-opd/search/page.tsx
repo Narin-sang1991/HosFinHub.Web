@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from 'next/navigation';
 import { Button, Card, Form, Table, DatePicker, } from 'antd';
 import type { TableProps, TableColumnsType } from 'antd';
-import { SearchOutlined, PlusCircleOutlined, } from '@ant-design/icons';
+import { SearchOutlined, PlusCircleOutlined, EditTwoTone } from '@ant-design/icons';
 import moment from "moment";
 import withTheme from '../../../theme';
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -19,6 +20,7 @@ type OpdSearchProps = {}
 const OpdSearch = function OpdSearch(props: OpdSearchProps) {
 
     const dispatch = useAppDispatch();
+    const router = useRouter()
     const [formCriteria] = Form.useForm();
     const [pageIndex, setPageIndex] = useState(1);
     const [pageSize] = useState(15);
@@ -29,10 +31,10 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
     async function onSearch(index?: number, sorter?: any) {
         // console.log("page-searchAsync-->");
         formCriteria.validateFields()
-            .then((values: any) => { 
+            .then((values: any) => {
                 setPageIndex(index ?? 1);
                 (async () => {
-                    let criteria = packCriteria(index ?? 1, sorter, values); 
+                    let criteria = packCriteria(index ?? 1, sorter, values);
                     await dispatch(searchAsync(criteria));
                 })();
             });
@@ -93,7 +95,6 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
             key: "seq",
             width: 40,
             ellipsis: true,
-            sorter: (a, b) => a.seq.localeCompare(b.seq),
         },
         {
             title: "OPD Date",
@@ -130,11 +131,16 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
             key: "action",
             width: 80,
             render: (_: any, record: OpdSearchModel) => (
-                <a href={record.seq}>Edit</a>
+                <Button type="link"
+                    icon={<EditTwoTone />}
+                    onClick={() => router.push(`/work-opd/editor?id=${record.seq}`)}>
+                    Edit
+                </Button>
             )
         },
     ]
-    //#endregion 
+    //#endregion
+
     return (
         <>
             <Card bordered={true} style={{ borderBottomColor: "LightGray" }} className={"MasterBackground"} >
