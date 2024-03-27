@@ -19,7 +19,8 @@ import '@/app/globals.css';
 
 interface OpdEditorProps { }
 const dateDisplayFormat: string = "DD MMM YYYY";
-const { Title, Text } = Typography;
+const defaultStrEmpty: string = "-";
+const { Text } = Typography;
 
 const OpdEditor = function OpdEditor(props: OpdEditorProps) {
 
@@ -90,7 +91,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         if (patient !== undefined) {
             return `${patient.title}${patient.fname}  ${patient.lname}`
         }
-        return "";
+        return defaultStrEmpty;
     }
 
     function getVisitType(typeIn?: number) {
@@ -98,7 +99,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         if (typeIn == 2) return "Appointment";
         if (typeIn == 3) return "Refer-in";
         if (typeIn == 4) return "EMS-in";
-        return "-";
+        return defaultStrEmpty;
     }
 
     function getDischargeType(typeOut?: number) {
@@ -110,7 +111,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         if (typeOut == 6) return "Death-in-refer";
         if (typeOut == 7) return "Reject-to-heal";
         if (typeOut == 8) return "Escape";
-        return "-";
+        return defaultStrEmpty;
     }
 
     function getProviderType(opType?: number) {
@@ -124,7 +125,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         if (opType == 7) return "OP-อื่นๆ (Individual data)";
         if (opType == 8) return "ผู้ป่วยกึ่ง OP/IP (NONI)";
         if (opType == 8) return "บริการแพทย์แผนไทย";
-        return "-";
+        return defaultStrEmpty;
     }
 
     const getColResponsive = (key: string, children: any) => {
@@ -155,11 +156,11 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                                     editingData?.patient.sex == 1
                                         ? <ManOutlined />
                                         : editingData?.patient.sex == 2
-                                            ? <WomanOutlined rotate={45}/>
+                                            ? <WomanOutlined rotate={45} />
                                             : <MehOutlined />
                                 }
                                 />
-                                <Text strong keyboard >{`HN:${editingData?.opd.hn}`}</Text>
+                                <Text strong keyboard >{`HN:${editingData?.opd.hn || 'N/A'}`}</Text>
                                 <Text type="warning" >{moment(editingData?.opd.dateopd).format(dateDisplayFormat)}</Text>
                             </Space>
                         </Col>
@@ -193,21 +194,21 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                                 {getColResponsive('btemp',
                                     <Space align="start" size="small" >
                                         <Text type="secondary">อุณหภูมิร่างกาย :</Text>
-                                        <Text strong>{editingData?.opd.btemp}</Text>
+                                        <Text strong>{editingData?.opd.btemp || defaultStrEmpty}</Text>
                                         <Text type="secondary">°C</Text>
                                     </Space>
                                 )}
                                 {getColResponsive('sbp-dbp',
                                     <Space align="start" size="small" >
                                         <Text type="secondary">ความดันโลหิต :</Text>
-                                        <Text strong>{`${editingData?.opd.sbp}/${editingData?.opd.dbp}`}</Text>
+                                        <Text strong>{`${editingData?.opd.sbp || defaultStrEmpty}/${editingData?.opd.dbp || defaultStrEmpty}`}</Text>
                                         <Text type="secondary">mmHg</Text>
                                     </Space>
                                 )}
                                 {getColResponsive('pr',
                                     <Space align="start" size="small" >
                                         <Text type="secondary">อัตราของหัวใจ :</Text>
-                                        <Text strong>{editingData?.opd.pr}</Text>
+                                        <Text strong>{editingData?.opd.pr || defaultStrEmpty}</Text>
                                         <Text type="secondary">/ min.</Text>
                                     </Space>
                                 )}
@@ -215,7 +216,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                                 {getColResponsive('rr',
                                     <Space align="start" size="small" >
                                         <Text type="secondary">อัตราการหายใจ :</Text>
-                                        <Text strong>{editingData?.opd.rr}</Text>
+                                        <Text strong>{editingData?.opd.rr || defaultStrEmpty}</Text>
                                         <Text type="secondary">/ min.</Text>
                                     </Space>
                                 )}
@@ -227,8 +228,8 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                                 )}
 
                                 {/* <Form.Item label="Plant" name="Plant" >
-                            <Input readOnly />
-                        </Form.Item> */}
+                                    <Input readOnly />
+                                </Form.Item> */}
                             </Row>
                         </Col>
                     </Row>
