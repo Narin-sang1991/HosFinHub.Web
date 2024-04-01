@@ -19,7 +19,7 @@ export interface InvoiceItemModel {
     hn: string,         // patient number
     an?: string,        // admit number
     date: Date,         // start date or discharge date or insurance change date
-    chrgitem: number,   // code of payment method in announcement
+    chrgitem: string,   // code of payment method in announcement
     amount: number,     // amount of invoice item
     person_id: string,  // id of person
     seq: number,        // transaction key

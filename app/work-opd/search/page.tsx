@@ -10,11 +10,11 @@ import withTheme from '../../../theme';
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { searchAsync, selectResult, selectStatus } from "@/store/work-opd/workOpdSlice";
 import type { OpdSearchModel } from "@/store/work-opd/opdSearchModel";
+import { getPatientID } from "@/client.constant/patient.constant";
+import { dateDisplayFormat, dateInterfaceFormat } from "@/client.constant/format.constant";
 import '@/app/globals.css';
 
 // moment.locale('th');
-const dateDisplayFormat: string = "DD MMM YYYY";
-const dateInterfaceFormat: string = "YYYYMMDD";
 type OpdSearchProps = {}
 
 const OpdSearch = function OpdSearch(props: OpdSearchProps) {
@@ -60,22 +60,10 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
         return "";
     }
 
-    function getPatientID(record: OpdSearchModel) {
+    function getRecordPatientID(record: OpdSearchModel) {
         if (record.opd_pat !== undefined) {
             let patient = record.opd_pat;
-            let idItems = Array.from(patient.person_id);
-            let result: string = "";
-            let strSplitor: string = " ";
-            let includeSplitor: number[] = [0, 5, 10, 12]
-            idItems.forEach((idItem, index) => {
-                if (includeSplitor.includes(index)) {
-                    result = (result.trim().length === 0) ? `${idItem}${strSplitor}` : `${result}${strSplitor}${idItem}`;
-                }
-                else {
-                    result = (result.trim().length === 0) ? `${idItem}` : `${result}${idItem}`;
-                }
-            });
-            return result;
+            return getPatientID(patient.person_id);
         }
         return "";
     }
@@ -86,15 +74,9 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
             dataIndex: "hn",
             key: "hn",
             width: 40,
+            fixed: 'left',
             ellipsis: true,
             sorter: (a, b) => a.hn.localeCompare(b.hn),
-        },
-        {
-            title: "SEQ.",
-            dataIndex: "seq",
-            key: "seq",
-            width: 40,
-            ellipsis: true,
         },
         {
             title: "OPD Date",
@@ -123,13 +105,21 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
             key: "person_id",
             width: 80,
             render: (record) => (
-                <>{getPatientID(record)}</>
+                <>{getRecordPatientID(record)}</>
             )
+        },
+        {
+            title: "SEQ.",
+            dataIndex: "seq",
+            key: "seq",
+            width: 40,
+            ellipsis: true,
         },
         {
             title: "Action",
             key: "action",
-            width: 80,
+            width: 50,
+            fixed: 'right',
             render: (_: any, record: OpdSearchModel) => (
                 <Button type="link"
                     icon={<EditTwoTone />}
@@ -183,7 +173,7 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
                 loading={status === "loading"}
                 columns={columns}
                 dataSource={searchResult || []}
-                pagination={{ current: pageIndex, pageSize: pageSize, total: searchResult.length || 10, }}
+                pagination={{ current: pageIndex, pageSize: pageSize, total: searchResult?.length || 10, showSizeChanger: true }}
                 onChange={onTableCriteriaChange}
                 size="small" className={"MasterBackground"} style={{ margin: "10px 0", height: "600px", width: "100%" }}
                 sticky scroll={{ x: 1000 }}
