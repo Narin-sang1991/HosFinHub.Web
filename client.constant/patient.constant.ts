@@ -1,6 +1,6 @@
 
 import moment from "moment";
-import { dateInterfaceFormat } from "@/client.constant/format.constant";
+import { dateCalcFormat } from "@/client.constant/format.constant";
 
 const defaultStrEmpty: string = "-";
 
@@ -65,8 +65,8 @@ export function getVisitType(typeIn?: number) {
 
 export function getAgeYear(bornDate: Date, seviceDate: Date) {
     if (bornDate !== undefined && seviceDate !== undefined) {
-        let result: number = new Date(moment(seviceDate).format(dateInterfaceFormat)).getFullYear()
-            - new Date(moment(bornDate).format(dateInterfaceFormat)).getFullYear();
+        let result: number = new Date(moment(seviceDate).format(dateCalcFormat)).getFullYear()
+            - new Date(moment(bornDate).format(dateCalcFormat)).getFullYear();
         return Math.round(result);
     }
     return defaultStrEmpty;

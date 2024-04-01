@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from 'next/navigation';
 import { Button, Card, Form, Table, DatePicker, } from 'antd';
 import type { TableProps, TableColumnsType } from 'antd';
-import { SearchOutlined, PlusCircleOutlined, EditTwoTone } from '@ant-design/icons';
+import { SearchOutlined, PlusCircleOutlined, EditOutlined } from '@ant-design/icons';
 import moment from "moment";
 import withTheme from '../../../theme';
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -116,16 +116,14 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
             ellipsis: true,
         },
         {
-            title: "Action",
+            title: null,
             key: "action",
-            width: 50,
+            width: 20,
             fixed: 'right',
             render: (_: any, record: OpdSearchModel) => (
-                <Button type="link"
-                    icon={<EditTwoTone />}
-                    onClick={() => router.push(`/work-opd/editor?id=${record.seq}`)}>
-                    Edit
-                </Button>
+                <Button type="primary" ghost block style={{ border: 0 }}
+                    icon={<EditOutlined />}
+                    onClick={() => router.push(`/work-opd/editor?id=${record.seq}`)} /> 
             )
         },
     ]
