@@ -25,6 +25,19 @@ export interface InvoiceItemModel {
     seq: number,        // transaction key
 }
 
+export interface InvoiceEditorModel {
+    id: string,                 // unique key of data
+    seq: number,                // transaction key
+    dummyKey: number,           // dummy key for UI component
+    idDurty: boolean,
+    totalAmount: number,
+    overAmount: number,
+    approvedAmount: number,
+    chargeCode: string,
+    chargeDetail: string,
+    status: number,
+}
+
 export interface AdditionalPaymentModel {
     id: string,             // unique key of data
     hn: string,             // patient number

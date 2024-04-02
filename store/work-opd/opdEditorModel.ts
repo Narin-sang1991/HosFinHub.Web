@@ -1,7 +1,7 @@
 import type { PatientDetailModel } from "@/store/patient/patientModel";
-import type { MedicineModel } from "@/store/patient/medicineModel";
+import type { DrugModel, DrugEditorModel } from "@/store/patient/drugModel";
 import type { InsureDetailModel } from "@/store/financial/insureModel";
-import type { InvoiceModel, InvoiceItemModel, AdditionalPaymentModel } from "@/store/financial/paymentModel";
+import type { InvoiceModel, InvoiceItemModel, InvoiceEditorModel, AdditionalPaymentModel } from "@/store/financial/paymentModel";
 
 export interface OpdEditorModel {
     opd: OpdDetailModel,
@@ -10,8 +10,8 @@ export interface OpdEditorModel {
     adp: AdditionalPaymentModel[],
     aer: any[],
     cht: InvoiceModel[],
-    cha: InvoiceItemModel[],
-    dru: MedicineModel[],
+    invoiceItems: InvoiceEditorModel[],
+    drugItems: DrugEditorModel[],
 }
 
 export interface OpdResponeModel {
@@ -22,7 +22,7 @@ export interface OpdResponeModel {
     aer: any[],
     cht: InvoiceModel[],
     cha: InvoiceItemModel[],
-    dru: MedicineModel[],
+    dru: DrugModel[],
 }
 
 export interface OpdDetailModel {

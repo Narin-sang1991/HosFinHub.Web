@@ -1,5 +1,5 @@
 
-export interface MedicineModel {
+export interface DrugModel {
     id: string,             // unique key of data
     hcode: string,          // key of hospital
     hn: string,             // patient number
@@ -23,4 +23,10 @@ export interface MedicineModel {
     sigcode:string,         // code of explain to medicine using
     sigtext:string,         // text of explain to medicine using
     provider?:string,
+}
+
+export interface DrugEditorModel extends DrugModel { 
+    dummyKey: number,           // dummy key for UI component
+    idDurty: boolean,
+    status: number,
 }

@@ -1,110 +1,134 @@
 "use client";
 
-import React from 'react';
-import { Button, Typography, Table, InputNumber, } from 'antd';
+import React, { useState } from 'react';
+import { Button, Typography, Table, Statistic, Modal } from 'antd';
 import type { TableColumnsType } from 'antd';
-import { PlusOutlined, EditOutlined } from '@ant-design/icons';
-import { InvoiceItemModel } from '@/store/financial/paymentModel';
-import { getChargeDetails } from "@/client.constant/payment.method.constant";
+import { FileDoneOutlined } from '@ant-design/icons';
+import { InvoiceEditorModel } from '@/store/financial/paymentModel';
+import type { DrugEditorModel } from "@/store/patient/drugModel";
+import { getStatusDisplayType, getClaimStatusText } from "@/client.constant/invoice.billing.constant";
+import InvoiceDrugPage from './invoice.drug';
 import '@/app/globals.css';
 
-type InvoiceBillingProps = { invoiceItems: InvoiceItemModel[] }
+type InvoiceBillingProps = {
+    invoiceItems: InvoiceEditorModel[],
+    drugItems: DrugEditorModel[]
+}
 const { Text } = Typography;
 
-const InvoiceBillingTab = function InvoiceBilling({ invoiceItems }: InvoiceBillingProps) {
+const InvoiceBillingTab = function InvoiceBilling({ invoiceItems, drugItems }: InvoiceBillingProps) {
+
+    const [isModalDrugOpen, setModalDrugOpen] = useState(false);
+
+    function takeAction(chargeCode: string) {
+        if (chargeCode.startsWith('3') || chargeCode.startsWith('4')) setModalDrugOpen(true);
+        return;
+    }
 
     //#region Local Filter Data
-    const columns: TableColumnsType<InvoiceItemModel> = [
+    const columns: TableColumnsType<InvoiceEditorModel> = [
         {
-            title: <Button type="primary" ghost block style={{ border: 0 }}
-                icon={<PlusOutlined />}
-            // onClick={() =>  )}
-            />,
-            key: "action",
+            title: <p className="Center">หมวด</p>,
+            dataIndex: "dummyKey",
+            key: "dummyKey",
             width: 15,
             fixed: 'left',
-            render: (_: any, record: InvoiceItemModel) => (
-                <Button type="primary" ghost block style={{ border: 0 }}
-                    icon={<EditOutlined />}
-                // onClick={() =>  )}
+            ellipsis: true,
+            className: "Center"
+        },
+        {
+            title: "รายการค่าบริการทางการแพทย์",
+            dataIndex: "chargeDetail",
+            key: "chargeDetail",
+            width: 80,
+            ellipsis: true,
+        },
+        {
+            title: "ราคาเรียกเก็บ",
+            dataIndex: "totalAmount",
+            key: "totalAmount",
+            width: 40,
+            ellipsis: true,
+            render: (totalAmount) => (
+                // <Text type={totalAmount == 0 ? 'secondary' : 'warning'}>{totalAmount}</Text>
+                <Statistic precision={2} value={totalAmount}
+                    valueStyle={{ fontSize: '16px', color: totalAmount == 0 ? 'gray' : 'black' }}
                 />
             )
         },
         {
-            title: "หมวด",
-            dataIndex: "chrgitem",
-            key: "chrgitem",
-            width: 20,
-            fixed: 'left',
-            ellipsis: true,
-            sorter: (a, b) => a.chrgitem.localeCompare(b.chrgitem),
-        },
-        {
-            title: "รายการค่าบริการทางการแพทย์",
-            key: "chrgitem-details",
-            width: 80,
-            ellipsis: true,
-            render: (record) => (
-                <>{getChargeDetails(record.chrgitem)}</>
-            )
-        },
-        {
-            title: "ราคาเรียกเก็บ",
-            dataIndex: "amount",
-            key: "amount",
-            width: 40,
-            ellipsis: true,
-            render: (amount) => (
-                <InputNumber value={amount} precision={2} readOnly />
-            )
-        },
-        {
             title: "ส่วนเกิน",
-            dataIndex: "over_amount",
-            key: "over_amount",
+            dataIndex: "overAmount",
+            key: "overAmount",
             width: 40,
             ellipsis: true,
-            render: (over_amount) => (
-                <InputNumber value={over_amount || 0} precision={2} readOnly />
+            render: (overAmount) => (
+                <Statistic precision={2} value={overAmount}
+                    valueStyle={{ fontSize: '16px', color: overAmount == 0 ? 'gray' : 'orange' }}
+                />
             )
         },
         {
             title: "จำนวนเงินที่อนุมัติ",
-            dataIndex: "approve_amount",
-            key: "approve_amount",
+            dataIndex: "approvedAmount",
+            key: "approvedAmount",
             width: 40,
             ellipsis: true,
-            render: (approve_amount) => (
-                <InputNumber value={approve_amount || 0} precision={2} readOnly />
+            render: (approvedAmount) => (
+                <Statistic precision={2} value={approvedAmount}
+                    valueStyle={{ fontSize: '16px', color: approvedAmount == 0 ? 'gray' : '#3f8600' }}
+                />
             )
         },
         {
-            title: "สถานะ",
-            dataIndex: "approve_status",
-            key: "approve_status",
+            title: <p className="Center">สถานะ</p>,
+            dataIndex: "status",
+            key: "status",
             width: 30,
             fixed: 'right',
             ellipsis: true,
-            render: (approve_status) => (
-                <Text strong italic type={approve_status == '1' ? 'success'
-                    : approve_status == '2' ? 'warning'
-                        : approve_status == '3' ? 'danger' : 'secondary'} >
-                    {approve_status || "-"}
+            className: "Center",
+            render: (status) => (
+                <Text italic type={getStatusDisplayType(status)} >
+                    {getClaimStatusText(status)}
                 </Text>
+            )
+        },
+        {
+            title: <p className="Center">จัดการ</p>,
+            key: "action",
+            width: 20,
+            fixed: 'right',
+            ellipsis: true,
+            className: "Center",
+            render: (_: any, record: InvoiceEditorModel) => (
+                record.status == 0 ? <></> : <Button type="primary" ghost block style={{ border: 0 }}
+                    icon={<FileDoneOutlined />}
+                    onClick={() => takeAction(record.chargeCode)}
+                />
             )
         },
     ]
     //#endregion
 
     return (
-        <Table
-            rowKey={record => record.id}
-            columns={columns} dataSource={invoiceItems}
-            size="small" className={"MasterBackground"}
-            pagination={{ pageSize: 10, showSizeChanger: true }}
-            style={{ margin: "10px 0", height: "500px", width: "100%" }}
-            sticky scroll={{ x: 600 }}
-        />
+        <>
+            <Table
+                rowKey={record => record.id}
+                columns={columns} dataSource={invoiceItems}
+                size="small" className={"MasterBackground"}
+                pagination={{ pageSize: 10 }}
+                style={{ margin: -10, height: "400px", width: "100%" }}
+                sticky scroll={{ x: 400 }}
+            />
+            <Modal title={`รายการเบิก (จำนวน ${drugItems.length || 0} รายการ)`}
+                open={isModalDrugOpen} centered width={'90%'}
+                onOk={() => setModalDrugOpen(false)} onCancel={() =>
+                    setModalDrugOpen(false)}
+            >
+                <InvoiceDrugPage drugItems={drugItems} />
+            </Modal>
+        </>
     );
 }
 
