@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 // import { uuid } from 'uuidv4';
 import { Button, Typography, Table, Form, Space, Popconfirm, Tooltip, } from 'antd';
-import type { TableProps } from 'antd';
+import type { TableProps, TableColumnProps } from 'antd';
 import { EditOutlined, CheckOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
 import { DrugEditorModel } from '@/store/patient/drugModel';
 import { EditableCell } from "@/client.component/antd.table.editable";
@@ -198,7 +198,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems }: InvoiceDrugProps) {
 
     const mergedColumns: TableProps['columns'] = columns.map((col) => {
         if (!col.editable) {
-            return col;
+            return col as TableColumnProps<DrugEditorModel>;
         }
         let numTypes = ['totcopay', 'total']
         return {
@@ -210,7 +210,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems }: InvoiceDrugProps) {
                 title: col.title,
                 editing: isEditing(record),
             }),
-        };
+        } as TableColumnProps<DrugEditorModel>;
     });
     //#endregion
 
