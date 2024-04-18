@@ -23,6 +23,10 @@ export function getPatientID(personID: string) {
     return "";
 }
 
+export function getPatientInscl(){
+    
+}
+
 export function getPatientSex(typeIn?: number) {
     if (typeIn == 1) return "เพศชาย";
     if (typeIn == 2) return "เพศหญิง";
