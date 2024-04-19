@@ -1,16 +1,12 @@
 "use client";
 
+//#region Import
 import React, { useState, useEffect } from "react";
 // import { uuid } from 'uuidv4';
 import {
-  Button,
-  Typography,
-  Table,
-  Form,
-  Space,
-  Popconfirm,
-  Tooltip,
-  Tag,
+  Button, Typography, Table,
+  Form, Space, Popconfirm,
+  Tooltip, Tag,
 } from "antd";
 import type { TableProps, TableColumnProps } from "antd";
 import {
@@ -18,27 +14,40 @@ import {
   CheckOutlined,
   CloseOutlined,
   DeleteOutlined,
+  SisternodeOutlined,
+  UndoOutlined,
 } from "@ant-design/icons";
 import { DrugEditorModel } from "@/store/patient/drugModel";
+import { MoveInvoiceItemModel } from "@/store/financial/moveItemModel";
 import { EditableCell } from "@/client.component/antd.table.editable";
 import {
   getStatusDisplayType,
   getClaimStatusText,
 } from "@/client.constant/invoice.billing.constant";
 import "@/app/globals.css";
+//#endregion
 
-type InvoiceDrugProps = { drugItems: DrugEditorModel[] };
+type InvoiceDrugProps = {
+  drugItems: DrugEditorModel[],
+  onMoveto?: any
+};
 const { Text } = Typography;
 
-const InvoiceDrugPage = function InvoiceDrug({ drugItems }: InvoiceDrugProps) {
+const InvoiceDrugPage = function InvoiceDrug({ drugItems, onMoveto }: InvoiceDrugProps) {
+  
   const [formEditor] = Form.useForm();
   const [editingData, setEditingData] = useState<DrugEditorModel[]>([]);
   const [editingKey, setEditingKey] = useState("");
+  const [moveItems, setMoveItems] = useState<MoveInvoiceItemModel[]>([]);
 
   useEffect(() => {
-    setEditingData(drugItems);
-    console.log(drugItems);
+    refreshItems()
   }, [drugItems]);
+
+  function refreshItems(): void {
+    setEditingData(drugItems);
+    setMoveItems([]);
+  };
 
   //#region Editor
   const cancel = () => {
@@ -58,12 +67,27 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems }: InvoiceDrugProps) {
 
   const viewMode = editingKey === "";
   const isEditing = (record: DrugEditorModel) => record.id === editingKey;
-  const editItem = (record: Partial<DrugEditorModel>) => {
+  function editItem(record: Partial<DrugEditorModel>): void {
     formEditor.setFieldsValue({ ...record });
     setEditingKey(record?.id || "");
   };
 
-  const deleteItem = (key: React.Key) => {
+  function moveItemToCharge(record: DrugEditorModel): void {
+    try {
+      let chargeCode: string = 'J1';
+      let item: MoveInvoiceItemModel = {
+        id: record.id,
+        chargeCode: chargeCode,
+        name: `${record.did}: ${record.didname}`
+      }
+      setMoveItems([...moveItems, item]);
+      deleteItem(record.id);
+    } catch (errInfo) {
+      console.log("Validate Failed:", errInfo);
+    }
+  }
+
+  function deleteItem(key: React.Key): void {
     const newData = [...editingData];
     const index = newData.findIndex((item) => key === item.id);
     if (index > -1) {
@@ -72,7 +96,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems }: InvoiceDrugProps) {
     }
   };
 
-  const saveItem = async (key: React.Key) => {
+  async function saveItem(key: React.Key): Promise<void> {
     try {
       const row = (await formEditor.validateFields()) as DrugEditorModel;
       const newData = [...editingData];
@@ -188,10 +212,20 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems }: InvoiceDrugProps) {
     },
     {
       title: viewMode ? (
-        <p className="Center">Operation</p>
+        <p className="Center"> <Space size="small">
+          {"จัดการ"}
+          <Tooltip title="ย้อนกลับ">
+            <Button
+              disabled={!viewMode}
+              onClick={refreshItems}
+              type="text" shape="circle"
+              size="small" block
+              icon={<UndoOutlined />}
+            />
+          </Tooltip></Space></p>
       ) : (
         <p className="Center">
-          <Text type="warning">Confirm ?</Text>
+          <Text type="warning">ยืนยัน ?</Text>
         </p>
       ),
       dataIndex: "operation",
@@ -230,7 +264,18 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems }: InvoiceDrugProps) {
           </Space>
         ) : (
           <Space size="small">
-            <Tooltip title="Edit">
+            {/* <Tooltip title="ย้ายไปยัง">
+              <Button
+                disabled={!viewMode}
+                onClick={() => moveItemToCharge(record)}
+                type="primary"
+                shape="circle"
+                size="small"
+                block
+                icon={<SisternodeOutlined />}
+              />
+            </Tooltip> */}
+            <Tooltip title="แก้ไข">
               <Button
                 disabled={!viewMode}
                 onClick={() => editItem(record)}
@@ -242,11 +287,11 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems }: InvoiceDrugProps) {
                 icon={<EditOutlined />}
               />
             </Tooltip>
-            <Tooltip title="Delete">
+            <Tooltip title="ลบออก">
               <Popconfirm
                 title="Sure to delete?"
                 placement="bottom"
-                onConfirm={() => deleteItem(record.id)}
+                onConfirm={() => moveItemToCharge(record)}
               >
                 <Button
                   disabled={!viewMode}
@@ -285,23 +330,31 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems }: InvoiceDrugProps) {
   //#endregion
 
   return (
-    <Table
-      rowKey={(record) => record.id}
-      components={{
-        body: {
-          cell: EditableCell<DrugEditorModel>,
-        },
-      }}
-      // bordered
-      columns={mergedColumns}
-      dataSource={drugItems}
-      size="small"
-      className={"MasterBackground"}
-      pagination={{ pageSize: 10, simple: true }}
-      style={{ margin: "10px 0", height: "500px", width: "100%" }}
-      sticky
-      scroll={{ x: 400 }}
-    />
+    <Space size={"small"} direction="vertical">
+      <Form form={formEditor} component={false}>
+        <Table
+          rowKey={(record) => record.id}
+          components={{
+            body: {
+              cell: EditableCell<DrugEditorModel>,
+            },
+          }}
+          columns={mergedColumns}
+          dataSource={editingData}
+          size="small"
+          className={"MasterBackground"}
+          pagination={{ pageSize: 10, simple: true }}
+          style={{ margin: "10px 0", height: "500px", width: "100%" }}
+          sticky
+          scroll={{ x: 400 }}
+        />
+      </Form>
+      <Space size={"small"}>
+        {
+          moveItems.map((t) => { return <Tag color="warning">{t.name}</Tag> })
+        }
+      </Space>
+    </Space>
   );
 };
 

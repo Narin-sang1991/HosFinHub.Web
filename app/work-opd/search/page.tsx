@@ -63,7 +63,8 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
     sorter,
     extra
   ) => {
-    onSearch(pagination.current, sorter);
+    // onSearch(pagination.current, sorter);
+    setPageIndex(pagination.current || 1);
   };
 
   function getPatientName(record: OpdSearchModel) {
