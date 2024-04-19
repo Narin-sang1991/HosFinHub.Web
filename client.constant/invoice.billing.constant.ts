@@ -90,7 +90,7 @@ export function genarateAllCharges(
   //assign error to charge.
   results = results.map((item) => {
     if (item.chargeCode === "41") {
-      
+
       //item 41 = ยาที่นำไปใช้ต่อที่บ้าน
       validItem?.forEach((v) => {
         //dru error
@@ -149,14 +149,14 @@ export function getClaimStatusText(status: number) {
     status == 0
       ? "ไม่มีรายการ"
       : status == 1
-      ? "รอดำเนินการ"
-      : status == 2
-      ? "รอพิจารณา"
-      : status == 3
-      ? "อนุมัติแล้ว"
-      : status == 4
-      ? "ไม่อนุมัติ"
-      : defaultStrEmpty;
+        ? "รอดำเนินการ"
+        : status == 2
+          ? "รอพิจารณา"
+          : status == 3
+            ? "อนุมัติแล้ว"
+            : status == 4
+              ? "ไม่อนุมัติ"
+              : defaultStrEmpty;
   return result;
 }
 
@@ -165,11 +165,11 @@ export function getStatusDisplayType(status: number) {
     status == 0
       ? "secondary"
       : status == 1 || status == 2
-      ? "warning"
-      : status == 3
-      ? "success"
-      : status == 4
-      ? "danger"
-      : "secondary";
+        ? "warning"
+        : status == 3
+          ? "success"
+          : status == 4
+            ? "danger"
+            : "secondary";
   return result;
 }

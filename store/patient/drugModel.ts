@@ -28,7 +28,8 @@ export interface DrugModel {
 
 export interface DrugEditorModel extends DrugModel {
   dummyKey: number; // dummy key for UI component
+  totalreq: number;
   idDurty: boolean;
-  status: number;
+  hasError: boolean;
   validError?: OpdValids[];
 }

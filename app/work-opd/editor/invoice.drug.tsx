@@ -16,6 +16,7 @@ import {
   DeleteOutlined,
   SisternodeOutlined,
   UndoOutlined,
+  FileExclamationTwoTone,
 } from "@ant-design/icons";
 import { DrugEditorModel } from "@/store/patient/drugModel";
 import { MoveInvoiceItemModel } from "@/store/financial/moveItemModel";
@@ -34,7 +35,7 @@ type InvoiceDrugProps = {
 const { Text } = Typography;
 
 const InvoiceDrugPage = function InvoiceDrug({ drugItems, onMoveto }: InvoiceDrugProps) {
-  
+
   const [formEditor] = Form.useForm();
   const [editingData, setEditingData] = useState<DrugEditorModel[]>([]);
   const [editingKey, setEditingKey] = useState("");
@@ -131,19 +132,6 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems, onMoveto }: InvoiceDru
       className: "Center",
     },
     {
-      title: <p className="Center">สถานะ</p>,
-      dataIndex: "status",
-      key: "status",
-      width: 20,
-      ellipsis: true,
-      className: "Center",
-      render: (status: number) => (
-        <Text italic type={getStatusDisplayType(status)}>
-          {getClaimStatusText(status)}
-        </Text>
-      ),
-    },
-    {
       title: "รหัสยา",
       dataIndex: "did",
       key: "did",
@@ -159,29 +147,30 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems, onMoveto }: InvoiceDru
     },
     {
       title: "หน่วย",
-      dataIndex: "unit",
       key: "unit",
-      width: 15,
-      ellipsis: true,
+      width: 20,
+      render: (_: any, record: DrugEditorModel) => {
+        return <>{`${record.amount} ${record.unit}`}</>
+      }
     },
     {
       title: "ราคาขาย",
       dataIndex: "drugprice",
       key: "drugprice",
-      width: 30,
+      width: 20,
       ellipsis: true,
     },
     {
-      title: "จำนวน",
-      dataIndex: "amount",
-      key: "amount",
+      title: "พึ่งเบิกได้",
+      dataIndex: "total",
+      key: "total",
       width: 30,
       ellipsis: true,
     },
     {
       title: "ขอเบิก",
-      dataIndex: "total",
-      key: "total",
+      dataIndex: "totalreq",
+      key: "totalreq",
       width: 30,
       ellipsis: true,
       editable: true,
@@ -198,13 +187,14 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems, onMoveto }: InvoiceDru
       title: "ไม่ผ่าน",
       dataIndex: "validError",
       key: "validError",
+      className: "Center",
       width: 20,
       ellipsis: true,
       render: (_: any, record: DrugEditorModel) => {
         return record.validError?.map((i) => {
           return (
-            <Tooltip title={i.code_error_descriptions} color={"blue"} >
-              <Tag color="#f5222d">{i.code_error}</Tag>
+            <Tooltip title={`${i.code_error}: ${i.code_error_descriptions}`} >
+              <FileExclamationTwoTone twoToneColor="#ffab00" style={{ fontSize: '20px' }} />
             </Tooltip>
           );
         });
@@ -233,8 +223,8 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems, onMoveto }: InvoiceDru
       fixed: "right",
       width: 30,
       render: (_: any, record: DrugEditorModel) => {
-        const editable = isEditing(record);
-        return editable ? (
+        const editing = isEditing(record);
+        return editing ? (
           <Space size="small">
             <Button
               disabled={viewMode}
@@ -313,9 +303,12 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems, onMoveto }: InvoiceDru
 
   const mergedColumns: TableProps["columns"] = columns.map((col) => {
     if (!col.editable) {
-      return col as TableColumnProps<DrugEditorModel>;
+      return {
+        ...col,
+        onCell: (record: DrugEditorModel) => ({ className: record.hasError ? 'Col-Table-Row-Error' : '',})
+      } as TableColumnProps<DrugEditorModel>;
     }
-    let numTypes = ["totcopay", "total"];
+    let numTypes = ["totcopay", "totalreq"];
     return {
       ...col,
       onCell: (record: DrugEditorModel) => ({
@@ -324,6 +317,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems, onMoveto }: InvoiceDru
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
+        styleClass: record.hasError ? 'Col-Table-Row-Error' : '',
       }),
     } as TableColumnProps<DrugEditorModel>;
   });

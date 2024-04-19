@@ -9,6 +9,7 @@ export interface EditableCellProps<T> extends React.HTMLAttributes<HTMLElement> 
     record: T;
     index: number;
     children: React.ReactNode;
+    styleClass: any;
 }
 
 export function EditableCell<T>({
@@ -19,9 +20,10 @@ export function EditableCell<T>({
     record,
     index,
     children,
+    styleClass,
     ...restProps
 }: EditableCellProps<T>) {
-    
+
     const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
 
     return (
@@ -39,9 +41,8 @@ export function EditableCell<T>({
                 >
                     {inputNode}
                 </Form.Item>
-            ) : (
-                children
-            )}
+            ) : <p className={styleClass}>{children}</p>
+            }
         </td>
     );
 };

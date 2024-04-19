@@ -18,10 +18,11 @@ export function genarateDrugEditors(
       ...drugItem,
       dummyKey,
       idDurty: false,
-      status: 2,
+      totalreq: 0.00,
+      hasError: (assignItemError.length !== 0),
       validError: assignItemError,
     };
     results.push(data);
   });
   return results;
-}
+} 
