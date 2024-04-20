@@ -1,5 +1,6 @@
 import type { PatientModel } from "@/store/patient/patientModel";
 import type { InsureModel } from "@/store/financial/insureModel";
+import { OpdValids } from "./opdEditorModel";
 
 export interface OpdSearchModel {
   id: string;
@@ -7,6 +8,7 @@ export interface OpdSearchModel {
   seq: number;
   dateopd: Date;
   opd_pat: OpdPatientModel;
+  error: OpdValids[]
 }
 
 export interface OpdPatientModel extends PatientModel {
