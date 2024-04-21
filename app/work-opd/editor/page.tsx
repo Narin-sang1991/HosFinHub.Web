@@ -173,6 +173,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                 title: "ข้อมูลค่ารักษาพยาบาล",
                 children: (
                     <InvoiceBillingTab
+                        clinicCode={editingData?.opd.clinic}
                         invoiceItems={editingData?.invoiceItems || []}
                         drugItems={editingData?.drugItems || []}
                     />

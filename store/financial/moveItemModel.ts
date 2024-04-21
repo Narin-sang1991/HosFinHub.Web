@@ -2,6 +2,8 @@
 
 export interface MoveInvoiceItemModel   {
     id: string;         // unique key of data
-    chargeCode: string, // type code of invoice item
+    sourceFileID : string,
+    chargeCodeFrom?: string, // type code of invoice item
+    chargeCodeTo: string, // type code of invoice item
     name: string,
 }

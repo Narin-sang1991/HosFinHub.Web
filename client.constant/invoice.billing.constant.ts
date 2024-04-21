@@ -6,11 +6,25 @@ import type {
 import { OpdValidModel } from "@/store/work-opd/opdEditorModel";
 const defaultStrEmpty: string = "-";
 
+//#region File and Code
+export const drugInChargePrefix = "3";
+export const drugExChargePrefix = "4";
+export const drugFileCode = "DRU";
+
+
+export const additionalPaymentChargePrefix = "J";
+export const additionalPaymentFileCode = "ADP";
+//#endregion
+
+//#region Additional Payment Type
+export const adpTypeNonGroup = "3";
+//#endregion
+
 const allCharges: string[] = [
   "1",
   "2",
-  "3",
-  "4",
+  drugInChargePrefix,
+  drugExChargePrefix,
   "5",
   "6",
   "7",

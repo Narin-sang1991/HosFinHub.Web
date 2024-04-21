@@ -6,7 +6,7 @@ export interface DrugModel {
   hn: string; // patient number
   an?: string; // admit number
   clinic: string; // code of clinic or service point
-  date_serv: string; // start visit date in AD
+  date_serv: Date; // start visit date in AD
   did: string; // code of medicine in clinic or service point
   didname: string; // name of medicine in clinic or service point
   amount: number; // amount of medicine

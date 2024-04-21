@@ -10,35 +10,33 @@ import {
 } from "antd";
 import type { TableProps, TableColumnProps } from "antd";
 import {
-  EditOutlined,
+  EditTwoTone,
   CheckOutlined,
   CloseOutlined,
   DeleteOutlined,
   SisternodeOutlined,
   UndoOutlined,
-  FileExclamationTwoTone,
+  WarningTwoTone,
 } from "@ant-design/icons";
 import { DrugEditorModel } from "@/store/patient/drugModel";
 import { MoveInvoiceItemModel } from "@/store/financial/moveItemModel";
 import { EditableCell } from "@/client.component/antd.table.editable";
-import {
-  getStatusDisplayType,
-  getClaimStatusText,
-} from "@/client.constant/invoice.billing.constant";
+import { drugFileCode, drugExChargePrefix, additionalPaymentChargePrefix } from "@/client.constant/invoice.billing.constant";
 import "@/app/globals.css";
 //#endregion
 
 type InvoiceDrugProps = {
-  drugItems: DrugEditorModel[],
+  drugItems?: DrugEditorModel[],
   moveInvoiceItems?: MoveInvoiceItemModel[],
-  onChange?: any;
+  onChange?: any,
 };
+
 const { Text } = Typography;
 
 const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: InvoiceDrugProps) {
 
   const [formEditor] = Form.useForm();
-  const [editingData, setEditingData] = useState<DrugEditorModel[]>([]);
+  const [editingDrugData, setEditingData] = useState<DrugEditorModel[]>([]);
   const [editingKey, setEditingKey] = useState("");
   const [moveItems, setMoveItems] = useState<MoveInvoiceItemModel[]>([]);
 
@@ -48,7 +46,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
 
   useEffect(() => {
     triggerChange();
-  }, [editingData, moveItems]);
+  }, [editingDrugData, moveItems]);
 
   function refreshItems(): void {
     setEditingData(drugItems);
@@ -57,20 +55,18 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
 
   const triggerChange = () => {
     onChange?.({
-      drugItems: editingData,
+      drugItems: editingDrugData,
       moveInvoiceItems: moveItems,
     });
   };
 
   //#region Editor
-
-
   const cancel = () => {
     setEditingKey("");
   };
 
   // const addItem = () => {
-  //     const newData = [...editingData];
+  //     const newData = [...editingDrugData];
   //     let newId = uuid();
   //     newData.push({
   //         id: newId,
@@ -89,10 +85,12 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
 
   function moveItemToCharge(record: DrugEditorModel): void {
     try {
-      let chargeCode: string = 'J1';
+      let chargeCodeTo: string = additionalPaymentChargePrefix + '1';
       let item: MoveInvoiceItemModel = {
         id: record.id,
-        chargeCode: chargeCode,
+        sourceFileID: drugFileCode,
+        chargeCodeFrom: drugExChargePrefix,
+        chargeCodeTo: chargeCodeTo,
         name: `${record.did}: ${record.didname}`
       }
       setMoveItems([...moveItems, item]);
@@ -103,7 +101,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
   }
 
   function deleteItem(key: React.Key): void {
-    const newData = [...editingData];
+    const newData = [...editingDrugData];
     const index = newData.findIndex((item) => key === item.id);
     if (index > -1) {
       newData.splice(index, 1);
@@ -114,7 +112,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
   async function saveItem(key: React.Key): Promise<void> {
     try {
       const row = (await formEditor.validateFields()) as DrugEditorModel;
-      const newData = [...editingData];
+      const newData = [...editingDrugData];
       const index = newData.findIndex((item) => key === item.id);
       if (index > -1) {
         const item = newData[index];
@@ -208,7 +206,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
         return record.validError?.map((i) => {
           return (
             <Tooltip title={`${i.code_error}: ${i.code_error_descriptions}`} >
-              <FileExclamationTwoTone twoToneColor="#ffab00" style={{ fontSize: '20px' }} />
+              <WarningTwoTone twoToneColor="#ffab00" style={{ fontSize: '20px' }} />
             </Tooltip>
           );
         });
@@ -239,15 +237,12 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
       render: (_: any, record: DrugEditorModel) => {
         const editing = isEditing(record);
         return editing ? (
-          <Space size="small">
+          <Space size="middle">
             <Button
               disabled={viewMode}
               onClick={() => saveItem(record.id)}
-              type="primary"
-              block
-              shape="circle"
-              size="small"
-              icon={<CheckOutlined />}
+              type="text" size="small" block
+              icon={<CheckOutlined style={{ color: 'green' }} />}
             />
             <Popconfirm
               title="Sure to cancel?"
@@ -256,18 +251,13 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
             >
               <Button
                 disabled={viewMode}
-                type="primary"
-                danger
-                shape="circle"
-                size="small"
-                ghost
-                block
+                type="text" size="small" block danger
                 icon={<CloseOutlined />}
               />
             </Popconfirm>
           </Space>
         ) : (
-          <Space size="small">
+          <Space size="middle">
             {/* <Tooltip title="ย้ายไปยัง">
               <Button
                 disabled={!viewMode}
@@ -283,12 +273,8 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
               <Button
                 disabled={!viewMode}
                 onClick={() => editItem(record)}
-                type="primary"
-                shape="circle"
-                size="small"
-                ghost
-                block
-                icon={<EditOutlined />}
+                type="text" size="small" block
+                icon={<EditTwoTone />}
               />
             </Tooltip>
             <Tooltip title="ลบออก">
@@ -299,12 +285,8 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
               >
                 <Button
                   disabled={!viewMode}
-                  type="primary"
+                  type="text" size="small" block
                   danger
-                  shape="circle"
-                  size="small"
-                  ghost
-                  block
                   icon={<DeleteOutlined />}
                 />
               </Popconfirm>
@@ -348,7 +330,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
             },
           }}
           columns={mergedColumns}
-          dataSource={editingData}
+          dataSource={editingDrugData}
           size="small"
           className={"MasterBackground"}
           pagination={{ pageSize: 10, simple: true }}
