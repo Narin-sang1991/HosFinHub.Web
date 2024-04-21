@@ -88,10 +88,12 @@ const InvoiceBillingTab = function InvoiceBilling({
                 rate: drug.drugprice,
                 total: drug.total,
                 totcopay: drug.totcopay,
-                clinic: clinicCode
+                clinic: clinicCode || "09900",
+                itemsrc : 2,
             }
             temp.push(newItem);
-        })
+        });
+        setAdditPaymentData(temp);
     }
     //#endregion
 
