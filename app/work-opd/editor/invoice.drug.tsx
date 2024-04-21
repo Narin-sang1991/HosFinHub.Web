@@ -2,7 +2,6 @@
 
 //#region Import
 import React, { useState, useEffect } from "react";
-// import { uuid } from 'uuidv4';
 import {
   Button, Typography, Table,
   Form, Space, Popconfirm,
@@ -14,7 +13,6 @@ import {
   CheckOutlined,
   CloseOutlined,
   DeleteOutlined,
-  SisternodeOutlined,
   UndoOutlined,
   WarningTwoTone,
 } from "@ant-design/icons";
@@ -35,28 +33,26 @@ const { Text } = Typography;
 
 const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: InvoiceDrugProps) {
 
-  const [formEditor] = Form.useForm();
+  const [formDrugEditor] = Form.useForm();
   const [editingDrugData, setEditingData] = useState<DrugEditorModel[]>([]);
   const [editingKey, setEditingKey] = useState("");
   const [moveItems, setMoveItems] = useState<MoveInvoiceItemModel[]>([]);
 
   useEffect(() => {
-    refreshItems()
+    console.log('invoice.drug', drugItems);
+    setEditingData(drugItems);
   }, [drugItems]);
-
-  useEffect(() => {
-    triggerChange();
-  }, [editingDrugData, moveItems]);
 
   function refreshItems(): void {
     setEditingData(drugItems);
     setMoveItems([]);
+    triggerChange(drugItems, []);
   };
 
-  const triggerChange = () => {
+  const triggerChange = (drugData: DrugEditorModel[], moveData: MoveInvoiceItemModel[]) => {
     onChange?.({
-      drugItems: editingDrugData,
-      moveInvoiceItems: moveItems,
+      drugItems: drugData,
+      moveInvoiceItems: moveData,
     });
   };
 
@@ -79,7 +75,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
   const viewMode = editingKey === "";
   const isEditing = (record: DrugEditorModel) => record.id === editingKey;
   function editItem(record: Partial<DrugEditorModel>): void {
-    formEditor.setFieldsValue({ ...record });
+    formDrugEditor.setFieldsValue({ ...record });
     setEditingKey(record?.id || "");
   };
 
@@ -93,25 +89,28 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
         chargeCodeTo: chargeCodeTo,
         name: `${record.did}: ${record.didname}`
       }
-      setMoveItems([...moveItems, item]);
-      deleteItem(record.id);
+      let newMoveItems = [...moveItems, item];
+      setMoveItems(newMoveItems);
+      let newData = deleteItem(record.id);
+      triggerChange(newData, newMoveItems);
     } catch (errInfo) {
       console.log("Validate Failed:", errInfo);
     }
   }
 
-  function deleteItem(key: React.Key): void {
+  function deleteItem(key: React.Key): DrugEditorModel[] {
     const newData = [...editingDrugData];
     const index = newData.findIndex((item) => key === item.id);
     if (index > -1) {
       newData.splice(index, 1);
       setEditingData(newData);
     }
+    return newData;
   };
 
   async function saveItem(key: React.Key): Promise<void> {
     try {
-      const row = (await formEditor.validateFields()) as DrugEditorModel;
+      const row = (await formDrugEditor.validateFields()) as DrugEditorModel;
       const newData = [...editingDrugData];
       const index = newData.findIndex((item) => key === item.id);
       if (index > -1) {
@@ -127,6 +126,8 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
         setEditingData(newData);
         setEditingKey("");
       }
+
+      triggerChange(newData, moveItems);
     } catch (errInfo) {
       console.log("Validate Failed:", errInfo);
     }
@@ -258,17 +259,6 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
           </Space>
         ) : (
           <Space size="middle">
-            {/* <Tooltip title="ย้ายไปยัง">
-              <Button
-                disabled={!viewMode}
-                onClick={() => moveItemToCharge(record)}
-                type="primary"
-                shape="circle"
-                size="small"
-                block
-                icon={<SisternodeOutlined />}
-              />
-            </Tooltip> */}
             <Tooltip title="แก้ไข">
               <Button
                 disabled={!viewMode}
@@ -321,7 +311,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
 
   return (
     <Space size={"small"} direction="vertical">
-      <Form form={formEditor} component={false}>
+      <Form form={formDrugEditor} component={false}>
         <Table
           rowKey={(record) => record.id}
           components={{

@@ -5,95 +5,123 @@ import React, { useState, useEffect } from "react";
 import { Button, Typography, Table, Statistic, Modal, Tag, Badge, Form, Space } from "antd";
 import type { TableColumnsType } from "antd";
 import { FileDoneOutlined, FileExclamationTwoTone } from "@ant-design/icons";
-import { AdditionalPaymentModel, InvoiceEditorModel } from "@/store/financial/paymentModel";
+import { InvoiceEditorModel } from "@/store/financial/invoiceModel";
+import { AdditPaymentModelEditorModel } from "@/store/financial/additionalModel";
 import type { DrugEditorModel } from "@/store/patient/drugModel";
 import { MoveInvoiceItemModel } from "@/store/financial/moveItemModel";
 import {
     getStatusDisplayType, getClaimStatusText,
     drugFileCode, drugInChargePrefix, drugExChargePrefix,
-    additionalPaymentFileCode, additionalPaymentChargePrefix,
-    adpTypeNonGroup,
+    additionalPaymentFileCode, additionalPaymentChargePrefix, adpTypeNonGroup,
+    reconcileAdpCharges,
 } from "@/client.constant/invoice.billing.constant";
+import { getAdpDisplay } from "@/client.constant/invoice.addit.payment.constant";
 import InvoiceDrugPage from "./invoice.drug";
+import InvoiceAdditionalPage from "./invoice.additional";
 import "@/app/globals.css";
 //#endregion
 
 type InvoiceBillingProps = {
+    seqKey: number,
     clinicCode?: string,
     invoiceItems: InvoiceEditorModel[],
     drugItems: DrugEditorModel[],
-    additPaymentItems?: AdditionalPaymentModel[],
+    additPaymentItems?: AdditPaymentModelEditorModel[],
     onChange?: any,
 };
 const { Text } = Typography;
 
 const InvoiceBillingTab = function InvoiceBilling({
-    invoiceItems,
-    drugItems,
-    additPaymentItems,
-    clinicCode,
+    seqKey, clinicCode,
+    invoiceItems, drugItems, additPaymentItems,
     onChange,
 }: InvoiceBillingProps,) {
 
     const [formBillingEditor] = Form.useForm();
-    const [invoiceData, setInvoiceData] = useState<InvoiceEditorModel[]>([]);
-    const [drugData, setDruData] = useState<DrugEditorModel[]>([]);
-    const [additPaymentData, setAdditPaymentData] = useState<AdditionalPaymentModel[]>([]);
+    const [invoiceData, setInvoiceData] = useState<InvoiceEditorModel[]>(invoiceItems);
+    const [drugData, setDruData] = useState<DrugEditorModel[]>(drugItems);
+    const [additPaymentData, setAdditPaymentData] = useState<AdditPaymentModelEditorModel[]>(additPaymentItems || []);
     const [isModalDrugOpen, setModalDrugOpen] = useState(false);
+    const [isAdditPaymentOpen, setModalAdditPaymentOpen] = useState(false);
 
     useEffect(() => {
-        setInvoiceData(invoiceItems);
-    }, [invoiceItems]);
-    useEffect(() => {
-        setDruData(drugItems);
-    }, [drugItems]);
-    useEffect(() => {
-        setAdditPaymentData(additPaymentItems || []);
-    }, [additPaymentItems]);
+        formBillingEditor.resetFields(["InvoiceAdp"]);
+        // formBillingEditor.setFieldValue("InvoiceAdp", { additionalItems: additPaymentData });
+    }, [additPaymentData]);
 
     //#region Editor
     function takeAction(chargeCode: string) {
-        if (chargeCode.startsWith("3") || chargeCode.startsWith("4")) setModalDrugOpen(true)    // infoInvoiceDrug();
-        return;
+        if (chargeCode.startsWith(drugInChargePrefix) || chargeCode.startsWith(drugExChargePrefix)) {
+            setModalDrugOpen(true);
+            return;
+        }
+
+        if (chargeCode.startsWith(additionalPaymentChargePrefix)) {
+            setModalAdditPaymentOpen(true);
+            return;
+        }
     }
 
     async function saveInvoiceDrug(): Promise<void> {
         const drugEditing = formBillingEditor.getFieldValue("InvoiceDrug");
-        console.log('dataEditing=>', drugEditing);
-        setDruData(drugEditing.drugItems);
         if (drugEditing.moveInvoiceItems.length > 0) {
             let moveInvoiceItems = drugEditing.moveInvoiceItems as MoveInvoiceItemModel[];
-
-            await MoveDrugTo(moveInvoiceItems.filter(t => t.sourceFileID === drugFileCode));
-
+            let newPaymentData = await MoveDrugTo(moveInvoiceItems.filter(t => t.sourceFileID === drugFileCode));
+            reconcileAdpCharges(seqKey, invoiceData, newPaymentData).then((newInvoiceData) => {
+                setInvoiceData(newInvoiceData);
+            });
+        } else {
+            setInvoiceData(invoiceItems);
+            setAdditPaymentData(additPaymentItems || []);
         }
+
+        setDruData(drugEditing.drugItems);
+        setModalDrugOpen(false);
     }
 
     const MoveDrugTo = async (drugMoveItems: MoveInvoiceItemModel[]) => {
-        let temp = [...additPaymentData];
+        let newPaymentData = [...additPaymentData];
         let drugMoveToAdpItems = drugMoveItems.filter(t => t.chargeCodeTo.startsWith(additionalPaymentChargePrefix));
-        drugMoveToAdpItems.forEach(t => {
+        await drugMoveToAdpItems.forEach(t => {
             let drugIndex = drugItems.findIndex(d => d.id === t.id);
             if (drugIndex < 0) return;
 
             let drug = drugItems[drugIndex];
-            let newItem: AdditionalPaymentModel = {
+            let newItem: AdditPaymentModelEditorModel = {
+                dummyKey: (newPaymentData?.length || 0) + 1,
+                totalreq: 0.00,
+                idDurty: false,
+                hasError: true,
                 id: drug.id,
-                seq: drug.seq,
+                seq: seqKey,
                 hn: drug.hn,
                 dateopd: drug.date_serv,
                 type: adpTypeNonGroup,
+                typeDisplay: getAdpDisplay(adpTypeNonGroup),
                 code: drug.didname,
                 qty: drug.amount,
                 rate: drug.drugprice,
+                dose: drug.unit,
                 total: drug.total,
                 totcopay: drug.totcopay,
                 clinic: clinicCode || "09900",
-                itemsrc : 2,
+                itemsrc: 2,
+            };
+            let adpIndex = newPaymentData.findIndex(a => a.id === t.id);
+            if (adpIndex < 0) {
+                newPaymentData.push(newItem);
+            } else {
+                let adpItem = newPaymentData[adpIndex];
+                newPaymentData.splice(adpIndex, 1, {
+                    ...adpItem,
+                    ...newItem,
+                    dummyKey: adpItem.dummyKey,
+                });
             }
-            temp.push(newItem);
         });
-        setAdditPaymentData(temp);
+
+        setAdditPaymentData(newPaymentData);
+        return newPaymentData;
     }
     //#endregion
 
@@ -269,14 +297,28 @@ const InvoiceBillingTab = function InvoiceBilling({
                 <Modal
                     title={<Space>
                         <FileExclamationTwoTone twoToneColor="#ffab00" />
-                        {`รายการเบิก (จำนวน ${drugItems.length || 0} รายการ)`}
+                        {`ข้อมูลการใช้ยา (จำนวน ${drugData.length || 0} รายการ)`}
                     </Space>}
                     open={isModalDrugOpen} centered width={"90%"}
                     onCancel={() => setModalDrugOpen(false)} cancelText={"ปิด"}
                     onOk={saveInvoiceDrug} okText="นำไปใช้"
                 >
-                    <Form.Item name="InvoiceDrug"   >
-                        <InvoiceDrugPage drugItems={drugData} />
+                    <Form.Item name="InvoiceDrug">
+                        <InvoiceDrugPage drugItems={drugItems} />
+                    </Form.Item>
+                </Modal>
+                <Modal
+                    title={<Space>
+                        <FileExclamationTwoTone twoToneColor="#ffab00" />
+                        {`ค่าใช้จ่ายเพิ่มเติ่ม (จำนวน ${additPaymentData.length || 0} รายการ)`}
+                    </Space>}
+                    open={isAdditPaymentOpen} centered width={"90%"}
+                    onCancel={() => setModalAdditPaymentOpen(false)} cancelText={"ปิด"}
+                    onOk={saveInvoiceDrug}
+                    okText="นำไปใช้"
+                >
+                    <Form.Item name="InvoiceAdp">
+                        <InvoiceAdditionalPage additionalItems={additPaymentData} />
                     </Form.Item>
                 </Modal>
             </Form>

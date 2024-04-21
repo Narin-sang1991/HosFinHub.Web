@@ -1,9 +1,11 @@
-import { uuid } from "uuidv4";
+
+import { v4 as uuidv4 } from "uuid";
 import type {
   InvoiceItemModel,
   InvoiceEditorModel,
-} from "@/store/financial/paymentModel";
+} from "@/store/financial/invoiceModel";
 import { OpdValidModel } from "@/store/work-opd/opdEditorModel";
+import { AdditPaymentModelEditorModel } from "@/store/financial/additionalModel";
 const defaultStrEmpty: string = "-";
 
 //#region File and Code
@@ -43,19 +45,65 @@ const allCharges: string[] = [
   "K",
 ];
 
-export function genarateAllCharges(
+export async function reconcileAdpCharges(
+  seqKey: number,
+  invoiceEditors: InvoiceEditorModel[],
+  adtEditors: AdditPaymentModelEditorModel[],
+): Promise<InvoiceEditorModel[]> {
+
+  if (adtEditors.length == 0) return invoiceEditors;
+
+  let results: InvoiceEditorModel[] = [...invoiceEditors];
+  let overAmount: number = 0;
+  let approvedAmount: number = 0;
+  let sumTotal: number = adtEditors.map(a => a.total).reduce(function (a, b) { return parseInt(a.toString()) + parseInt(b.toString()); });
+
+  let invoiceAdpIndex = invoiceEditors.findIndex(t => t.chargeCode.startsWith(additionalPaymentChargePrefix));
+  if (invoiceAdpIndex <= -1) {
+
+    let chrgitem = additionalPaymentChargePrefix + '1';
+    let newInvoiceItem: InvoiceEditorModel = {
+      id: uuidv4(),
+      seq: seqKey,
+      dummyKey: (invoiceEditors.length || 0) + 1,
+      idDurty: true,
+      totalAmount: sumTotal,
+      overAmount, approvedAmount,
+      chargeCode: chrgitem,
+      chargeDetail: getChargeDetails(chrgitem),
+      status: 1,
+      valid: [],
+    };
+    results.push(newInvoiceItem);
+  }
+  else {
+    let invoiceAdp = invoiceEditors[invoiceAdpIndex];
+    console.log('sumTotal=>', sumTotal);
+    console.log('invoiceAdp.totalAmount=>', invoiceAdp.totalAmount);
+    let calcResult: number = parseInt(sumTotal.toString()) + parseInt(invoiceAdp.totalAmount.toString());
+    console.log('calcResult=>', calcResult);
+    results.splice(invoiceAdpIndex, 1, {
+      ...invoiceAdp,
+      totalAmount: calcResult,
+      status: 1,
+      idDurty: true,
+    });
+  }
+  return await results;
+}
+
+export async function genarateAllCharges(
   invoiceItems: InvoiceItemModel[],
   validItem: OpdValidModel[] | undefined
-) {
+): Promise<InvoiceEditorModel[]> {
   let results: InvoiceEditorModel[] = [];
 
-  allCharges.forEach((chargePrefix, i) => {
-    let invoiceInCharges =
-      invoiceItems.filter((t) => t.chrgitem.startsWith(chargePrefix)) || [];
+  await allCharges.forEach((chargePrefix, i) => {
+    let invoiceInCharges = invoiceItems.filter((t) => t.chrgitem.startsWith(chargePrefix)) || [];
     let dummyKey: number = i + 1;
     if (invoiceInCharges.length > 0) {
-      let overAmount: number = 0.0;
-      let approvedAmount: number = 0.0;
+      let overAmount: number = 0;
+      let approvedAmount: number = 0;
       invoiceInCharges.forEach((invoiceInCharge) => {
         if (invoiceInCharge.chrgitem.endsWith("1")) {
           approvedAmount = invoiceInCharge.amount;
@@ -66,14 +114,15 @@ export function genarateAllCharges(
           return;
         }
       });
-      let totalAmount: number = overAmount + approvedAmount;
+      let totalAmount: number = parseInt(overAmount.toString()) + parseInt(approvedAmount.toString());
+      console.log('totalAmount=>', totalAmount);
       let invoiceItem = invoiceInCharges[0];
       let data: InvoiceEditorModel = {
         id: invoiceItem.id,
         seq: invoiceItem.seq,
         dummyKey,
         idDurty: false,
-        totalAmount,
+        totalAmount: totalAmount,
         overAmount,
         approvedAmount,
         chargeCode: invoiceItem.chrgitem,
@@ -85,7 +134,7 @@ export function genarateAllCharges(
     } else {
       let chrgitem: string = chargePrefix + "1";
       let data: InvoiceEditorModel = {
-        id: uuid(),
+        id: uuidv4(),
         seq: dummyKey,
         dummyKey,
         idDurty: false,
@@ -102,7 +151,7 @@ export function genarateAllCharges(
   });
 
   //assign error to charge.
-  results = results.map((item) => {
+  results = await results.map((item) => {
     if (item.chargeCode === "41") {
 
       //item 41 = ยาที่นำไปใช้ต่อที่บ้าน
@@ -125,7 +174,7 @@ export function genarateAllCharges(
       return item;
     }
   });
-  console.log('genarateAllCharges=>', results);
+  // console.log('genarateAllCharges=>', results);
   return results;
 }
 

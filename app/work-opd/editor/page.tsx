@@ -1,5 +1,6 @@
 "use client";
 
+//#region Import
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
@@ -38,11 +39,14 @@ import {
 } from "@/client.constant/patient.constant";
 import { getColResponsive } from "@/client.component/antd.col.resposive";
 import { dateDisplayFormat } from "@/client.constant/format.constant";
-import { genarateAllCharges } from "@/client.constant/invoice.billing.constant";
+import { InvoiceEditorModel } from "@/store/financial/invoiceModel";
+import { genarateAllCharges, reconcileAdpCharges } from "@/client.constant/invoice.billing.constant";
 import { genarateDrugEditors } from "@/client.constant/invoice.drug.constant";
+import { genarateAdditPaymentEditors } from "@/client.constant/invoice.addit.payment.constant";
 import PatientInfoTab from "./patient.info";
 import InvoiceBillingTab from "./invoice.billing";
 import "@/app/globals.css";
+//#endregion
 
 interface OpdEditorProps { }
 const defaultStrEmpty: string = "-";
@@ -78,14 +82,17 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         (async () => {
             let opdDetail = { ...originData.opd[0] };
             let patientDetail = { ...originData.pat[0] };
+            let adtItems = await genarateAdditPaymentEditors(originData.adp);
+            let invoiceItems = await genarateAllCharges(originData.cha, valid);
+            invoiceItems = await reconcileAdpCharges(opdDetail.seq, invoiceItems, adtItems);
             let transformData: OpdEditorModel = {
                 opd: opdDetail,
                 patient: patientDetail,
                 insureItems: originData.ins,
-                adp: originData.adp,
+                additPayments: adtItems,
                 aer: originData.aer,
                 cht: originData.cht,
-                invoiceItems: genarateAllCharges(originData.cha, valid),
+                invoiceItems: invoiceItems,
                 drugItems: genarateDrugEditors(originData.dru, valid),
             };
             setEditData(transformData);
@@ -129,7 +136,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         return (
             <Card
                 title={propCard.title}
-                style={{ width: "100%", height: "550px" }}
+                style={{ width: "100%", height: "650px" }}
                 headStyle={{ backgroundColor: "lightgray", marginBottom: "-15px" }}
             >
                 {propCard.children}
@@ -172,10 +179,11 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
             children: getCardInTab({
                 title: "ข้อมูลค่ารักษาพยาบาล",
                 children: (
-                    <InvoiceBillingTab
+                    <InvoiceBillingTab seqKey={editingData?.opd.seq || 0}
                         clinicCode={editingData?.opd.clinic}
                         invoiceItems={editingData?.invoiceItems || []}
                         drugItems={editingData?.drugItems || []}
+                        additPaymentItems={editingData?.additPayments || []}
                     />
                 ),
             }),

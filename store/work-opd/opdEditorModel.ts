@@ -5,14 +5,17 @@ import type {
   InvoiceModel,
   InvoiceItemModel,
   InvoiceEditorModel,
+} from "@/store/financial/invoiceModel";
+import {
   AdditionalPaymentModel,
-} from "@/store/financial/paymentModel";
+  AdditPaymentModelEditorModel,
+} from "@/store/financial/additionalModel";
 
 export interface OpdEditorModel {
   opd: OpdDetailModel;
   patient: PatientDetailModel;
   insureItems: InsureDetailModel[];
-  adp: AdditionalPaymentModel[];
+  additPayments: AdditPaymentModelEditorModel[];
   aer: any[];
   cht: InvoiceModel[];
   invoiceItems: InvoiceEditorModel[];
