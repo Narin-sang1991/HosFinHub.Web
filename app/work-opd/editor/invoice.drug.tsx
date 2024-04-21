@@ -30,11 +30,12 @@ import "@/app/globals.css";
 
 type InvoiceDrugProps = {
   drugItems: DrugEditorModel[],
-  onMoveto?: any
+  moveInvoiceItems?: MoveInvoiceItemModel[],
+  onChange?: any;
 };
 const { Text } = Typography;
 
-const InvoiceDrugPage = function InvoiceDrug({ drugItems, onMoveto }: InvoiceDrugProps) {
+const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: InvoiceDrugProps) {
 
   const [formEditor] = Form.useForm();
   const [editingData, setEditingData] = useState<DrugEditorModel[]>([]);
@@ -45,12 +46,25 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems, onMoveto }: InvoiceDru
     refreshItems()
   }, [drugItems]);
 
+  useEffect(() => {
+    triggerChange();
+  }, [editingData, moveItems]);
+
   function refreshItems(): void {
     setEditingData(drugItems);
     setMoveItems([]);
   };
 
+  const triggerChange = () => {
+    onChange?.({
+      drugItems: editingData,
+      moveInvoiceItems: moveItems,
+    });
+  };
+
   //#region Editor
+
+
   const cancel = () => {
     setEditingKey("");
   };
@@ -305,7 +319,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems, onMoveto }: InvoiceDru
     if (!col.editable) {
       return {
         ...col,
-        onCell: (record: DrugEditorModel) => ({ className: record.hasError ? 'Col-Table-Row-Error' : '',})
+        onCell: (record: DrugEditorModel) => ({ className: record.hasError ? 'Col-Table-Row-Error' : '', })
       } as TableColumnProps<DrugEditorModel>;
     }
     let numTypes = ["totcopay", "totalreq"];

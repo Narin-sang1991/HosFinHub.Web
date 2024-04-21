@@ -1,7 +1,8 @@
 "use client";
 
+//#region Import
 import React, { useState } from "react";
-import { Button, Typography, Table, Statistic, Modal, Tag, Badge } from "antd";
+import { Button, Typography, Table, Statistic, Modal, Tag, Badge, Form } from "antd";
 import type { TableColumnsType } from "antd";
 import { FileDoneOutlined } from "@ant-design/icons";
 import { AdditionalPaymentModel, InvoiceEditorModel } from "@/store/financial/paymentModel";
@@ -12,6 +13,7 @@ import {
 } from "@/client.constant/invoice.billing.constant";
 import InvoiceDrugPage from "./invoice.drug";
 import "@/app/globals.css";
+//#endregion
 
 type InvoiceBillingProps = {
     invoiceItems: InvoiceEditorModel[];
@@ -25,6 +27,8 @@ const InvoiceBillingTab = function InvoiceBilling({
     drugItems,
     additPaymentItems
 }: InvoiceBillingProps) {
+
+    const [formBillingEditor] = Form.useForm();
     const [isModalDrugOpen, setModalDrugOpen] = useState(false);
 
     function takeAction(chargeCode: string) {
@@ -33,8 +37,10 @@ const InvoiceBillingTab = function InvoiceBilling({
         return;
     }
 
-    function moveItemTo(record: DrugEditorModel, chargeCode: string): void {
-
+    function saveInvoiceDrug(): void {
+        const dataEditing = formBillingEditor.getFieldValue("InvoiceDrug");
+        console.log('dataEditing=>', dataEditing);
+        setModalDrugOpen(false);
     }
 
     //#region Local Filter Data
@@ -188,10 +194,14 @@ const InvoiceBillingTab = function InvoiceBilling({
                 open={isModalDrugOpen}
                 centered
                 width={"90%"}
-                onOk={() => setModalDrugOpen(false)}
+                onOk={saveInvoiceDrug}
                 onCancel={() => setModalDrugOpen(false)}
             >
-                <InvoiceDrugPage drugItems={drugItems} onMoveto={moveItemTo} />
+                <Form form={formBillingEditor}>
+                    <Form.Item name="InvoiceDrug"   >
+                        <InvoiceDrugPage drugItems={drugItems} />
+                    </Form.Item>
+                </Form>
             </Modal>
         </>
     );

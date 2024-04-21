@@ -111,7 +111,7 @@ export function genarateAllCharges(
       return item;
     }
   });
-
+  console.log('genarateAllCharges=>', results);
   return results;
 }
 

@@ -11,6 +11,7 @@ import {
 } from "@ant-design/icons";
 import { Breadcrumb, Layout, Menu, theme } from "antd";
 import type { MenuProps } from "antd";
+import "@/app/globals.css";
 const { Header, Content, Sider } = Layout;
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -42,7 +43,7 @@ const MenuLayout = function MenuLayout({
   const router = useRouter();
 
   const menuItems: MenuProps["items"] = [
-    getItem(<p onClick={() => router.push("/")}>My Task</p>, "1"),
+    getItem(<p className="Center" onClick={() => router.push("/")}>{collapsed ? "Task" : "My Task"}</p>, "1"),
 
     { type: "divider" },
 
