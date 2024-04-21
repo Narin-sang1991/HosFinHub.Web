@@ -68,10 +68,7 @@ const MenuLayout = function MenuLayout({
       ),
     ]),
     getItem("ประมวลผลข้อมูล", "sub3", <SettingOutlined />, [
-      getItem(
-        <p onClick={() => router.push("/process")}>ประมวลผล</p>,
-        "6"
-      ),
+      getItem(<p onClick={() => router.push("/process")}>ประมวลผล</p>, "6"),
     ]),
 
     // { type: 'divider' },

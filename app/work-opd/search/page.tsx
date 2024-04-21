@@ -1,8 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Card, Form, Table, DatePicker } from "antd";
+import {
+  Button,
+  Card,
+  Form,
+  Table,
+  DatePicker,
+  Tag,
+  Flex,
+  Segmented,
+} from "antd";
 import type { TableProps, TableColumnsType } from "antd";
 import {
   SearchOutlined,
@@ -27,16 +36,39 @@ import "@/app/globals.css";
 
 // moment.locale('th');
 type OpdSearchProps = {};
-
+type FilterType = { text: string; value: string };
 const OpdSearch = function OpdSearch(props: OpdSearchProps) {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [formCriteria] = Form.useForm();
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize] = useState(15);
+  const [filterValue, setFilterValue] = useState<FilterType[]>([]);
   const status = useAppSelector(selectStatus);
   const searchResult = useAppSelector(selectResult);
 
+  const setFilter = (searchResult: OpdSearchModel[]) => {
+    const fillter: FilterType[] = [];
+    searchResult.forEach((pat) => {
+      if (pat.error.length > 0) {
+        pat.error.map((e) => {
+          const index = fillter.findIndex((f) => f.text === e.code_error);
+          if (index === -1) {
+            const filler: FilterType = {
+              text: e.code_error,
+              value: e.code_error,
+            };
+            fillter.push(filler);
+          }
+        });
+      }
+    });
+    setFilterValue(fillter);
+  };
+
+  useEffect(() => {
+    setFilter(searchResult);
+  }, [searchResult]);
   //#region Search
   async function onSearch(index?: number, sorter?: any) {
     // console.log("page-searchAsync-->");
@@ -48,6 +80,7 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
       })();
     });
   }
+
   function packCriteria(index: number, sorter?: any, values: any) {
     return {
       startDate: moment(new Date(values.DateFrom)).format(dateInterfaceFormat),
@@ -84,8 +117,6 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
   }
 
   function getRecordPatientInscl(record: OpdSearchModel) {
-    console.log(record.opd_pat);
-
     if (record.opd_pat !== undefined) {
       const patientInscl = record.opd_pat.pat_ins.find(
         (i) => i.seq === record.seq
@@ -150,6 +181,27 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
       ellipsis: true,
     },
     {
+      title: "Error",
+      dataIndex: "error",
+      key: "error",
+      width: 40,
+      ellipsis: true,
+      filterSearch: true,
+      filters: filterValue,
+      onFilter: (value, record) =>
+        record.error.map((item) => item.code_error).indexOf(value as string) ===
+        0,
+      render: (value: any[], _: OpdSearchModel) => {
+        if (value.length > 0) {
+          return value.map((item) => {
+            return <Tag color="volcano">{item.code_error}</Tag>;
+          });
+        } else {
+          return "";
+        }
+      },
+    },
+    {
       title: null,
       key: "action",
       width: 20,
@@ -205,6 +257,7 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
           </Form.Item>
         </Form>
       </Card>
+
       <Table
         rowKey={(record) => record.id}
         loading={status === "loading"}
