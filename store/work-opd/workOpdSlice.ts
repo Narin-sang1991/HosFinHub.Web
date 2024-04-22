@@ -3,15 +3,15 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import { fetchSearch, fetchGet } from "@/services/work.opd.provider";
 import type { OpdSearchModel } from "@/store/work-opd/opdSearchModel";
 import type {
-  OpdResponeModel,
-  OpdResponst,
+  OpdDataModel,
+  OpdResponse,
   OpdValidModel,
 } from "@/store/work-opd/opdEditorModel";
 
 export interface WorkOpdSliceState {
   searchResult: OpdSearchModel[];
   searchStatus: "idle" | "loading" | "failed";
-  getResult?: OpdResponeModel;
+  getResult?: OpdDataModel;
   getStatus: "idle" | "loading" | "failed";
   getValid?: Array<OpdValidModel>;
   getValidStatus: "idle" | "loading" | "failed";
@@ -58,7 +58,7 @@ export const workOpdSlice = createAppSlice({
         pending: (state) => {
           state.getStatus = "loading";
         },
-        fulfilled: (state, action: PayloadAction<OpdResponst>) => {
+        fulfilled: (state, action: PayloadAction<OpdResponse>) => {
           state.getStatus = "idle";
           state.getResult = action.payload.data;
 

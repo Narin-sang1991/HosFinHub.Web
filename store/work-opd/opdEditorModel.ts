@@ -1,11 +1,8 @@
 import type { PatientDetailModel } from "@/store/patient/patientModel";
-import type { DrugModel, InvoiceDrugEditorModel } from "@/store/patient/drugModel";
+import type { InvoiceDrugModel, InvoiceDrugEditorModel } from "@/store/financial/invoiceDrugModel";
 import type { InsureDetailModel } from "@/store/financial/insureModel";
-import type {
-  InvoiceModel,
-  InvoiceItemModel,
-  InvoiceEditorModel,
-} from "@/store/financial/invoiceModel";
+import type { InvoiceModel, } from "@/store/financial/invoiceModel";
+import type { InvoiceItemModel, InvoiceItemEditorModel } from "@/store/financial/invoiceItemModel";
 import {
   AdditionalPaymentModel,
   AdditPaymentModelEditorModel,
@@ -18,7 +15,7 @@ export interface OpdEditorModel {
   additPayments: AdditPaymentModelEditorModel[];
   aer: any[];
   cht: InvoiceModel[];
-  invoiceItems: InvoiceEditorModel[];
+  invoiceItems: InvoiceItemEditorModel[];
   drugItems: InvoiceDrugEditorModel[];
 }
 
@@ -48,7 +45,7 @@ export interface OpdValidModel {
   orf: OpdValids[];
 }
 
-export interface OpdResponeModel {
+export interface OpdDataModel {
   opd: OpdDetailModel[];
   pat: PatientDetailModel[];
   ins: InsureDetailModel[];
@@ -56,11 +53,11 @@ export interface OpdResponeModel {
   aer: any[];
   cht: InvoiceModel[];
   cha: InvoiceItemModel[];
-  dru: DrugModel[];
+  dru: InvoiceDrugModel[];
 }
 
-export interface OpdResponst {
-  data: OpdResponeModel;
+export interface OpdResponse {
+  data: OpdDataModel;
   error: Array<OpdValidModel>;
 }
 export interface OpdDetailModel {

@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Typography, Table, Statistic, Modal, Tag, Badge, Form, Space } from "antd";
 import type { TableColumnsType } from "antd";
 import { FileDoneOutlined, FileExclamationTwoTone } from "@ant-design/icons";
-import { InvoiceEditorModel } from "@/store/financial/invoiceModel";
+import { InvoiceItemEditorModel } from "@/store/financial/invoiceItemModel";
 import { AdditPaymentModelEditorModel } from "@/store/free-additional/additionalModel";
 import type { InvoiceDrugEditorModel } from "@/store/financial/invoiceDrugModel";
 import { MoveInvoiceItemModel } from "@/store/financial/moveItemModel";
@@ -22,9 +22,9 @@ import "@/app/globals.css";
 //#endregion
 
 type InvoiceBillingProps = {
-    seqKey: number,
+    seqKey: string,
     clinicCode?: string,
-    invoiceItems: InvoiceEditorModel[],
+    invoiceItems: InvoiceItemEditorModel[],
     drugItems: InvoiceDrugEditorModel[],
     additPaymentItems?: AdditPaymentModelEditorModel[],
     onChange?: any,
@@ -38,7 +38,7 @@ const InvoiceBillingTab = function InvoiceBilling({
 }: InvoiceBillingProps) {
 
     const [formBillingEditor] = Form.useForm();
-    const [invoiceData, setInvoiceData] = useState<InvoiceEditorModel[]>(invoiceItems);
+    const [invoiceData, setInvoiceData] = useState<InvoiceItemEditorModel[]>(invoiceItems);
     const [drugData, setDruData] = useState<InvoiceDrugEditorModel[]>(drugItems);
     const [additPaymentData, setAdditPaymentData] = useState<AdditPaymentModelEditorModel[]>(additPaymentItems || []);
     const [isModalDrugOpen, setModalDrugOpen] = useState(false);
@@ -65,6 +65,18 @@ const InvoiceBillingTab = function InvoiceBilling({
             setInvoiceData(invoiceUtdDrug);
         });
     }, [drugData]);
+
+    useEffect(() => {
+        triggerChange();
+    }, [invoiceData]);
+
+    const triggerChange = () => {
+        onChange?.({
+            invoiceItems: invoiceData,
+            drugItems: drugData,
+            adpItems: additPaymentData,
+        });
+    };
 
     //#region Editor
     function takeAction(chargeCode: string) {
@@ -149,7 +161,7 @@ const InvoiceBillingTab = function InvoiceBilling({
     //#endregion
 
     //#region Local Filter Data
-    const columns: TableColumnsType<InvoiceEditorModel> = [
+    const columns: TableColumnsType<InvoiceItemEditorModel> = [
         {
             title: <p className="Center">หมวด</p>,
             dataIndex: "dummyKey",
@@ -239,7 +251,7 @@ const InvoiceBillingTab = function InvoiceBilling({
             fixed: "right",
             ellipsis: true,
             className: "Center",
-            render: (_: any, record: InvoiceEditorModel) =>
+            render: (_: any, record: InvoiceItemEditorModel) =>
                 record.status == 0 ? (
                     <></>
                 ) : (
@@ -260,7 +272,7 @@ const InvoiceBillingTab = function InvoiceBilling({
             fixed: "right",
             ellipsis: true,
             className: "Center",
-            render: (_: any, record: InvoiceEditorModel) =>
+            render: (_: any, record: InvoiceItemEditorModel) =>
                 record.valid?.length === 0 ? (
                     <Tag color="#87d068">ผ่าน</Tag>
                 ) : (

@@ -88,6 +88,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ additionalItems = [],
                     let unitPrice = Number(row.freeDrug.unitPrice);
                     row.rate = unitPrice
                     row.totalreq = row.totalreq > 0 ? row.totalreq : unitPrice * Number(item.qty.toString());
+                    row.totcopay = Number(item.total) - Number(row.totalreq);
                 }
                 newData.splice(index, 1, {
                     ...item,

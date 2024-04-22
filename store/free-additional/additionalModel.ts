@@ -10,7 +10,7 @@ export interface AdditionalPaymentModel {
     code: string;
     qty: number;
     rate: number;
-    seq: number; // transaction key
+    seq: string; // transaction key
     cagcode?: string;
     dose?: string;
     ca_type?: number;

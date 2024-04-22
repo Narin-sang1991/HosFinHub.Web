@@ -1,9 +1,6 @@
 
 import { v4 as uuidv4 } from "uuid";
-import type {
-  InvoiceItemModel,
-  InvoiceEditorModel,
-} from "@/store/financial/invoiceModel";
+import type { InvoiceItemModel, InvoiceItemEditorModel, } from "@/store/financial/invoiceItemModel";
 import { OpdValidModel } from "@/store/work-opd/opdEditorModel";
 import { AdditPaymentModelEditorModel } from "@/store/free-additional/additionalModel";
 import { InvoiceDrugEditorModel } from "@/store/financial/invoiceDrugModel";
@@ -47,21 +44,24 @@ const allCharges: string[] = [
 ];
 
 type CalcAdpChargesProps = {
-  seqKey: number,
-  invoiceEditors: InvoiceEditorModel[],
+  seqKey: string,
+  invoiceEditors: InvoiceItemEditorModel[],
   adtEditors: AdditPaymentModelEditorModel[],
   reconcile?: boolean,
 };
 export async function recalcAdpCharges({
   seqKey, invoiceEditors, adtEditors, reconcile }: CalcAdpChargesProps
-): Promise<InvoiceEditorModel[]> {
+): Promise<InvoiceItemEditorModel[]> {
   // if (adtEditors.length == 0) return invoiceEditors;
 
-  let results: InvoiceEditorModel[] = [...invoiceEditors];
+  let results: InvoiceItemEditorModel[] = [...invoiceEditors];
   let overAmount: number = 0;
   let approvedAmount: number = 0;
   let sumTotal: number = adtEditors.length > 0
     ? adtEditors.map(a => a.total).reduce(function (a, b) { return Number(a.toString()) + Number(b.toString()); })
+    : 0;
+  let requestTotal: number = adtEditors.length > 0
+    ? adtEditors.map(a => a.totalreq).reduce(function (a, b) { return Number(a.toString()) + Number(b.toString()); })
     : 0;
   let adtErr: boolean = adtEditors.length > 0
     ? adtEditors.filter(a => a.hasError == true).length > 0
@@ -71,13 +71,14 @@ export async function recalcAdpCharges({
   if (invoiceAdpIndex <= -1) {
 
     let chrgitem = additionalPaymentChargePrefix + '1';
-    let newInvoiceItem: InvoiceEditorModel = {
+    let newInvoiceItem: InvoiceItemEditorModel = {
       id: uuidv4(),
       seq: seqKey,
       dummyKey: (invoiceEditors.length || 0) + 1,
       idDurty: true,
       totalAmount: sumTotal,
-      overAmount, approvedAmount,
+      overAmount: requestTotal > 0 ? sumTotal - requestTotal : overAmount,
+      approvedAmount: requestTotal > 0 ? requestTotal : approvedAmount,
       chargeCode: chrgitem,
       chargeDetail: getChargeDetails(chrgitem),
       status: 1,
@@ -91,9 +92,11 @@ export async function recalcAdpCharges({
     let calcResult: number = (reconcile === true
       ? Number(sumTotal.toString()) + Number(invoiceAdp.totalAmount.toString())
       : sumTotal);
-    let editItem: InvoiceEditorModel = {
+    let editItem: InvoiceItemEditorModel = {
       ...invoiceAdp,
       totalAmount: calcResult,
+      overAmount: requestTotal > 0 ? calcResult - requestTotal : overAmount,
+      approvedAmount: requestTotal > 0 ? requestTotal : approvedAmount,
       status: 1,
       idDurty: true,
     };
@@ -103,7 +106,7 @@ export async function recalcAdpCharges({
   }
   return await results;
 }
-function pushErrorToAdpCharges(invoiceItem: InvoiceEditorModel) {
+function pushErrorToAdpCharges(invoiceItem: InvoiceItemEditorModel) {
   invoiceItem.valid = [{
     code_error: "E000",
     code_error_descriptions: "ต้องระบุรหัสรายการ"
@@ -111,17 +114,17 @@ function pushErrorToAdpCharges(invoiceItem: InvoiceEditorModel) {
 }
 
 type CalcDrugChargesProps = {
-  seqKey: number,
-  invoiceEditors: InvoiceEditorModel[],
+  seqKey: string,
+  invoiceEditors: InvoiceItemEditorModel[],
   drugEditors: InvoiceDrugEditorModel[],
 };
 export async function recalcDrugCharges({
   seqKey, invoiceEditors, drugEditors }: CalcDrugChargesProps
-): Promise<InvoiceEditorModel[]> {
+): Promise<InvoiceItemEditorModel[]> {
 
   // if (drugEditors.length == 0) return invoiceEditors;
 
-  let results: InvoiceEditorModel[] = [...invoiceEditors];
+  let results: InvoiceItemEditorModel[] = [...invoiceEditors];
   let overAmount: number = drugEditors.length > 0
     ? drugEditors.map(a => a.totcopay).reduce(function (a, b) { return Number(a.toString()) + Number(b.toString()); })
     : 0;
@@ -138,7 +141,7 @@ export async function recalcDrugCharges({
   let invoiceDrugIndex = invoiceEditors.findIndex(t => t.chargeCode.startsWith(drugExChargePrefix));
   if (invoiceDrugIndex <= -1) {
     let chrgitem = drugExChargePrefix + '1';
-    let newInvoiceItem: InvoiceEditorModel = {
+    let newInvoiceItem: InvoiceItemEditorModel = {
       id: uuidv4(),
       seq: seqKey,
       dummyKey: (invoiceEditors.length || 0) + 1,
@@ -155,7 +158,7 @@ export async function recalcDrugCharges({
   }
   else {
     let invoiceDrug = invoiceEditors[invoiceDrugIndex];
-    let editItem: InvoiceEditorModel = {
+    let editItem: InvoiceItemEditorModel = {
       ...invoiceDrug,
       totalAmount: totalAmount,
       overAmount,
@@ -173,8 +176,8 @@ export async function recalcDrugCharges({
 export async function genarateAllCharges(
   invoiceItems: InvoiceItemModel[],
   validItem: OpdValidModel[] | undefined
-): Promise<InvoiceEditorModel[]> {
-  let results: InvoiceEditorModel[] = [];
+): Promise<InvoiceItemEditorModel[]> {
+  let results: InvoiceItemEditorModel[] = [];
 
   await allCharges.forEach((chargePrefix, i) => {
     let invoiceInCharges = invoiceItems.filter((t) => t.chrgitem.startsWith(chargePrefix)) || [];
@@ -194,7 +197,7 @@ export async function genarateAllCharges(
       });
       let totalAmount: number = Number(overAmount.toString()) + Number(approvedAmount.toString());
       let invoiceItem = invoiceInCharges[0];
-      let data: InvoiceEditorModel = {
+      let data: InvoiceItemEditorModel = {
         id: invoiceItem.id,
         seq: invoiceItem.seq,
         dummyKey,
@@ -210,9 +213,9 @@ export async function genarateAllCharges(
       results.push(data);
     } else {
       let chrgitem: string = chargePrefix + "1";
-      let data: InvoiceEditorModel = {
+      let data: InvoiceItemEditorModel = {
         id: uuidv4(),
-        seq: dummyKey,
+        seq: dummyKey.toString(),
         dummyKey,
         idDurty: false,
         totalAmount: 0.0,
