@@ -22,3 +22,14 @@ export const fetchGet = async (criteria: any) => {
         .catch((e) => console.log("API-Error: ", e))
     return apiResult;
 };
+
+export const fetchSave = async (data: any) => {
+    const apiResult = await axiosHosProvider.post('edit-16f/update-pat-opd', data)
+        .then((response) => {
+            // const result: { data: OpdResponse } = response;
+            // return result;
+            console.log("API-Response: ", response);
+        })
+        .catch((e) => console.log("API-Error: ", e))
+    return apiResult;
+};

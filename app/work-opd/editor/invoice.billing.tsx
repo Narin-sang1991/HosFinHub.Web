@@ -12,13 +12,14 @@ import { MoveInvoiceItemModel } from "@/store/financial/moveItemModel";
 import {
     getStatusDisplayType, getClaimStatusText,
     drugFileCode, drugInChargePrefix, drugExChargePrefix,
-    additionalPaymentFileCode, additionalPaymentChargePrefix, adpTypeNonGroup,
-    recalcDrugCharges, recalcAdpCharges,
+    additionalPaymentChargePrefix,
 } from "@/client.constant/invoice.billing.constant";
 import { getAdpDisplay } from "@/client.constant/invoice.addit.payment.constant";
 import InvoiceDrugPage from "./invoice.drug";
 import InvoiceAdditionalPage from "./invoice.additional";
 import "@/app/globals.css";
+import { adpTypeNonGroup, recalcAdpCharges } from "@/client.constant/invoice.additional.constant";
+import { recalcDrugCharges } from "@/client.constant/invoice.drug.constant";
 //#endregion
 
 type InvoiceBillingProps = {

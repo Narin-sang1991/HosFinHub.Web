@@ -1,6 +1,6 @@
 import { createAppSlice } from "@/store/createAppSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
-import { fetchSearch, fetchGet } from "@/services/work.opd.provider";
+import { fetchSearch, fetchGet, fetchSave } from "@/services/work.opd.provider";
 import type { OpdSearchModel } from "@/store/work-opd/opdSearchModel";
 import type {
   OpdDataModel,
@@ -15,6 +15,7 @@ export interface WorkOpdSliceState {
   getStatus: "idle" | "loading" | "failed";
   getValid?: Array<OpdValidModel>;
   getValidStatus: "idle" | "loading" | "failed";
+  saveStatus: "idle" | "loading" | "failed";
 }
 
 const initialState: WorkOpdSliceState = {
@@ -24,6 +25,7 @@ const initialState: WorkOpdSliceState = {
   getStatus: "idle",
   getValid: undefined,
   getValidStatus: "idle",
+  saveStatus: "idle",
 };
 
 export const workOpdSlice = createAppSlice({
@@ -69,6 +71,25 @@ export const workOpdSlice = createAppSlice({
         },
       }
     ),
+
+    saveAsync: create.asyncThunk(
+      async (body: any) => {
+        const response = await fetchSave(body);
+        return response;
+      },
+      {
+        pending: (state) => {
+          state.saveStatus = "loading";
+        },
+        fulfilled: (state, action) => {
+          state.saveStatus = "idle";
+        },
+        rejected: (state) => {
+          state.saveStatus = "failed";
+        },
+      }
+    ),
+
   }),
 
   selectors: {
@@ -78,10 +99,12 @@ export const workOpdSlice = createAppSlice({
     getStatus: (workOpd) => workOpd.getStatus,
 
     getValid: (workOpd) => workOpd.getValid,
+
+    saveStatus: (workOpd) => workOpd.saveStatus,
   },
 });
 
-export const { searchAsync, getAsync } = workOpdSlice.actions;
+export const { searchAsync, getAsync, saveAsync } = workOpdSlice.actions;
 
-export const { selectResult, selectStatus, getResult, getStatus, getValid } =
+export const { selectResult, selectStatus, getResult, getStatus, getValid, saveStatus } =
   workOpdSlice.selectors;

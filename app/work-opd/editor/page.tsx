@@ -20,10 +20,8 @@ import {
     CloseCircleTwoTone,
 } from "@ant-design/icons";
 import {
-    getAsync,
-    getResult,
-    getStatus,
-    getValid,
+    getAsync, getResult, getStatus, getValid,
+    saveAsync, saveStatus,
 } from "@/store/work-opd/workOpdSlice";
 import type {
     OpdDataModel,
@@ -43,9 +41,13 @@ import {
 } from "@/client.constant/patient.constant";
 import { getColResponsive } from "@/client.component/antd.col.resposive";
 import { dateDisplayFormat } from "@/client.constant/format.constant";
-import { genarateAllCharges, recalcAdpCharges } from "@/client.constant/invoice.billing.constant";
+import { genarateAllCharges } from "@/client.constant/invoice.billing.constant";
 import { genarateDrugEditors } from "@/client.constant/invoice.drug.constant";
 import { genarateAdditPaymentEditors } from "@/client.constant/invoice.addit.payment.constant";
+import { recalcAdpCharges } from "@/client.constant/invoice.additional.constant";
+import { InvoiceItemModel } from "@/store/financial/invoiceItemModel";
+import { InvoiceDrugModel } from "@/store/financial/invoiceDrugModel";
+import { AdditionalPaymentModel } from "@/store/free-additional/additionalModel";
 import PatientInfoTab from "./patient.info";
 import InvoiceBillingTab from "./invoice.billing";
 import withTheme from "../../../theme";
@@ -61,6 +63,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
     const searchParams = useSearchParams();
     const [formEditor] = Form.useForm();
     const status = useAppSelector(getStatus);
+    const saveState = useAppSelector(saveStatus);
     const originData = useAppSelector(getResult);
     const valid: OpdValidModel[] | undefined = useAppSelector(getValid);
     const [editingData, setEditData] = useState<OpdEditorModel>();
@@ -129,10 +132,9 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
             await dispatch(getAsync({ seq: id }));
         })();
     }
-    function onSave() {
-        const data = formEditor.getFieldValue("InvoiceBilling");
-        console.log("InvoiceBilling=>", data);
 
+    async function onSave() {
+        const data = formEditor.getFieldValue("InvoiceBilling");
         const opdData: OpdDetailModel[] = editingData != undefined ? [{ ...editingData.opd }] : [];
         const patData: PatientDetailModel[] = editingData != undefined ? [{ ...editingData.patient }] : [];
         const savedata: OpdDataModel = {
@@ -145,8 +147,10 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
             adp: data.adpItems as AdditionalPaymentModel[],
             aer: [],
         };
-
         console.log("savedata=>", savedata);
+        (async () => {
+            await dispatch(saveAsync({ ...savedata }));
+        })();
     }
     //#endregion
 
@@ -226,7 +230,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
             <Space size={"small"} direction="vertical" align="end">
                 <Affix offsetTop={50}  ><Row style={{ margin: -10, marginBottom: 10 }} justify="end" align="middle" gutter={[4, 4]}>
                     <Col>
-                        <Button type="text" onClick={onSave}
+                        <Button type="text" onClick={onSave} loading={saveState === "idle"}
                             icon={<SaveTwoTone twoToneColor={'#52c41a'} style={{ fontSize: '30px' }} />}
                         />
                     </Col>
