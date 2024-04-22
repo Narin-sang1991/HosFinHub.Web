@@ -15,7 +15,7 @@ export interface DrugModel {
   didstd: number; // key of medicine (24 digit)
   unit: string; // common unit of medicine
   unit_pack: string; // package unit of medicine
-  seq: number; // transaction key
+  seq: string; // transaction key
   drugremark: string;
   pa_no?: string; // permit number for special medicine using
   totcopay: number; // total amount of exclude cliaming

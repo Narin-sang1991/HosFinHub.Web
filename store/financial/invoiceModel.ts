@@ -7,7 +7,7 @@ export interface InvoiceModel {
   paid: number; // paid
   pttype: number;
   person_id: string; // id of person
-  seq: number; // transaction key
+  seq: string; // transaction key
   opd_memo?: string;
   invoice_no?: string; // invoice number
   invoice_lt?: string; // invoice number of service point
@@ -21,12 +21,12 @@ export interface InvoiceItemModel {
   chrgitem: string; // code of payment method in announcement
   amount: number; // amount of invoice item
   person_id: string; // id of person
-  seq: number; // transaction key
+  seq: string; // transaction key
 }
 
 export interface InvoiceEditorModel {
   id: string; // unique key of data
-  seq: number; // transaction key
+  seq: string; // transaction key
   dummyKey: number; // dummy key for UI component
   idDurty: boolean;
   totalAmount: number;

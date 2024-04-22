@@ -5,7 +5,7 @@ import { OpdValids } from "./opdEditorModel";
 export interface OpdSearchModel {
   id: string;
   hn: string;
-  seq: number;
+  seq: string;
   dateopd: Date;
   opd_pat: OpdPatientModel;
   error: OpdValids[]

@@ -70,7 +70,7 @@ export interface OpdDetailModel {
   dateopd: Date;
   timeopd: string;
   uuc: number;
-  seq: number; // transaction key
+  seq: string; // transaction key
   detail?: string;
 
   /**
