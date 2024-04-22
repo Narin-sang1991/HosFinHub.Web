@@ -40,6 +40,10 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ additionalItems = [],
         setEditingData(additionalItems);
     }, [additionalItems]);
 
+    const triggerChange = (additionalData: AdditPaymentModelEditorModel[]) => {
+        onChange?.({ adpItems: additionalData });
+    };
+
     //#region Editor
     const cancel = () => {
         setEditingKey("");
@@ -96,6 +100,8 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ additionalItems = [],
                 setEditingData(newData);
                 setEditingKey("");
             }
+
+            triggerChange(newData);
         } catch (errInfo) {
             console.log("Validate Failed:", errInfo);
         }

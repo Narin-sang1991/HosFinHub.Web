@@ -234,7 +234,7 @@ export async function genarateAllCharges(
       //item 41 = ยาที่นำไปใช้ต่อที่บ้าน
       validItem?.forEach((v) => {
         //dru error
-        if (v.dru) {
+        if (v.dru && item.totalAmount > 0) {
           item.valid = item.valid?.concat(v.dru);
         }
       });
@@ -242,7 +242,7 @@ export async function genarateAllCharges(
     } else if (item.chargeCode === "31") {
       //item 31 = ยาและสารอาหารทางเส้นเลือดที่ใช้ในโรงพยาบาล
       validItem?.forEach((v) => {
-        if (v.dru) {
+        if (v.dru && item.totalAmount > 0) {
           item.valid = item.valid?.concat(v.dru);
         }
       });

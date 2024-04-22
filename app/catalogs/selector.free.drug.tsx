@@ -64,10 +64,10 @@ export function FreeDrugSelector({ showCode, initInfo, onChange }: FreeDrugSelec
                     name: itemSelected.generic_name,
                     unitPrice: itemSelected.price
                 };
-                if (onChange) onChange({ ...changedObj });
+                onChange?.({ ...changedObj });
             }
         } else {
-            if (onChange) onChange({
+            onChange?.({
                 id: uuidv4(),
                 code: selectedValue,
                 name: selectedValue,

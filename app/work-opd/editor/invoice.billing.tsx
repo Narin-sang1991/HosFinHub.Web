@@ -44,23 +44,6 @@ const InvoiceBillingTab = function InvoiceBilling({
     const [isModalDrugOpen, setModalDrugOpen] = useState(false);
     const [isAdditPaymentOpen, setModalAdditPaymentOpen] = useState(false);
 
-    // useEffect(() => {
-    //     formBillingEditor.resetFields(["InvoiceAdp"]);
-    //     recalcAdpCharges({
-    //         seqKey,
-    //         invoiceEditors: invoiceData,
-    //         adtEditors: additPaymentData,
-    //         reconcile: false
-    //     }).then((invoiceUtdAdp) => {
-    //         recalcDrugCharges({
-    //             seqKey,
-    //             invoiceEditors: invoiceUtdAdp,
-    //             drugEditors: drugData,
-    //         }).then((invoiceUtdDrug) => {
-    //             setInvoiceData(invoiceUtdDrug);
-    //         });
-    //     });
-    // }, [additPaymentData, drugData]);
     useEffect(() => {
         formBillingEditor.resetFields(["InvoiceAdp"]);
         recalcAdpCharges({
@@ -82,6 +65,7 @@ const InvoiceBillingTab = function InvoiceBilling({
             setInvoiceData(invoiceUtdDrug);
         });
     }, [drugData]);
+
     //#region Editor
     function takeAction(chargeCode: string) {
         if (chargeCode.startsWith(drugInChargePrefix) || chargeCode.startsWith(drugExChargePrefix)) {
@@ -102,13 +86,6 @@ const InvoiceBillingTab = function InvoiceBilling({
             let moveInvoiceItems = drugEditing.moveInvoiceItems as MoveInvoiceItemModel[];
             let newPaymentData = await MoveDrugTo(moveInvoiceItems.filter(t => t.sourceFileID === drugFileCode));
             setAdditPaymentData(newPaymentData);
-            // let invoiceAfterCalcAdp = await recalcAdpCharges({
-            //     seqKey,
-            //     invoiceEditors: invoiceData,
-            //     adtEditors: newPaymentData,
-            //     reconcile: false
-            // });
-            // let invoiceAfterCalcAdp = await recalcDrugCharges
         } else {
             setAdditPaymentData(additPaymentItems || []);
         }
@@ -157,6 +134,17 @@ const InvoiceBillingTab = function InvoiceBilling({
             }
         });
         return newPaymentData;
+    }
+
+    async function saveInvoiceAdditPayment(): Promise<void> {
+        const adpEditing = formBillingEditor.getFieldValue("InvoiceAdp");
+        if (adpEditing?.adpItems.length > 0 || false) {
+            let editingAdpItems = adpEditing.adpItems as AdditPaymentModelEditorModel[];
+            setAdditPaymentData(editingAdpItems);
+        } else {
+            setAdditPaymentData([]);
+        }
+        setModalAdditPaymentOpen(false);
     }
     //#endregion
 
@@ -349,7 +337,7 @@ const InvoiceBillingTab = function InvoiceBilling({
                     </Space>}
                     open={isAdditPaymentOpen} centered width={"90%"}
                     onCancel={() => setModalAdditPaymentOpen(false)} cancelText={"ปิด"}
-                    onOk={saveInvoiceDrug}
+                    onOk={saveInvoiceAdditPayment}
                     okText="นำไปใช้"
                 >
                     <Form.Item name="InvoiceAdp">
