@@ -13,7 +13,7 @@ import {
     getStatusDisplayType, getClaimStatusText,
     drugFileCode, drugInChargePrefix, drugExChargePrefix,
     additionalPaymentFileCode, additionalPaymentChargePrefix, adpTypeNonGroup,
-    reconcileAdpCharges,
+    recalcDrugCharges, recalcAdpCharges,
 } from "@/client.constant/invoice.billing.constant";
 import { getAdpDisplay } from "@/client.constant/invoice.addit.payment.constant";
 import InvoiceDrugPage from "./invoice.drug";
@@ -46,9 +46,25 @@ const InvoiceBillingTab = function InvoiceBilling({
 
     useEffect(() => {
         formBillingEditor.resetFields(["InvoiceAdp"]);
-        // formBillingEditor.setFieldValue("InvoiceAdp", { additionalItems: additPaymentData });
-    }, [additPaymentData]);
-
+        recalcAdpCharges({
+            seqKey,
+            invoiceEditors: invoiceData,
+            adtEditors: additPaymentData,
+            reconcile: false
+        }).then((invoiceUtdAdp) => {
+            // setInvoiceData(invoiceUtdAdp);
+            console.log("invoiceUtd-After-recalcAdp=>", invoiceUtdAdp);
+            console.log("drugData-before-recalcDrug=>", drugData);
+            recalcDrugCharges({
+                seqKey,
+                invoiceEditors: invoiceUtdAdp,
+                drugEditors: drugData,
+            }).then((invoiceUtdDrug) => {
+                console.log("invoiceUtd-After-recalcDrug=>", invoiceUtdDrug);
+                setInvoiceData(invoiceUtdDrug);
+            });
+        });
+    }, [additPaymentData, drugData]);
     //#region Editor
     function takeAction(chargeCode: string) {
         if (chargeCode.startsWith(drugInChargePrefix) || chargeCode.startsWith(drugExChargePrefix)) {
@@ -64,18 +80,21 @@ const InvoiceBillingTab = function InvoiceBilling({
 
     async function saveInvoiceDrug(): Promise<void> {
         const drugEditing = formBillingEditor.getFieldValue("InvoiceDrug");
+        setDruData(drugEditing.drugItems);
         if (drugEditing.moveInvoiceItems.length > 0) {
             let moveInvoiceItems = drugEditing.moveInvoiceItems as MoveInvoiceItemModel[];
             let newPaymentData = await MoveDrugTo(moveInvoiceItems.filter(t => t.sourceFileID === drugFileCode));
-            reconcileAdpCharges(seqKey, invoiceData, newPaymentData).then((newInvoiceData) => {
-                setInvoiceData(newInvoiceData);
-            });
+            setAdditPaymentData(newPaymentData);
+            // let invoiceAfterCalcAdp = await recalcAdpCharges({
+            //     seqKey,
+            //     invoiceEditors: invoiceData,
+            //     adtEditors: newPaymentData,
+            //     reconcile: false
+            // });
+            // let invoiceAfterCalcAdp = await recalcDrugCharges
         } else {
-            setInvoiceData(invoiceItems);
             setAdditPaymentData(additPaymentItems || []);
         }
-
-        setDruData(drugEditing.drugItems);
         setModalDrugOpen(false);
     }
 
@@ -119,8 +138,6 @@ const InvoiceBillingTab = function InvoiceBilling({
                 });
             }
         });
-
-        setAdditPaymentData(newPaymentData);
         return newPaymentData;
     }
     //#endregion
@@ -144,7 +161,7 @@ const InvoiceBillingTab = function InvoiceBilling({
             ellipsis: true,
         },
         {
-            title: "ราคาเรียกเก็บ",
+            title: "ขอเบิก",
             dataIndex: "totalAmount",
             key: "totalAmount",
             width: 40,
@@ -162,24 +179,7 @@ const InvoiceBillingTab = function InvoiceBilling({
             ),
         },
         {
-            title: "ส่วนเกิน",
-            dataIndex: "overAmount",
-            key: "overAmount",
-            width: 40,
-            ellipsis: true,
-            render: (overAmount) => (
-                <Statistic
-                    precision={2}
-                    value={overAmount}
-                    valueStyle={{
-                        fontSize: "16px",
-                        color: overAmount == 0 ? "gray" : "orange",
-                    }}
-                />
-            ),
-        },
-        {
-            title: "จำนวนเงินที่อนุมัติ",
+            title: "เบิกได้",
             dataIndex: "approvedAmount",
             key: "approvedAmount",
             width: 40,
@@ -191,6 +191,23 @@ const InvoiceBillingTab = function InvoiceBilling({
                     valueStyle={{
                         fontSize: "16px",
                         color: approvedAmount == 0 ? "gray" : "#3f8600",
+                    }}
+                />
+            ),
+        },
+        {
+            title: "เบิกไม่ได้",
+            dataIndex: "overAmount",
+            key: "overAmount",
+            width: 40,
+            ellipsis: true,
+            render: (overAmount) => (
+                <Statistic
+                    precision={2}
+                    value={overAmount}
+                    valueStyle={{
+                        fontSize: "16px",
+                        color: overAmount == 0 ? "gray" : "orange",
                     }}
                 />
             ),

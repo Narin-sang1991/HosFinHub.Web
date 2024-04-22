@@ -40,7 +40,7 @@ import {
 import { getColResponsive } from "@/client.component/antd.col.resposive";
 import { dateDisplayFormat } from "@/client.constant/format.constant";
 import { InvoiceEditorModel } from "@/store/financial/invoiceModel";
-import { genarateAllCharges, reconcileAdpCharges } from "@/client.constant/invoice.billing.constant";
+import { genarateAllCharges, recalcAdpCharges } from "@/client.constant/invoice.billing.constant";
 import { genarateDrugEditors } from "@/client.constant/invoice.drug.constant";
 import { genarateAdditPaymentEditors } from "@/client.constant/invoice.addit.payment.constant";
 import PatientInfoTab from "./patient.info";
@@ -84,7 +84,12 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
             let patientDetail = { ...originData.pat[0] };
             let adtItems = await genarateAdditPaymentEditors(originData.adp);
             let invoiceItems = await genarateAllCharges(originData.cha, valid);
-            invoiceItems = await reconcileAdpCharges(opdDetail.seq, invoiceItems, adtItems);
+            invoiceItems = await recalcAdpCharges({
+                seqKey: opdDetail.seq,
+                invoiceEditors: invoiceItems,
+                adtEditors: adtItems,
+                reconcile: true
+            });
             let transformData: OpdEditorModel = {
                 opd: opdDetail,
                 patient: patientDetail,

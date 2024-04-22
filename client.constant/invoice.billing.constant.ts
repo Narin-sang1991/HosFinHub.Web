@@ -6,6 +6,7 @@ import type {
 } from "@/store/financial/invoiceModel";
 import { OpdValidModel } from "@/store/work-opd/opdEditorModel";
 import { AdditPaymentModelEditorModel } from "@/store/financial/additionalModel";
+import { DrugEditorModel } from "@/store/patient/drugModel";
 const defaultStrEmpty: string = "-";
 
 //#region File and Code
@@ -45,18 +46,23 @@ const allCharges: string[] = [
   "K",
 ];
 
-export async function reconcileAdpCharges(
+type CalcAdpChargesProps = {
   seqKey: number,
   invoiceEditors: InvoiceEditorModel[],
   adtEditors: AdditPaymentModelEditorModel[],
+  reconcile?: boolean,
+};
+export async function recalcAdpCharges({
+  seqKey, invoiceEditors, adtEditors, reconcile }: CalcAdpChargesProps
 ): Promise<InvoiceEditorModel[]> {
-
-  if (adtEditors.length == 0) return invoiceEditors;
+  // if (adtEditors.length == 0) return invoiceEditors;
 
   let results: InvoiceEditorModel[] = [...invoiceEditors];
   let overAmount: number = 0;
   let approvedAmount: number = 0;
-  let sumTotal: number = adtEditors.map(a => a.total).reduce(function (a, b) { return parseInt(a.toString()) + parseInt(b.toString()); });
+  let sumTotal: number = adtEditors.length > 0
+    ? adtEditors.map(a => a.total).reduce(function (a, b) { return parseInt(a.toString()) + parseInt(b.toString()); })
+    : 0;
 
   let invoiceAdpIndex = invoiceEditors.findIndex(t => t.chargeCode.startsWith(additionalPaymentChargePrefix));
   if (invoiceAdpIndex <= -1) {
@@ -78,13 +84,66 @@ export async function reconcileAdpCharges(
   }
   else {
     let invoiceAdp = invoiceEditors[invoiceAdpIndex];
-    console.log('sumTotal=>', sumTotal);
-    console.log('invoiceAdp.totalAmount=>', invoiceAdp.totalAmount);
-    let calcResult: number = parseInt(sumTotal.toString()) + parseInt(invoiceAdp.totalAmount.toString());
-    console.log('calcResult=>', calcResult);
+    let calcResult: number = (reconcile === true
+      ? parseInt(sumTotal.toString()) + parseInt(invoiceAdp.totalAmount.toString())
+      : sumTotal);
     results.splice(invoiceAdpIndex, 1, {
       ...invoiceAdp,
       totalAmount: calcResult,
+      status: 1,
+      idDurty: true,
+    });
+  }
+  return await results;
+}
+
+type CalcDrugChargesProps = {
+  seqKey: number,
+  invoiceEditors: InvoiceEditorModel[],
+  drugEditors: DrugEditorModel[],
+};
+export async function recalcDrugCharges({
+  seqKey, invoiceEditors, drugEditors }: CalcDrugChargesProps
+): Promise<InvoiceEditorModel[]> {
+
+  // if (drugEditors.length == 0) return invoiceEditors;
+
+  let results: InvoiceEditorModel[] = [...invoiceEditors];
+  let overAmount: number = drugEditors.length > 0
+    ? drugEditors.map(a => a.totcopay).reduce(function (a, b) { return parseInt(a.toString()) + parseInt(b.toString()); })
+    : 0;
+  let reqestTotal: number = drugEditors.length > 0
+    ? drugEditors.map(a => a.totalreq).reduce(function (a, b) { return parseInt(a.toString()) + parseInt(b.toString()); })
+    : 0;
+  let sumTotal: number = drugEditors.length > 0
+    ? drugEditors.map(a => a.total).reduce(function (a, b) { return parseInt(a.toString()) + parseInt(b.toString()); })
+    : 0;
+  let totalAmount = (reqestTotal > 0 ? reqestTotal : sumTotal);
+  let invoiceDrugIndex = invoiceEditors.findIndex(t => t.chargeCode.startsWith(drugExChargePrefix));
+  if (invoiceDrugIndex <= -1) {
+    let chrgitem = drugExChargePrefix + '1';
+    let newInvoiceItem: InvoiceEditorModel = {
+      id: uuidv4(),
+      seq: seqKey,
+      dummyKey: (invoiceEditors.length || 0) + 1,
+      idDurty: true,
+      totalAmount: totalAmount,
+      overAmount,
+      approvedAmount: 0,
+      chargeCode: chrgitem,
+      chargeDetail: getChargeDetails(chrgitem),
+      status: 1,
+      valid: [],
+    };
+    results.push(newInvoiceItem);
+  }
+  else {
+    let invoiceDrug = invoiceEditors[invoiceDrugIndex];
+    results.splice(invoiceDrugIndex, 1, {
+      ...invoiceDrug,
+      totalAmount: totalAmount,
+      overAmount,
+      approvedAmount: 0,
       status: 1,
       idDurty: true,
     });
