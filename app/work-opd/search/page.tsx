@@ -2,37 +2,19 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Button,
-  Card,
-  Form,
-  Table,
-  DatePicker,
-  Tag,
-  Flex,
-  Segmented,
-} from "antd";
+import { Button, Card, Form, Table, DatePicker, Tag, Flex, Segmented, message, } from "antd";
 import type { TableProps, TableColumnsType } from "antd";
-import {
-  SearchOutlined,
-  PlusCircleOutlined,
-  EditOutlined,
-} from "@ant-design/icons";
+import { SearchOutlined, EditOutlined, SendOutlined, } from "@ant-design/icons";
 import moment from "moment";
 import withTheme from "../../../theme";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import {
-  searchAsync,
-  selectResult,
-  selectStatus,
-} from "@/store/work-opd/workOpdSlice";
+import { searchAsync, selectResult, selectStatus, } from "@/store/work-opd/workOpdSlice";
 import type { OpdSearchModel } from "@/store/work-opd/opdSearchModel";
 import { getPatientID } from "@/client.constant/patient.constant";
-import {
-  dateDisplayFormat,
-  dateInterfaceFormat,
-} from "@/client.constant/format.constant";
+import { dateDisplayFormat, dateInterfaceFormat, } from "@/client.constant/format.constant";
 import "@/app/globals.css";
+import { claimOpd } from "@/services/send.fhd.prioviver";
+import ButtonSent from "./button.send";
 
 // moment.locale('th');
 type OpdSearchProps = {};
@@ -47,6 +29,18 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
   const status = useAppSelector(selectStatus);
   const searchResult = useAppSelector(selectResult);
 
+  //claim  FDH
+  const onClickClaim = async (seq: string) => {
+    console.log(seq);
+    const resultClaim = await claimOpd([seq]) as unknown as any
+  
+    if(resultClaim.status===200){
+      message.success(resultClaim.message_th)
+    }else{
+      message.error(resultClaim.message_th)
+    }
+  }
+  // set errorfilter
   const setFilter = (searchResult: OpdSearchModel[]) => {
     const fillter: FilterType[] = [];
     searchResult.forEach((pat) => {
@@ -90,12 +84,7 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
   //#endregion
 
   //#region Local Filter Data
-  const onTableCriteriaChange: TableProps<OpdSearchModel>["onChange"] = (
-    pagination,
-    filters,
-    sorter,
-    extra
-  ) => {
+  const onTableCriteriaChange: TableProps<OpdSearchModel>["onChange"] = (pagination, filters, sorter, extra) => {
     // onSearch(pagination.current, sorter);
     setPageIndex(pagination.current || 1);
   };
@@ -118,16 +107,26 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
 
   function getRecordPatientInscl(record: OpdSearchModel) {
     if (record.opd_pat !== undefined) {
-      const patientInscl = record.opd_pat.pat_ins.find(
-        (i) => i.seq === record.seq
-      );
 
-      return patientInscl?.inscl;
+      if (record.opd_pat.pat_ins === undefined) {
+        return ""
+      } else {
+        const patientInscl = record.opd_pat.pat_ins.find((i) => i.seq === record.seq)
+        return patientInscl?.inscl;
+      }
+    } else {
+      return "";
     }
-    return "";
   }
 
   const columns: TableColumnsType<OpdSearchModel> = [
+    {
+      title: "Calim",
+      dataIndex: "seq",
+      key: "seq",
+      fixed: 'left', width: 60,
+      render: (record) => <Button onClick={() => onClickClaim(record)} icon={<SendOutlined />}>ส่งข้อมูลFDH</Button>
+    },
     {
       title: "HN",
       dataIndex: "hn",
@@ -257,7 +256,7 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
           </Form.Item>
         </Form>
       </Card>
-
+      <ButtonSent opd={searchResult} />
       <Table
         rowKey={(record) => record.id}
         loading={status === "loading"}

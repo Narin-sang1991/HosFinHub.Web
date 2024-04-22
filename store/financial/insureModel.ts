@@ -4,7 +4,7 @@ export interface InsureModel   {
     cid: string,        // claim key id
     inscl: string,      // code of insurance
     subtype: number, 
-    seq: number, 
+    seq: string, 
 }
 
 export interface InsureDetailModel   {
