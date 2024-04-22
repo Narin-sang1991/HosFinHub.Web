@@ -1,6 +1,6 @@
 import { OpdValids } from "../work-opd/opdEditorModel";
 
-export interface DrugModel {
+export interface InvoiceDrugModel {
   id: string; // unique key of data
   hcode: string; // key of hospital
   hn: string; // patient number
@@ -26,7 +26,7 @@ export interface DrugModel {
   provider?: string;
 }
 
-export interface DrugEditorModel extends DrugModel {
+export interface InvoiceDrugEditorModel extends InvoiceDrugModel {
   dummyKey: number; // dummy key for UI component
   totalreq: number;
   idDurty: boolean;

@@ -5,8 +5,8 @@ import type {
   InvoiceEditorModel,
 } from "@/store/financial/invoiceModel";
 import { OpdValidModel } from "@/store/work-opd/opdEditorModel";
-import { AdditPaymentModelEditorModel } from "@/store/financial/additionalModel";
-import { DrugEditorModel } from "@/store/patient/drugModel";
+import { AdditPaymentModelEditorModel } from "@/store/free-additional/additionalModel";
+import { InvoiceDrugEditorModel } from "@/store/financial/invoiceDrugModel";
 const defaultStrEmpty: string = "-";
 
 //#region File and Code
@@ -61,8 +61,11 @@ export async function recalcAdpCharges({
   let overAmount: number = 0;
   let approvedAmount: number = 0;
   let sumTotal: number = adtEditors.length > 0
-    ? adtEditors.map(a => a.total).reduce(function (a, b) { return parseInt(a.toString()) + parseInt(b.toString()); })
+    ? adtEditors.map(a => a.total).reduce(function (a, b) { return Number(a.toString()) + Number(b.toString()); })
     : 0;
+  let adtErr: boolean = adtEditors.length > 0
+    ? adtEditors.filter(a => a.hasError == true).length > 0
+    : false;
 
   let invoiceAdpIndex = invoiceEditors.findIndex(t => t.chargeCode.startsWith(additionalPaymentChargePrefix));
   if (invoiceAdpIndex <= -1) {
@@ -78,29 +81,39 @@ export async function recalcAdpCharges({
       chargeCode: chrgitem,
       chargeDetail: getChargeDetails(chrgitem),
       status: 1,
-      valid: [],
     };
+    if (adtErr) pushErrorToAdpCharges(newInvoiceItem);
+
     results.push(newInvoiceItem);
   }
   else {
     let invoiceAdp = invoiceEditors[invoiceAdpIndex];
     let calcResult: number = (reconcile === true
-      ? parseInt(sumTotal.toString()) + parseInt(invoiceAdp.totalAmount.toString())
+      ? Number(sumTotal.toString()) + Number(invoiceAdp.totalAmount.toString())
       : sumTotal);
-    results.splice(invoiceAdpIndex, 1, {
+    let editItem: InvoiceEditorModel = {
       ...invoiceAdp,
       totalAmount: calcResult,
       status: 1,
       idDurty: true,
-    });
+    };
+    if (adtErr) pushErrorToAdpCharges(editItem);
+
+    results.splice(invoiceAdpIndex, 1, editItem);
   }
   return await results;
+}
+function pushErrorToAdpCharges(invoiceItem: InvoiceEditorModel) {
+  invoiceItem.valid = [{
+    code_error: "E000",
+    code_error_descriptions: "ต้องระบุรหัสรายการ"
+  }];
 }
 
 type CalcDrugChargesProps = {
   seqKey: number,
   invoiceEditors: InvoiceEditorModel[],
-  drugEditors: DrugEditorModel[],
+  drugEditors: InvoiceDrugEditorModel[],
 };
 export async function recalcDrugCharges({
   seqKey, invoiceEditors, drugEditors }: CalcDrugChargesProps
@@ -110,14 +123,17 @@ export async function recalcDrugCharges({
 
   let results: InvoiceEditorModel[] = [...invoiceEditors];
   let overAmount: number = drugEditors.length > 0
-    ? drugEditors.map(a => a.totcopay).reduce(function (a, b) { return parseInt(a.toString()) + parseInt(b.toString()); })
+    ? drugEditors.map(a => a.totcopay).reduce(function (a, b) { return Number(a.toString()) + Number(b.toString()); })
     : 0;
   let reqestTotal: number = drugEditors.length > 0
-    ? drugEditors.map(a => a.totalreq).reduce(function (a, b) { return parseInt(a.toString()) + parseInt(b.toString()); })
+    ? drugEditors.map(a => a.totalreq).reduce(function (a, b) { return Number(a.toString()) + Number(b.toString()); })
     : 0;
   let sumTotal: number = drugEditors.length > 0
-    ? drugEditors.map(a => a.total).reduce(function (a, b) { return parseInt(a.toString()) + parseInt(b.toString()); })
+    ? drugEditors.map(a => a.total).reduce(function (a, b) { return Number(a.toString()) + Number(b.toString()); })
     : 0;
+  let drugErr: boolean = drugEditors.length > 0
+    ? drugEditors.filter(a => a.hasError == true).length > 0
+    : false;
   let totalAmount = (reqestTotal > 0 ? reqestTotal : sumTotal);
   let invoiceDrugIndex = invoiceEditors.findIndex(t => t.chargeCode.startsWith(drugExChargePrefix));
   if (invoiceDrugIndex <= -1) {
@@ -139,14 +155,17 @@ export async function recalcDrugCharges({
   }
   else {
     let invoiceDrug = invoiceEditors[invoiceDrugIndex];
-    results.splice(invoiceDrugIndex, 1, {
+    let editItem: InvoiceEditorModel = {
       ...invoiceDrug,
       totalAmount: totalAmount,
       overAmount,
       approvedAmount: 0,
       status: 1,
       idDurty: true,
-    });
+    };
+    if (!drugErr) editItem.valid = [];
+
+    results.splice(invoiceDrugIndex, 1, editItem);
   }
   return await results;
 }
@@ -173,8 +192,7 @@ export async function genarateAllCharges(
           return;
         }
       });
-      let totalAmount: number = parseInt(overAmount.toString()) + parseInt(approvedAmount.toString());
-      console.log('totalAmount=>', totalAmount);
+      let totalAmount: number = Number(overAmount.toString()) + Number(approvedAmount.toString());
       let invoiceItem = invoiceInCharges[0];
       let data: InvoiceEditorModel = {
         id: invoiceItem.id,
@@ -209,7 +227,7 @@ export async function genarateAllCharges(
     }
   });
 
-  //assign error to charge.
+  //#region Assign error to charge.
   results = await results.map((item) => {
     if (item.chargeCode === "41") {
 
@@ -233,7 +251,8 @@ export async function genarateAllCharges(
       return item;
     }
   });
-  // console.log('genarateAllCharges=>', results);
+  //#endregion
+
   return results;
 }
 

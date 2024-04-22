@@ -6,8 +6,8 @@ import { Button, Typography, Table, Statistic, Modal, Tag, Badge, Form, Space } 
 import type { TableColumnsType } from "antd";
 import { FileDoneOutlined, FileExclamationTwoTone } from "@ant-design/icons";
 import { InvoiceEditorModel } from "@/store/financial/invoiceModel";
-import { AdditPaymentModelEditorModel } from "@/store/financial/additionalModel";
-import type { DrugEditorModel } from "@/store/patient/drugModel";
+import { AdditPaymentModelEditorModel } from "@/store/free-additional/additionalModel";
+import type { InvoiceDrugEditorModel } from "@/store/financial/invoiceDrugModel";
 import { MoveInvoiceItemModel } from "@/store/financial/moveItemModel";
 import {
     getStatusDisplayType, getClaimStatusText,
@@ -25,7 +25,7 @@ type InvoiceBillingProps = {
     seqKey: number,
     clinicCode?: string,
     invoiceItems: InvoiceEditorModel[],
-    drugItems: DrugEditorModel[],
+    drugItems: InvoiceDrugEditorModel[],
     additPaymentItems?: AdditPaymentModelEditorModel[],
     onChange?: any,
 };
@@ -35,15 +35,32 @@ const InvoiceBillingTab = function InvoiceBilling({
     seqKey, clinicCode,
     invoiceItems, drugItems, additPaymentItems,
     onChange,
-}: InvoiceBillingProps,) {
+}: InvoiceBillingProps) {
 
     const [formBillingEditor] = Form.useForm();
     const [invoiceData, setInvoiceData] = useState<InvoiceEditorModel[]>(invoiceItems);
-    const [drugData, setDruData] = useState<DrugEditorModel[]>(drugItems);
+    const [drugData, setDruData] = useState<InvoiceDrugEditorModel[]>(drugItems);
     const [additPaymentData, setAdditPaymentData] = useState<AdditPaymentModelEditorModel[]>(additPaymentItems || []);
     const [isModalDrugOpen, setModalDrugOpen] = useState(false);
     const [isAdditPaymentOpen, setModalAdditPaymentOpen] = useState(false);
 
+    // useEffect(() => {
+    //     formBillingEditor.resetFields(["InvoiceAdp"]);
+    //     recalcAdpCharges({
+    //         seqKey,
+    //         invoiceEditors: invoiceData,
+    //         adtEditors: additPaymentData,
+    //         reconcile: false
+    //     }).then((invoiceUtdAdp) => {
+    //         recalcDrugCharges({
+    //             seqKey,
+    //             invoiceEditors: invoiceUtdAdp,
+    //             drugEditors: drugData,
+    //         }).then((invoiceUtdDrug) => {
+    //             setInvoiceData(invoiceUtdDrug);
+    //         });
+    //     });
+    // }, [additPaymentData, drugData]);
     useEffect(() => {
         formBillingEditor.resetFields(["InvoiceAdp"]);
         recalcAdpCharges({
@@ -52,19 +69,19 @@ const InvoiceBillingTab = function InvoiceBilling({
             adtEditors: additPaymentData,
             reconcile: false
         }).then((invoiceUtdAdp) => {
-            // setInvoiceData(invoiceUtdAdp);
-            console.log("invoiceUtd-After-recalcAdp=>", invoiceUtdAdp);
-            console.log("drugData-before-recalcDrug=>", drugData);
-            recalcDrugCharges({
-                seqKey,
-                invoiceEditors: invoiceUtdAdp,
-                drugEditors: drugData,
-            }).then((invoiceUtdDrug) => {
-                console.log("invoiceUtd-After-recalcDrug=>", invoiceUtdDrug);
-                setInvoiceData(invoiceUtdDrug);
-            });
+            setInvoiceData(invoiceUtdAdp);
         });
-    }, [additPaymentData, drugData]);
+    }, [additPaymentData]);
+
+    useEffect(() => {
+        recalcDrugCharges({
+            seqKey,
+            invoiceEditors: invoiceData,
+            drugEditors: drugData,
+        }).then((invoiceUtdDrug) => {
+            setInvoiceData(invoiceUtdDrug);
+        });
+    }, [drugData]);
     //#region Editor
     function takeAction(chargeCode: string) {
         if (chargeCode.startsWith(drugInChargePrefix) || chargeCode.startsWith(drugExChargePrefix)) {
@@ -110,14 +127,15 @@ const InvoiceBillingTab = function InvoiceBilling({
                 dummyKey: (newPaymentData?.length || 0) + 1,
                 totalreq: 0.00,
                 idDurty: false,
-                hasError: true,
+                hasError: drug.hasError,
                 id: drug.id,
                 seq: seqKey,
                 hn: drug.hn,
                 dateopd: drug.date_serv,
                 type: adpTypeNonGroup,
                 typeDisplay: getAdpDisplay(adpTypeNonGroup),
-                code: drug.didname,
+                code: drug.did,
+                freeDrug: { id: drug.id, code: drug.did, name: drug.didname, unitPrice: drug.drugprice.toString() },
                 qty: drug.amount,
                 rate: drug.drugprice,
                 dose: drug.unit,

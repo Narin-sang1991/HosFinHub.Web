@@ -1,4 +1,4 @@
-import type { AdditionalPaymentModel, AdditPaymentModelEditorModel } from "@/store/financial/additionalModel";
+import type { AdditionalPaymentModel, AdditPaymentModelEditorModel } from "@/store/free-additional/additionalModel";
 
 export async function genarateAdditPaymentEditors(
   adpItems: AdditionalPaymentModel[]
@@ -14,6 +14,7 @@ export async function genarateAdditPaymentEditors(
       totalreq: 0.00,
       hasError: false,
       typeDisplay: getAdpDisplay(adpItem.type),
+      freeDrug: { id: adpItem.id, code: adpItem.code, unitPrice: adpItem.rate.toString() }
     };
     results.push(data);
   });

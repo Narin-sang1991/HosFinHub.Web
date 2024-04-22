@@ -15,8 +15,11 @@ import {
     CloseOutlined,
     DeleteOutlined,
 } from "@ant-design/icons";
-import { AdditPaymentModelEditorModel } from "@/store/financial/additionalModel";
+import { AdditPaymentModelEditorModel } from "@/store/free-additional/additionalModel";
 import { EditableCell } from "@/client.component/antd.table.editable";
+import { FreeDrugSelector } from "@/app/catalogs/selector.free.drug";
+import { isNumber } from "@/client.constant/format.constant";
+import { FreeDrugSelectorModel } from "@/store/free-additional/freeDrugModel";
 //#endregion
 
 type InvoiceAdditionalProps = {
@@ -36,7 +39,6 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ additionalItems = [],
         console.log('invoice.additional', additionalItems);
         setEditingData(additionalItems);
     }, [additionalItems]);
-
 
     //#region Editor
     const cancel = () => {
@@ -77,6 +79,12 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ additionalItems = [],
             const index = newData.findIndex((item) => key === item.id);
             if (index > -1) {
                 const item = newData[index];
+                if (row.freeDrug.code.length > 0) row.code = row.freeDrug.code || row.code;
+                if (isNumber(Number(row.freeDrug.unitPrice))) {
+                    let unitPrice = Number(row.freeDrug.unitPrice);
+                    row.rate = unitPrice
+                    row.totalreq = row.totalreq > 0 ? row.totalreq : unitPrice * Number(item.qty.toString());
+                }
                 newData.splice(index, 1, {
                     ...item,
                     ...row,
@@ -105,11 +113,20 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ additionalItems = [],
             className: "Center",
         },
         {
-            title: "รหัสรายการ",
+            title: "ประเภท",
             dataIndex: "typeDisplay",
             key: "typeDisplay",
-            width: 30,
+            width: 20,
             ellipsis: true,
+        },
+        {
+            title: "รหัสรายการ",
+            dataIndex: "freeDrug",
+            key: "freeDrug",
+            width: 30,
+            editable: true,
+            selectorNode: <FreeDrugSelector showCode />,
+            render: (_: any, freeDrug: FreeDrugSelectorModel) => { return <>{freeDrug.name || freeDrug.code}</> },
         },
         {
             title: "หน่วย",
@@ -130,14 +147,14 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ additionalItems = [],
             title: "พึ่งเบิกได้",
             dataIndex: "total",
             key: "total",
-            width: 30,
+            width: 15,
             ellipsis: true,
         },
         {
             title: "ขอเบิก",
             dataIndex: "totalreq",
             key: "totalreq",
-            width: 30,
+            width: 15,
             ellipsis: true,
             editable: true,
         },
@@ -145,7 +162,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ additionalItems = [],
             title: "ส่วนเกิน",
             dataIndex: "totcopay",
             key: "totcopay",
-            width: 30,
+            width: 15,
             ellipsis: true,
             editable: true,
         },
@@ -156,7 +173,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ additionalItems = [],
             dataIndex: "operation",
             className: "Center",
             fixed: "right",
-            width: 30,
+            width: 20,
             render: (_: any, record: AdditPaymentModelEditorModel) => {
                 const editing = isEditing(record);
                 return editing ? (
@@ -217,14 +234,20 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ additionalItems = [],
             } as TableColumnProps<AdditPaymentModelEditorModel>;
         }
         let numTypes = ["totcopay", "totalreq"];
+        let selectorTypes = ["freeDrug"];
         return {
             ...col,
             onCell: (record: AdditPaymentModelEditorModel) => ({
                 record,
-                inputType: numTypes.includes(col.dataIndex) ? "number" : "text",
+                inputType: numTypes.includes(col.dataIndex)
+                    ? "number"
+                    : selectorTypes.includes(col.dataIndex)
+                        ? "selector"
+                        : "text",
                 dataIndex: col.dataIndex,
                 title: col.title,
                 editing: isEditing(record),
+                selectorNode: (col.selectorNode || <></>),
                 styleClass: record.hasError ? 'Col-Table-Row-Error' : '',
             }),
         } as TableColumnProps<AdditPaymentModelEditorModel>;

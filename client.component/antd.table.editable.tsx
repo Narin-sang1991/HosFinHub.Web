@@ -5,11 +5,12 @@ export interface EditableCellProps<T> extends React.HTMLAttributes<HTMLElement> 
     editing: boolean;
     dataIndex: string;
     title: any;
-    inputType: 'number' | 'text';
+    inputType: 'number' | 'text' | 'selector';
     record: T;
     index: number;
     children: React.ReactNode;
     styleClass: any;
+    selectorNode: any;
 }
 
 export function EditableCell<T>({
@@ -21,10 +22,11 @@ export function EditableCell<T>({
     index,
     children,
     styleClass,
+    selectorNode,
     ...restProps
 }: EditableCellProps<T>) {
 
-    const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
+    const inputNode = getInputNode(inputType, selectorNode);
 
     return (
         <td {...restProps}>
@@ -46,3 +48,11 @@ export function EditableCell<T>({
         </td>
     );
 };
+
+function getInputNode(inputType: string, selectorNode: any) {
+    return inputType === 'number'
+        ? <InputNumber />
+        : inputType === 'selector'
+            ? selectorNode
+            : <Input />;
+}

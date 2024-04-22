@@ -16,7 +16,7 @@ import {
   UndoOutlined,
   WarningTwoTone,
 } from "@ant-design/icons";
-import { DrugEditorModel } from "@/store/patient/drugModel";
+import { InvoiceDrugEditorModel } from "@/store/financial/invoiceDrugModel";
 import { MoveInvoiceItemModel } from "@/store/financial/moveItemModel";
 import { EditableCell } from "@/client.component/antd.table.editable";
 import { drugFileCode, drugExChargePrefix, additionalPaymentChargePrefix } from "@/client.constant/invoice.billing.constant";
@@ -24,7 +24,7 @@ import "@/app/globals.css";
 //#endregion
 
 type InvoiceDrugProps = {
-  drugItems?: DrugEditorModel[],
+  drugItems?: InvoiceDrugEditorModel[],
   moveInvoiceItems?: MoveInvoiceItemModel[],
   onChange?: any,
 };
@@ -34,7 +34,7 @@ const { Text } = Typography;
 const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: InvoiceDrugProps) {
 
   const [formDrugEditor] = Form.useForm();
-  const [editingDrugData, setEditingData] = useState<DrugEditorModel[]>([]);
+  const [editingDrugData, setEditingData] = useState<InvoiceDrugEditorModel[]>([]);
   const [editingKey, setEditingKey] = useState("");
   const [moveItems, setMoveItems] = useState<MoveInvoiceItemModel[]>([]);
 
@@ -49,7 +49,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
     triggerChange(drugItems, []);
   };
 
-  const triggerChange = (drugData: DrugEditorModel[], moveData: MoveInvoiceItemModel[]) => {
+  const triggerChange = (drugData: InvoiceDrugEditorModel[], moveData: MoveInvoiceItemModel[]) => {
     onChange?.({
       drugItems: drugData,
       moveInvoiceItems: moveData,
@@ -73,13 +73,13 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
   // };
 
   const viewMode = editingKey === "";
-  const isEditing = (record: DrugEditorModel) => record.id === editingKey;
-  function editItem(record: Partial<DrugEditorModel>): void {
+  const isEditing = (record: InvoiceDrugEditorModel) => record.id === editingKey;
+  function editItem(record: Partial<InvoiceDrugEditorModel>): void {
     formDrugEditor.setFieldsValue({ ...record });
     setEditingKey(record?.id || "");
   };
 
-  function moveItemToCharge(record: DrugEditorModel): void {
+  function moveItemToCharge(record: InvoiceDrugEditorModel): void {
     try {
       let chargeCodeTo: string = additionalPaymentChargePrefix + '1';
       let item: MoveInvoiceItemModel = {
@@ -98,7 +98,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
     }
   }
 
-  function deleteItem(key: React.Key): DrugEditorModel[] {
+  function deleteItem(key: React.Key): InvoiceDrugEditorModel[] {
     const newData = [...editingDrugData];
     const index = newData.findIndex((item) => key === item.id);
     if (index > -1) {
@@ -110,7 +110,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
 
   async function saveItem(key: React.Key): Promise<void> {
     try {
-      const row = (await formDrugEditor.validateFields()) as DrugEditorModel;
+      const row = (await formDrugEditor.validateFields()) as InvoiceDrugEditorModel;
       const newData = [...editingDrugData];
       const index = newData.findIndex((item) => key === item.id);
       if (index > -1) {
@@ -162,7 +162,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
       title: "หน่วย",
       key: "unit",
       width: 20,
-      render: (_: any, record: DrugEditorModel) => {
+      render: (_: any, record: InvoiceDrugEditorModel) => {
         return <>{`${record.amount} ${record.unit}`}</>
       }
     },
@@ -203,7 +203,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
       className: "Center",
       width: 20,
       ellipsis: true,
-      render: (_: any, record: DrugEditorModel) => {
+      render: (_: any, record: InvoiceDrugEditorModel) => {
         return record.validError?.map((i) => {
           return (
             <Tooltip title={`${i.code_error}: ${i.code_error_descriptions}`} >
@@ -235,7 +235,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
       className: "Center",
       fixed: "right",
       width: 30,
-      render: (_: any, record: DrugEditorModel) => {
+      render: (_: any, record: InvoiceDrugEditorModel) => {
         const editing = isEditing(record);
         return editing ? (
           <Space size="middle">
@@ -291,13 +291,13 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
     if (!col.editable) {
       return {
         ...col,
-        onCell: (record: DrugEditorModel) => ({ className: record.hasError ? 'Col-Table-Row-Error' : '', })
-      } as TableColumnProps<DrugEditorModel>;
+        onCell: (record: InvoiceDrugEditorModel) => ({ className: record.hasError ? 'Col-Table-Row-Error' : '', })
+      } as TableColumnProps<InvoiceDrugEditorModel>;
     }
     let numTypes = ["totcopay", "totalreq"];
     return {
       ...col,
-      onCell: (record: DrugEditorModel) => ({
+      onCell: (record: InvoiceDrugEditorModel) => ({
         record,
         inputType: numTypes.includes(col.dataIndex) ? "number" : "text",
         dataIndex: col.dataIndex,
@@ -305,7 +305,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
         editing: isEditing(record),
         styleClass: record.hasError ? 'Col-Table-Row-Error' : '',
       }),
-    } as TableColumnProps<DrugEditorModel>;
+    } as TableColumnProps<InvoiceDrugEditorModel>;
   });
   //#endregion
 
@@ -316,7 +316,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
           rowKey={(record) => record.id}
           components={{
             body: {
-              cell: EditableCell<DrugEditorModel>,
+              cell: EditableCell<InvoiceDrugEditorModel>,
             },
           }}
           columns={mergedColumns}

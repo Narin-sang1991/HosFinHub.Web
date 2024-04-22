@@ -1,11 +1,11 @@
-import type { DrugModel, DrugEditorModel } from "@/store/patient/drugModel";
+import type { DrugModel, InvoiceDrugEditorModel } from "@/store/patient/drugModel";
 import { OpdValidModel, OpdValids } from "@/store/work-opd/opdEditorModel";
 
 export function genarateDrugEditors(
   drugItems: DrugModel[],
   validItems: OpdValidModel[] | undefined
 ) {
-  let results: DrugEditorModel[] = [];
+  let results: InvoiceDrugEditorModel[] = [];
   drugItems.forEach((drugItem, i) => {
     //assing Error
     const itemDruError = validItems?.filter((i) => i.dru)[0][
@@ -14,7 +14,7 @@ export function genarateDrugEditors(
     const assignItemError = itemDruError.filter((i) => i.id === drugItem.id);
 
     let dummyKey: number = i + 1;
-    let data: DrugEditorModel = {
+    let data: InvoiceDrugEditorModel = {
       ...drugItem,
       dummyKey,
       idDurty: false,
