@@ -33,10 +33,10 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
   const onClickClaim = async (seq: string) => {
     console.log(seq);
     const resultClaim = await claimOpd([seq]) as unknown as any
-  
-    if(resultClaim.status===200){
+
+    if (resultClaim.status === 200) {
       message.success(resultClaim.message_th)
-    }else{
+    } else {
       message.error(resultClaim.message_th)
     }
   }
@@ -254,9 +254,11 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
               {"Load Data"}
             </Button>
           </Form.Item>
+          <Form.Item label="" name="send_data">
+            <ButtonSent opd={searchResult} />
+          </Form.Item>
         </Form>
       </Card>
-      <ButtonSent opd={searchResult} />
       <Table
         rowKey={(record) => record.id}
         loading={status === "loading"}
