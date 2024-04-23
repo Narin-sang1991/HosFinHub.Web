@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Card, Form, Table, DatePicker, Tag, Flex, Segmented, message, } from "antd";
+import { Button, Card, Form, Table, DatePicker, Tag, Flex, Segmented, message, Badge, Modal, } from "antd";
 import type { TableProps, TableColumnsType } from "antd";
 import { SearchOutlined, EditOutlined, SendOutlined, } from "@ant-design/icons";
 import moment from "moment";
@@ -30,10 +30,9 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
   const searchResult = useAppSelector(selectResult);
 
   //claim  FDH
-  const onClickClaim = async (seq: string) => {
-    console.log(seq);
-    const resultClaim = await claimOpd([seq]) as unknown as any
+  const onClickClaim = async (seq: string, countSend: number) => {
 
+    const resultClaim = await claimOpd([seq]) as unknown as any
     if (resultClaim.status === 200) {
       message.success(resultClaim.message_th)
     } else {
@@ -125,7 +124,10 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
       dataIndex: "seq",
       key: "seq",
       fixed: 'left', width: 60,
-      render: (record) => <Button onClick={() => onClickClaim(record)} icon={<SendOutlined />}>ส่งข้อมูลFDH</Button>
+      render: (seq, record: OpdSearchModel) =>
+        <Badge count={record.opd_claim_log.length} color="green">
+          <Button onClick={() => onClickClaim(seq, record.opd_claim_log.length)} icon={<SendOutlined />}>ส่งข้อมูลFDH</Button>
+        </Badge>
     },
     {
       title: "HN",

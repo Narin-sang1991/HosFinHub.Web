@@ -9,6 +9,7 @@ export interface OpdSearchModel {
   dateopd: Date;
   opd_pat: OpdPatientModel;
   error: OpdValids[]
+  opd_claim_log: any[]
 }
 
 export interface OpdPatientModel extends PatientModel {
