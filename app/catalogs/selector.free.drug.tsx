@@ -11,6 +11,7 @@ type FreeDrugSelectorProps = {
     showCode?: boolean,
     initInfo?: { value: string, text: string },
     onChange?: any,
+    
 }
 
 export function FreeDrugSelector({ showCode, initInfo, onChange }: FreeDrugSelectorProps) {
