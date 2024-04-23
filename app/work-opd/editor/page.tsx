@@ -135,6 +135,8 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
 
     async function onSave() {
         const data = formEditor.getFieldValue("InvoiceBilling");
+        console.log("data=>", data);
+        if(data == undefined) return;
         const opdData: OpdDetailModel[] = editingData != undefined ? [{ ...editingData.opd }] : [];
         const patData: PatientDetailModel[] = editingData != undefined ? [{ ...editingData.patient }] : [];
         const savedata: OpdDataModel = {
