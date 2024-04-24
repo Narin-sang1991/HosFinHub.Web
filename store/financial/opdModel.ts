@@ -46,27 +46,27 @@ export interface AdpModel {
     lmp: string
 }
 
-export interface AerModel {
-    id: string
-    hn: string
-    an: string
-    dateopd: string
-    authae: string
-    aedate: string
-    aetime: string
-    aetype: string
-    refer_no: string
-    refmaini: string
-    ireftype: string
-    refmaino: string
-    oreftype: string
-    ucae: string
-    emtype: string
-    seq: string
-    aestatus: string
-    dalert: string
-    talert: string
-}
+// export interface AerModel {
+//     id: string
+//     hn: string
+//     an: string
+//     dateopd: string
+//     authae: string
+//     aedate: string
+//     aetime: string
+//     aetype: string
+//     refer_no: string
+//     refmaini: string
+//     ireftype: string
+//     refmaino: string
+//     oreftype: string
+//     ucae: string
+//     emtype: string
+//     seq: string
+//     aestatus: string
+//     dalert: string
+//     talert: string
+// }
 
 export interface ChaModel {
     id: string
@@ -143,29 +143,30 @@ export interface InsModel {
     htype: string
 }
 
-export interface LabfuModel {
-    id: string
-    hcode: string
-    hn: string
-    person_id: string
-    dateserv: string
-    seq: string
-    labtest: string
-    labresult: string
+// export interface LabfuModel {
+//     id: string
+//     hcode: string
+//     hn: string
+//     person_id: string
+//     dateserv: string
+//     seq: string
+//     labtest: string
+//     labresult: string
 
-}
+// }
 
-export interface OdxModel {
-    id: string
-    hn: string
-    datedx: string
-    clinic: string
-    diag: string
-    dxtype: string
-    drdx: string
-    person_id: string
-    seq: string
-}
+// export interface OdxModel {
+//     id: string
+//     hn: string
+//     datedx: string
+//     clinic: string
+//     diag: string
+//     dxtype: string
+//     drdx: string
+//     person_id: string
+//     seq: string
+// }
+
 export interface OopModel {
     id: string
     hn: string
@@ -178,16 +179,16 @@ export interface OopModel {
     servprice: string
 }
 
-export interface OrfModel {
-    id: string
-    hn: string
-    dateopd: string
-    clinic: string
-    refer: string
-    refertype: string
-    seq: string
-    referdate: string
-}
+// export interface OrfModel {
+//     id: string
+//     hn: string
+//     dateopd: string
+//     clinic: string
+//     refer: string
+//     refertype: string
+//     seq: string
+//     referdate: string
+// }
 
 export interface PatModel {
     id: string

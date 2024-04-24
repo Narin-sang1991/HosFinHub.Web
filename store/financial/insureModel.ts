@@ -8,7 +8,10 @@ export interface InsureModel   {
 }
 
 export interface InsureDetailModel   {
+    id: string
     hn: string,         // patient number
+    inscl: string
+    subtype: string
     hcode: string,      // key of hospital
     dateexp: Date, 
     hospmain: string,

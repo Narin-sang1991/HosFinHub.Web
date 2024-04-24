@@ -98,14 +98,17 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                 reconcile: true
             });
             let transformData: OpdEditorModel = {
-                opd: opdDetail,
-                patient: patientDetail,
-                insureItems: originData.ins,
                 additPayments: adtItems,
-                aer: originData.aer,
-                cht: originData.cht,
+                additionEmergencies: originData.aer,
                 invoiceItems: invoiceItems,
+                invoices: originData.cht,
                 drugItems: genarateDrugEditors(originData.dru, valid),
+                insureItems: originData.ins,
+                labfuItems: originData.labfu,
+                diagnosisItems: originData.odx,
+                opdDetail: opdDetail,
+                opdReferItems: originData.orf,
+                patient: patientDetail,
             };
             setEditData(transformData);
 
@@ -136,18 +139,21 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
     async function onSave() {
         const data = formEditor.getFieldValue("InvoiceBilling");
         console.log("data=>", data);
-        if(data == undefined) return;
-        const opdData: OpdDetailModel[] = editingData != undefined ? [{ ...editingData.opd }] : [];
+        if (data == undefined) return;
+        const opdData: OpdDetailModel[] = editingData != undefined ? [{ ...editingData.opdDetail }] : [];
         const patData: PatientDetailModel[] = editingData != undefined ? [{ ...editingData.patient }] : [];
         const savedata: OpdDataModel = {
-            opd: opdData,
-            pat: patData,
-            ins: editingData?.insureItems || [],
-            cht: editingData?.cht || [],
+            adp: data.adpItems as AdditionalPaymentModel[],
+            aer: originData.additionEmergencies,
+            cht: editingData?.invoices || [],
             cha: data.invoiceItems as InvoiceItemModel[],
             dru: data.drugItems as InvoiceDrugModel[],
-            adp: data.adpItems as AdditionalPaymentModel[],
-            aer: [],
+            ins: editingData?.insureItems || [],
+            labfu: editingData?.labfuItems || [],
+            odx: editingData?.diagnosisItems || [],
+            opd: opdData,
+            orf: editingData?.opdReferItems || [],
+            pat: patData,
         };
         console.log("savedata=>", savedata);
         (async () => {
@@ -214,8 +220,8 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                 title: "ข้อมูลค่ารักษาพยาบาล",
                 children: (
                     <Form.Item name={"InvoiceBilling"}>
-                        <InvoiceBillingTab seqKey={editingData?.opd.seq || '0'}
-                            clinicCode={editingData?.opd.clinic}
+                        <InvoiceBillingTab seqKey={editingData?.opdDetail.seq || '0'}
+                            clinicCode={editingData?.opdDetail.clinic}
                             invoiceItems={editingData?.invoiceItems || []}
                             drugItems={editingData?.drugItems || []}
                             additPaymentItems={editingData?.additPayments || []}
@@ -277,7 +283,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                                                 <Space align="start" size="small">
                                                     <Text type="secondary">รูปแบบ :</Text>
                                                     <Text strong>
-                                                        {getVisitType(editingData?.opd.typein)}
+                                                        {getVisitType(editingData?.opdDetail.typein)}
                                                     </Text>
                                                 </Space>
                                             ),
@@ -288,7 +294,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                                                 <Space align="start" size="small">
                                                     <Text type="secondary">สถานะบริการ :</Text>
                                                     <Text strong>
-                                                        {getDischargeType(editingData?.opd.typeout)}
+                                                        {getDischargeType(editingData?.opdDetail.typeout)}
                                                     </Text>
                                                 </Space>
                                             ),
@@ -318,7 +324,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                                                         )
                                                     }
                                                 />
-                                                <Text strong keyboard>{`HN:${editingData?.opd.hn || "N/A"
+                                                <Text strong keyboard>{`HN:${editingData?.opdDetail.hn || "N/A"
                                                     }`}</Text>
                                             </Space>
                                         </Col>
@@ -336,7 +342,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                                                         <Space align="start" size="small">
                                                             <Text type="secondary">อุณหภูมิร่างกาย :</Text>
                                                             <Text strong>
-                                                                {editingData?.opd.btemp || defaultStrEmpty}
+                                                                {editingData?.opdDetail.btemp || defaultStrEmpty}
                                                             </Text>
                                                             <Text type="secondary">°C</Text>
                                                         </Space>
@@ -347,8 +353,8 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                                                     children: (
                                                         <Space align="start" size="small">
                                                             <Text type="secondary">ความดันโลหิต :</Text>
-                                                            <Text strong>{`${editingData?.opd.sbp || defaultStrEmpty
-                                                                }/${editingData?.opd.dbp || defaultStrEmpty
+                                                            <Text strong>{`${editingData?.opdDetail.sbp || defaultStrEmpty
+                                                                }/${editingData?.opdDetail.dbp || defaultStrEmpty
                                                                 }`}</Text>
                                                             <Text type="secondary">mmHg</Text>
                                                         </Space>
@@ -360,7 +366,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                                                         <Space align="start" size="small">
                                                             <Text type="secondary">อัตราของหัวใจ :</Text>
                                                             <Text strong>
-                                                                {editingData?.opd.pr || defaultStrEmpty}
+                                                                {editingData?.opdDetail.pr || defaultStrEmpty}
                                                             </Text>
                                                             <Text type="secondary">/ min.</Text>
                                                         </Space>
@@ -372,7 +378,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                                                         <Space align="start" size="small">
                                                             <Text type="secondary">อัตราการหายใจ :</Text>
                                                             <Text strong>
-                                                                {editingData?.opd.rr || defaultStrEmpty}
+                                                                {editingData?.opdDetail.rr || defaultStrEmpty}
                                                             </Text>
                                                             <Text type="secondary">/ min.</Text>
                                                         </Space>
@@ -385,7 +391,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                                                         <Space align="start" size="small">
                                                             <Text type="secondary">ประเภทการให้บริการ :</Text>
                                                             <Text strong>
-                                                                {getProviderType(editingData?.opd.optype)}
+                                                                {getProviderType(editingData?.opdDetail.optype)}
                                                             </Text>
                                                         </Space>
                                                     ),
@@ -396,7 +402,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                                                         <Space align="start" size="small">
                                                             <Text type="secondary">วันที่รับบริการ :</Text>
                                                             <Text type="warning">
-                                                                {moment(editingData?.opd.dateopd).format(
+                                                                {moment(editingData?.opdDetail.dateopd).format(
                                                                     dateDisplayFormat
                                                                 )}
                                                             </Text>

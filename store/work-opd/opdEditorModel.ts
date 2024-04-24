@@ -3,20 +3,68 @@ import type { InvoiceDrugModel, InvoiceDrugEditorModel } from "@/store/financial
 import type { InsureDetailModel } from "@/store/financial/insureModel";
 import type { InvoiceModel, } from "@/store/financial/invoiceModel";
 import type { InvoiceItemModel, InvoiceItemEditorModel } from "@/store/financial/invoiceItemModel";
-import {
-  AdditionalPaymentModel,
-  AdditPaymentModelEditorModel,
-} from "@/store/free-additional/additionalModel";
+import { AdditionalPaymentModel, AdditPaymentModelEditorModel, } from "@/store/free-additional/additionalModel";
+import { DianosisModel } from "../dianosis/dianosisModel";
+import { LabfuModel } from "../medical-tech/labfuModel";
+import { AdditionEmergencyModel } from "../refer/referEmergencyModel";
+import { OpdReferModel } from "../refer/referModel";
 
 export interface OpdEditorModel {
-  opd: OpdDetailModel;
-  patient: PatientDetailModel;
-  insureItems: InsureDetailModel[];
+
+  /**
+   * #origin => ADP
+   **/
   additPayments: AdditPaymentModelEditorModel[];
-  aer: any[];
-  cht: InvoiceModel[];
+
+  /**
+   * #origin => AER
+   **/
+  additionEmergencies: AdditionEmergencyModel[];
+
+  /**
+  * #origin => CHT
+  **/
+  invoices: InvoiceModel[];
+
+  /**
+   * #origin => CHA
+   **/
   invoiceItems: InvoiceItemEditorModel[];
+
+  /**
+  * #origin => DRU
+  **/
   drugItems: InvoiceDrugEditorModel[];
+
+  /**
+  * #origin => INS
+  **/
+  insureItems: InsureDetailModel[];
+
+  /**
+  * #origin => LABFU
+  **/
+  labfuItems: LabfuModel[];
+
+  /**
+  * #origin => ODX
+  **/
+  diagnosisItems: DianosisModel[],
+
+  /**
+  * #origin => OPD
+  **/
+  opdDetail: OpdDetailModel;
+
+  /**
+  * #origin => ORF
+  **/
+  opdReferItems: OpdReferModel[];
+ 
+  /**
+  * #origin => PAT
+  **/
+  patient: PatientDetailModel;
 }
 
 export interface OpdValids {
@@ -46,14 +94,17 @@ export interface OpdValidModel {
 }
 
 export interface OpdDataModel {
-  opd: OpdDetailModel[];
-  pat: PatientDetailModel[];
-  ins: InsureDetailModel[];
   adp: AdditionalPaymentModel[];
-  aer: any[];
-  cht: InvoiceModel[];
+  aer: AdditionEmergencyModel[];
   cha: InvoiceItemModel[];
+  cht: InvoiceModel[];
   dru: InvoiceDrugModel[];
+  ins: InsureDetailModel[];
+  labfu: LabfuModel[];
+  odx: DianosisModel[],
+  opd: OpdDetailModel[];
+  orf: OpdReferModel[];
+  pat: PatientDetailModel[];
 }
 
 export interface OpdResponse {
