@@ -39,7 +39,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
   const [moveItems, setMoveItems] = useState<MoveInvoiceItemModel[]>([]);
 
   useEffect(() => {
-    console.log('invoice.drug', drugItems);
+    // console.log('invoice.drug', drugItems);
     setEditingData(drugItems);
   }, [drugItems]);
 

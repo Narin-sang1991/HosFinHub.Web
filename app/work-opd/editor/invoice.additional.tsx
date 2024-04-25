@@ -19,7 +19,6 @@ import { AdditPaymentModelEditorModel } from "@/store/free-additional/additional
 import { EditableCell } from "@/client.component/antd.table.editable";
 import { FreeDrugSelector } from "@/app/catalogs/selector.free.drug";
 import { isNumber } from "@/client.constant/format.constant";
-import { FreeDrugSelectorModel } from "@/store/free-additional/freeDrugModel";
 //#endregion
 
 type InvoiceAdditionalProps = {
@@ -36,7 +35,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ additionalItems = [],
     const [editingKey, setEditingKey] = useState("");
 
     useEffect(() => {
-        console.log('invoice.additional', additionalItems);
+        // console.log('invoice.additional', additionalItems);
         setEditingData(additionalItems);
     }, [additionalItems]);
 
@@ -63,7 +62,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ additionalItems = [],
     const viewMode = editingKey === "";
     const isEditing = (record: AdditPaymentModelEditorModel) => record.id === editingKey;
     function editItem(record: Partial<AdditPaymentModelEditorModel>): void {
-        formAdpEditor.setFieldsValue({ ...record });
+        formAdpEditor.setFieldsValue({ ...record, });
         setEditingKey(record?.id || "");
     };
 
@@ -133,7 +132,10 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ additionalItems = [],
             width: 30,
             editable: true,
             selectorNode: <FreeDrugSelector showCode />,
-            render: (_: any, freeDrug: FreeDrugSelectorModel) => { return <>{freeDrug.name || freeDrug.code}</> },
+            render: (_: any, record: AdditPaymentModelEditorModel) => {
+                // console.log('freeDrug=>', record.freeDrug)
+                return <>{record.freeDrug.name || record.freeDrug.code}</>
+            },
         },
         {
             title: "หน่วย",
