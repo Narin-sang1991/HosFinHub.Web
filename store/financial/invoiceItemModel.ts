@@ -10,15 +10,12 @@ export interface InvoiceItemModel {
   seq: string; // transaction key
 }
 
-export interface InvoiceItemEditorModel {
-  id: string; // unique key of data
-  seq: string; // transaction key
+export interface InvoiceItemEditorModel extends InvoiceItemModel {
   dummyKey: number; // dummy key for UI component
-  idDurty: boolean;
+  isDurty: boolean;
   totalAmount: number;
   overAmount: number;
   approvedAmount: number;
-  chargeCode: string;
   chargeDetail: string;
   status: number;
   valid?: any[];

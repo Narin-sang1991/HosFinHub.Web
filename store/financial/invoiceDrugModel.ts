@@ -30,7 +30,7 @@ export interface InvoiceDrugModel {
 export interface InvoiceDrugEditorModel extends InvoiceDrugModel {
   dummyKey: number; // dummy key for UI component
   totalreq: number;
-  idDurty: boolean;
+  isDurty: boolean;
   hasError: boolean;
   validError?: OpdValids[];
 }

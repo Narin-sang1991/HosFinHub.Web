@@ -20,7 +20,7 @@ export function genarateDrugEditors(
     let data: InvoiceDrugEditorModel = {
       ...drugItem,
       dummyKey,
-      idDurty: false,
+      isDurty: false,
       totalreq: 0.00,
       hasError: (assignItemError.length !== 0),
       validError: assignItemError,
@@ -55,18 +55,20 @@ export async function recalcDrugCharges({
     ? drugEditors.filter(a => a.hasError == true).length > 0
     : false;
   let totalAmount = (reqestTotal > 0 ? reqestTotal : sumTotal);
-  let invoiceDrugIndex = invoiceEditors.findIndex(t => t.chargeCode.startsWith(drugExChargePrefix));
+  let invoiceDrugIndex = invoiceEditors.findIndex(t => t.chrgitem.startsWith(drugExChargePrefix));
+  const invoiceFirst = invoiceEditors[0];
   if (invoiceDrugIndex <= -1) {
     let chrgitem = drugExChargePrefix + '1';
     let newInvoiceItem: InvoiceItemEditorModel = {
+      ...invoiceFirst,
       id: uuidv4(),
       seq: seqKey,
       dummyKey: (invoiceEditors.length || 0) + 1,
-      idDurty: true,
+      isDurty: true,
       totalAmount: totalAmount,
       overAmount,
       approvedAmount: 0,
-      chargeCode: chrgitem,
+      chrgitem: chrgitem,
       chargeDetail: getChargeDetails(chrgitem),
       status: 1,
       valid: [],
@@ -81,7 +83,7 @@ export async function recalcDrugCharges({
       overAmount,
       approvedAmount: 0,
       status: 1,
-      idDurty: true,
+      isDurty: true,
     };
     if (!drugErr) editItem.valid = [];
 
@@ -90,3 +92,16 @@ export async function recalcDrugCharges({
   return await results;
 }
 
+
+export function convertEditorToDru(druEditors: InvoiceDrugEditorModel[]): InvoiceDrugModel[] {
+  let results: InvoiceDrugModel[] = [];
+  let excludeProps = ['dummyKey', 'totalreq', 'isDurty', 'hasError', 'validError'];
+  druEditors.forEach(item => {
+    let data: InvoiceDrugModel;
+    Object.keys(item).forEach((prop) => {
+      if (!excludeProps.includes(prop)) data = { ...data, [prop]: item[prop] };
+    });
+    results.push(data);
+  });
+  return results;
+}

@@ -1,13 +1,13 @@
 
 import { v4 as uuidv4 } from "uuid";
-import type {  InvoiceItemEditorModel, } from "@/store/financial/invoiceItemModel";
-import { AdditPaymentModelEditorModel } from "@/store/free-additional/additionalModel";
+import type { InvoiceItemEditorModel, } from "@/store/financial/invoiceItemModel";
+import { AdditPaymentModelEditorModel, AdditionalPaymentModel } from "@/store/free-additional/additionalModel";
 import { additionalPaymentChargePrefix, getChargeDetails } from "./invoice.billing.constant";
- 
+
 //#region Additional Payment Type
 export const adpTypeNonGroup = "3";
 //#endregion
- 
+
 type CalcAdpChargesProps = {
   seqKey: string,
   invoiceEditors: InvoiceItemEditorModel[],
@@ -32,7 +32,7 @@ export async function recalcAdpCharges({
     ? adtEditors.filter(a => a.hasError == true).length > 0
     : false;
 
-  let invoiceAdpIndex = invoiceEditors.findIndex(t => t.chargeCode.startsWith(additionalPaymentChargePrefix));
+  let invoiceAdpIndex = invoiceEditors.findIndex(t => t.chrgitem.startsWith(additionalPaymentChargePrefix));
   if (invoiceAdpIndex <= -1) {
 
     let chrgitem = additionalPaymentChargePrefix + '1';
@@ -40,11 +40,11 @@ export async function recalcAdpCharges({
       id: uuidv4(),
       seq: seqKey,
       dummyKey: (invoiceEditors.length || 0) + 1,
-      idDurty: true,
+      isDurty: true,
       totalAmount: sumTotal,
       overAmount: requestTotal > 0 ? sumTotal - requestTotal : overAmount,
       approvedAmount: requestTotal > 0 ? requestTotal : approvedAmount,
-      chargeCode: chrgitem,
+      chrgitem: chrgitem,
       chargeDetail: getChargeDetails(chrgitem),
       status: 1,
     };
@@ -63,7 +63,7 @@ export async function recalcAdpCharges({
       overAmount: requestTotal > 0 ? calcResult - requestTotal : overAmount,
       approvedAmount: requestTotal > 0 ? requestTotal : approvedAmount,
       status: 1,
-      idDurty: true,
+      isDurty: true,
     };
     if (adtErr) pushErrorToAdpCharges(editItem);
 

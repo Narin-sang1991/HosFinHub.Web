@@ -116,7 +116,7 @@ const InvoiceBillingTab = function InvoiceBilling({
             let newItem: AdditPaymentModelEditorModel = {
                 dummyKey: (newPaymentData?.length || 0) + 1,
                 totalreq: 0.00,
-                idDurty: false,
+                isDurty: false,
                 hasError: drug.hasError,
                 id: drug.id,
                 seq: seqKey,
@@ -262,7 +262,7 @@ const InvoiceBillingTab = function InvoiceBilling({
                         block
                         style={{ border: 0 }}
                         icon={<FileDoneOutlined />}
-                        onClick={() => takeAction(record.chargeCode)}
+                        onClick={() => takeAction(record.chrgitem)}
                     />
                 ),
         },
@@ -287,7 +287,7 @@ const InvoiceBillingTab = function InvoiceBilling({
                                 <Tag color="#f5222d">ไม่ผ่าน</Tag>
                             </Badge>
                         }
-                        onClick={() => takeAction(record.chargeCode)}
+                        onClick={() => takeAction(record.chrgitem)}
                     />
                 ),
         },

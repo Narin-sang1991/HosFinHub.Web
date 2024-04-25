@@ -10,7 +10,7 @@ export async function genarateAdditPaymentEditors(
     let data: AdditPaymentModelEditorModel = {
       ...adpItem,
       dummyKey,
-      idDurty: false,
+      isDurty: false,
       totalreq: 0.00,
       hasError: false,
       typeDisplay: getAdpDisplay(adpItem.type),
@@ -44,4 +44,17 @@ export function getAdpDisplay(type: string) {
   if (type.startsWith("20")) return "บริการทางกายภาพบำบัด และเวชกรรมฟื้นฟู";
 
   return "-";
+}
+
+export function convertEditorToAdp(adtEditors: AdditPaymentModelEditorModel[]): AdditionalPaymentModel[] {
+  let results: AdditionalPaymentModel[] = [];
+  let excludeProps = ['dummyKey', 'totalreq', 'isDurty', 'freeDrug', 'typeDisplay', 'hasError'];
+  adtEditors.forEach(item => {
+    let data: AdditionalPaymentModel;
+    Object.keys(item).forEach((prop) => {
+      if (!excludeProps.includes(prop)) data = { ...data, [prop]: item[prop] };
+    });
+    results.push(data);
+  });
+  return results;
 }

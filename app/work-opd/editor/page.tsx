@@ -41,9 +41,9 @@ import {
 } from "@/client.constant/patient.constant";
 import { getColResponsive } from "@/client.component/antd.col.resposive";
 import { dateDisplayFormat } from "@/client.constant/format.constant";
-import { genarateAllCharges } from "@/client.constant/invoice.billing.constant";
-import { genarateDrugEditors } from "@/client.constant/invoice.drug.constant";
-import { genarateAdditPaymentEditors } from "@/client.constant/invoice.addit.payment.constant";
+import { convertEditorToCha, genarateAllCharges } from "@/client.constant/invoice.billing.constant";
+import { convertEditorToDru, genarateDrugEditors } from "@/client.constant/invoice.drug.constant";
+import { convertEditorToAdp, genarateAdditPaymentEditors } from "@/client.constant/invoice.addit.payment.constant";
 import { recalcAdpCharges } from "@/client.constant/invoice.additional.constant";
 import { InvoiceItemModel } from "@/store/financial/invoiceItemModel";
 import { InvoiceDrugModel } from "@/store/financial/invoiceDrugModel";
@@ -143,11 +143,11 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         const opdData: OpdDetailModel[] = editingData != undefined ? [{ ...editingData.opdDetail }] : [];
         const patData: PatientDetailModel[] = editingData != undefined ? [{ ...editingData.patient }] : [];
         const savedata: OpdDataModel = {
-            adp: data.adpItems as AdditionalPaymentModel[],
+            adp: convertEditorToAdp(data.adpItems),
             aer: originData.additionEmergencies,
             cht: editingData?.invoices || [],
-            cha: data.invoiceItems as InvoiceItemModel[],
-            dru: data.drugItems as InvoiceDrugModel[],
+            cha: convertEditorToCha(data.invoiceItems),
+            dru: convertEditorToDru(data.drugItems),
             ins: editingData?.insureItems || [],
             labfu: editingData?.labfuItems || [],
             odx: editingData?.diagnosisItems || [],

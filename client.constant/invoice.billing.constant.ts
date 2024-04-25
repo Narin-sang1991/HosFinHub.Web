@@ -62,14 +62,12 @@ export async function genarateAllCharges(
       let totalAmount: number = Number(overAmount.toString()) + Number(approvedAmount.toString());
       let invoiceItem = invoiceInCharges[0];
       let data: InvoiceItemEditorModel = {
-        id: invoiceItem.id,
-        seq: invoiceItem.seq,
+        ...invoiceItem,
         dummyKey,
-        idDurty: false,
+        isDurty: false,
         totalAmount: totalAmount,
         overAmount,
         approvedAmount,
-        chargeCode: invoiceItem.chrgitem,
         chargeDetail: getChargeDetails(invoiceItem.chrgitem),
         status: 1,
         valid: [],
@@ -79,13 +77,13 @@ export async function genarateAllCharges(
       let chrgitem: string = chargePrefix + "1";
       let data: InvoiceItemEditorModel = {
         id: uuidv4(),
-        seq: dummyKey.toString(),
+        seq: '0',
         dummyKey,
-        idDurty: false,
+        isDurty: false,
         totalAmount: 0.0,
         overAmount: 0.0,
         approvedAmount: 0.0,
-        chargeCode: chrgitem,
+        chrgitem: chrgitem,
         chargeDetail: getChargeDetails(chrgitem),
         status: 0,
         valid: [],
@@ -96,7 +94,7 @@ export async function genarateAllCharges(
 
   //#region Assign error to charge.
   results = await results.map((item) => {
-    if (item.chargeCode === "41") {
+    if (item.chrgitem === "41") {
 
       //item 41 = ยาที่นำไปใช้ต่อที่บ้าน
       validItem?.forEach((v) => {
@@ -106,7 +104,7 @@ export async function genarateAllCharges(
         }
       });
       return item;
-    } else if (item.chargeCode === "31") {
+    } else if (item.chrgitem === "31") {
       //item 31 = ยาและสารอาหารทางเส้นเลือดที่ใช้ในโรงพยาบาล
       validItem?.forEach((v) => {
         if (v.dru && item.totalAmount > 0) {
@@ -181,3 +179,19 @@ export function getStatusDisplayType(status: number) {
             : "secondary";
   return result;
 }
+
+export function convertEditorToCha(chaEditors: InvoiceItemEditorModel[]): InvoiceItemModel[] {
+  let results: InvoiceItemModel[] = [];
+  let chaItems: InvoiceItemEditorModel[] = [...chaEditors].filter(t => t.seq != '0');
+  let excludeProps = ['dummyKey', 'isDurty', 'totalAmount', 'overAmount', 'approvedAmount', 'status', 'valid'];
+  chaItems.forEach(item => {
+    let data: InvoiceItemModel;
+    Object.keys(item).forEach((prop) => {
+      if (!excludeProps.includes(prop)) data = { ...data, [prop]: item[prop] };
+    });
+    data.amount = item.totalAmount;
+    results.push(data);
+  });
+  return results;
+}
+
