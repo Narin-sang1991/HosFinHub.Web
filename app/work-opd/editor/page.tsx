@@ -2,7 +2,7 @@
 
 //#region Import
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import moment from "moment";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
@@ -60,6 +60,7 @@ const { Text } = Typography;
 
 const OpdEditor = function OpdEditor(props: OpdEditorProps) {
     const dispatch = useAppDispatch();
+    const router = useRouter();
     const searchParams = useSearchParams();
     const [formEditor] = Form.useForm();
     const status = useAppSelector(getStatus);
@@ -160,6 +161,10 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
             await dispatch(saveAsync({ ...savedata }));
         })();
     }
+
+    function onClose() {
+        router.push(`/work-opd/search`)
+    }
     //#endregion
 
     //#region Internal function/method
@@ -244,7 +249,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                     </Col>
                     <Col> <Divider type="vertical" style={{ height: 20 }} /> </Col>
                     <Col>
-                        <Button type="text"
+                        <Button type="text" onClick={onClose}
                             icon={<CloseCircleTwoTone twoToneColor={'#f5222d'} style={{ fontSize: '30px' }} />}
                         />
 
