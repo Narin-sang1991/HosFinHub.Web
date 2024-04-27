@@ -148,7 +148,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
             adp: convertEditorToAdp(data.adpItems),
             aer: originData.additionEmergencies,
             cht: convertEditorToCht(editingData?.invoices || [], data.invoiceItems),
-            cha: convertEditorToCha(data.invoiceItems),
+            cha: convertEditorToCha(data.invoiceItems, opdData[0], patData[0]),
             dru: convertEditorToDru(data.drugItems),
             ins: editingData?.insureItems || [],
             labfu: editingData?.labfuItems || [],

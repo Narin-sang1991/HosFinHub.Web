@@ -13,7 +13,7 @@ export interface AdditionalPaymentModel {
     seq: string; // transaction key
     cagcode?: string;
     dose?: string;
-    ca_type?: number;
+    ca_type?: string;
     serialno?: string;
     totcopay: number = 0.0; // total amount of exclude cliaming
     use_status?: string;

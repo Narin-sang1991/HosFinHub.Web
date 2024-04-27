@@ -49,7 +49,34 @@ export function convertEditorToAdp(adtEditors: AdditPaymentModelEditorModel[]): 
   let results: AdditionalPaymentModel[] = [];
   let excludeProps = ['dummyKey', 'isDurty', 'freeDrug', 'typeDisplay', 'hasError'];
   adtEditors.forEach(item => {
-    let data: AdditionalPaymentModel;
+    let data: AdditionalPaymentModel = {
+      id: "",
+      hn: "",
+      an: "",
+      dateopd: new Date,
+      type: "",
+      code: "",
+      qty: 0,
+      rate: 0,
+      seq: "",
+      cagcode: "",
+      dose: "",
+      ca_type: "",
+      serialno: "",
+      totcopay: 0,
+      use_status: "",
+      total: 0,
+      tmltcode: "",
+      status1: "",
+      bi: "",
+      clinic: "",
+      itemsrc: 0,
+      provider: "",
+      gravida: "",
+      ga_week: "",
+      dcip_e_screen: "",
+      lmp: "",
+    };
     Object.keys(item).forEach((prop) => {
       if (!excludeProps.includes(prop)) data = { ...data, [prop]: item[prop] };
     });
