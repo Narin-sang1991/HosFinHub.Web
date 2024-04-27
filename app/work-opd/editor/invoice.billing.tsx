@@ -125,7 +125,7 @@ const InvoiceBillingTab = function InvoiceBilling({
                 type: adpTypeNonGroup,
                 typeDisplay: getAdpDisplay(adpTypeNonGroup),
                 code: drug.did,
-                freeDrug: { id: drug.id, code: drug.did, name: drug.didname, unitPrice: drug.drugprice.toString() },
+                freeDrug: { id: drug.id, code: '', name: drug.didname, unitPrice: drug.drugprice.toString() },
                 qty: drug.amount,
                 rate: drug.drugprice,
                 dose: drug.unit,

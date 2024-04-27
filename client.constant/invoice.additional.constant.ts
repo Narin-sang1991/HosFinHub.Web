@@ -44,8 +44,8 @@ export async function recalcAdpCharges({
       chrgitem: chrgitem,
       chargeDetail: getChargeDetails(chrgitem),
       status: 1,
+      valid: adtErr ? getErrorToAdpCharges() : [],
     };
-    if (adtErr) pushErrorToAdpCharges(newInvoiceItem);
 
     results.push(newInvoiceItem);
   }
@@ -61,16 +61,16 @@ export async function recalcAdpCharges({
       overAmount: overAmount,
       status: 1,
       isDurty: true,
+      valid: adtErr ? getErrorToAdpCharges() : [],
     };
-    if (adtErr) pushErrorToAdpCharges(editItem);
 
     results.splice(invoiceAdpIndex, 1, editItem);
   }
   return await results;
 }
 
-function pushErrorToAdpCharges(invoiceItem: InvoiceItemEditorModel) {
-  invoiceItem.valid = [{
+function getErrorToAdpCharges() {
+  return [{
     code_error: "E000",
     code_error_descriptions: "ต้องระบุรหัสรายการ"
   }];

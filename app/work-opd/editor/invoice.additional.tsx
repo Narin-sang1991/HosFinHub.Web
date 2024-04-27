@@ -80,6 +80,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ additionalItems = [],
             const row = (await formAdpEditor.validateFields()) as AdditPaymentModelEditorModel;
             const newData = [...editingAdditionalData];
             const index = newData.findIndex((item) => key === item.id);
+            let hasCode: boolean = (row.code != '');
             if (index > -1) {
                 const item = newData[index];
                 if (row.freeDrug.code.length > 0) row.code = row.freeDrug.code || row.code;
@@ -92,11 +93,12 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ additionalItems = [],
                 newData.splice(index, 1, {
                     ...item,
                     ...row,
+                    hasError: !hasCode
                 });
                 setEditingData(newData);
                 setEditingKey("");
             } else {
-                newData.push(row);
+                newData.push({ ...row, hasError: !hasCode });
                 setEditingData(newData);
                 setEditingKey("");
             }
