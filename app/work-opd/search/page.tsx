@@ -253,7 +253,7 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
               disabled={status === "loading"}
               onClick={() => onSearch(1)}
             >
-              {"Load Data"}
+              {"ค้นหา"}
             </Button>
           </Form.Item>
           <Form.Item label="" name="send_data">

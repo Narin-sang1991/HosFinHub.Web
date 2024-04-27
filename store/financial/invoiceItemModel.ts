@@ -15,7 +15,6 @@ export interface InvoiceItemEditorModel extends InvoiceItemModel {
   isDurty: boolean;
   totalAmount: number;
   overAmount: number;
-  approvedAmount: number;
   chargeDetail: string;
   status: number;
   valid?: any[];

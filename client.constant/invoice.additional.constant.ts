@@ -20,13 +20,11 @@ export async function recalcAdpCharges({
   // if (adtEditors.length == 0) return invoiceEditors;
 
   let results: InvoiceItemEditorModel[] = [...invoiceEditors];
-  let overAmount: number = 0;
-  let approvedAmount: number = 0;
+  let overAmount: number = adtEditors.length > 0
+    ? adtEditors.map(a => a.totcopay).reduce(function (a, b) { return Number(a.toString()) + Number(b.toString()); })
+    : 0;
   let sumTotal: number = adtEditors.length > 0
     ? adtEditors.map(a => a.total).reduce(function (a, b) { return Number(a.toString()) + Number(b.toString()); })
-    : 0;
-  let requestTotal: number = adtEditors.length > 0
-    ? adtEditors.map(a => a.totalreq).reduce(function (a, b) { return Number(a.toString()) + Number(b.toString()); })
     : 0;
   let adtErr: boolean = adtEditors.length > 0
     ? adtEditors.filter(a => a.hasError == true).length > 0
@@ -42,8 +40,7 @@ export async function recalcAdpCharges({
       dummyKey: (invoiceEditors.length || 0) + 1,
       isDurty: true,
       totalAmount: sumTotal,
-      overAmount: requestTotal > 0 ? sumTotal - requestTotal : overAmount,
-      approvedAmount: requestTotal > 0 ? requestTotal : approvedAmount,
+      overAmount: overAmount,
       chrgitem: chrgitem,
       chargeDetail: getChargeDetails(chrgitem),
       status: 1,
@@ -59,9 +56,9 @@ export async function recalcAdpCharges({
       : sumTotal);
     let editItem: InvoiceItemEditorModel = {
       ...invoiceAdp,
+      seq: seqKey,
       totalAmount: calcResult,
-      overAmount: requestTotal > 0 ? calcResult - requestTotal : overAmount,
-      approvedAmount: requestTotal > 0 ? requestTotal : approvedAmount,
+      overAmount: overAmount,
       status: 1,
       isDurty: true,
     };

@@ -46,7 +46,7 @@ const InvoiceBillingTab = function InvoiceBilling({
     const [isAdditPaymentOpen, setModalAdditPaymentOpen] = useState(false);
 
     useEffect(() => {
-        formBillingEditor.resetFields(["InvoiceAdp"]);
+        // formBillingEditor.resetFields(["InvoiceAdp"]);
         recalcAdpCharges({
             seqKey,
             invoiceEditors: invoiceData,
@@ -58,6 +58,7 @@ const InvoiceBillingTab = function InvoiceBilling({
     }, [additPaymentData]);
 
     useEffect(() => {
+        // formBillingEditor.resetFields(["InvoiceDrug"]);
         recalcDrugCharges({
             seqKey,
             invoiceEditors: invoiceData,
@@ -94,6 +95,7 @@ const InvoiceBillingTab = function InvoiceBilling({
 
     async function saveInvoiceDrug(): Promise<void> {
         const drugEditing = formBillingEditor.getFieldValue("InvoiceDrug");
+        console.log("drugEditing.drugItems=>", drugEditing.drugItems);
         setDruData(drugEditing.drugItems);
         if (drugEditing.moveInvoiceItems.length > 0) {
             let moveInvoiceItems = drugEditing.moveInvoiceItems as MoveInvoiceItemModel[];
@@ -104,7 +106,6 @@ const InvoiceBillingTab = function InvoiceBilling({
         }
         setModalDrugOpen(false);
     }
-
     const MoveDrugTo = async (drugMoveItems: MoveInvoiceItemModel[]) => {
         let newPaymentData = [...additPaymentData];
         let drugMoveToAdpItems = drugMoveItems.filter(t => t.chargeCodeTo.startsWith(additionalPaymentChargePrefix));
@@ -115,7 +116,6 @@ const InvoiceBillingTab = function InvoiceBilling({
             let drug = drugItems[drugIndex];
             let newItem: AdditPaymentModelEditorModel = {
                 dummyKey: (newPaymentData?.length || 0) + 1,
-                totalreq: 0.00,
                 isDurty: false,
                 hasError: drug.hasError,
                 id: drug.id,
@@ -151,6 +151,7 @@ const InvoiceBillingTab = function InvoiceBilling({
 
     async function saveInvoiceAdditPayment(): Promise<void> {
         const adpEditing = formBillingEditor.getFieldValue("InvoiceAdp");
+        console.log("adpEditing.adpItems=>", adpEditing.adpItems);
         if (adpEditing?.adpItems.length > 0 || false) {
             let editingAdpItems = adpEditing.adpItems as AdditPaymentModelEditorModel[];
             setAdditPaymentData(editingAdpItems);
@@ -193,23 +194,6 @@ const InvoiceBillingTab = function InvoiceBilling({
                     valueStyle={{
                         fontSize: "16px",
                         color: totalAmount == 0 ? "gray" : "black",
-                    }}
-                />
-            ),
-        },
-        {
-            title: "เบิกได้",
-            dataIndex: "approvedAmount",
-            key: "approvedAmount",
-            width: 40,
-            ellipsis: true,
-            render: (approvedAmount) => (
-                <Statistic
-                    precision={2}
-                    value={approvedAmount}
-                    valueStyle={{
-                        fontSize: "16px",
-                        color: approvedAmount == 0 ? "gray" : "#3f8600",
                     }}
                 />
             ),
@@ -329,7 +313,12 @@ const InvoiceBillingTab = function InvoiceBilling({
                 sticky
                 scroll={{ x: 400 }}
             />
-            <Form form={formBillingEditor} >
+            <Form form={formBillingEditor}
+                initialValues={{
+                    InvoiceDrug: { drugItems: drugItems },
+                    InvoiceAdp: { additionalItems: additPaymentData },
+                }}
+            >
                 <Modal
                     title={<Space>
                         <FileExclamationTwoTone twoToneColor="#ffab00" />

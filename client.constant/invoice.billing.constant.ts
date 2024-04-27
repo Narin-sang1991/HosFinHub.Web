@@ -2,6 +2,7 @@
 import { v4 as uuidv4 } from "uuid";
 import type { InvoiceItemModel, InvoiceItemEditorModel, } from "@/store/financial/invoiceItemModel";
 import { OpdValidModel } from "@/store/work-opd/opdEditorModel";
+import { InvoiceModel } from "@/store/financial/invoiceModel";
 const defaultStrEmpty: string = "-";
 
 //#region File and Code
@@ -47,11 +48,11 @@ export async function genarateAllCharges(
     let invoiceInCharges = invoiceItems.filter((t) => t.chrgitem.startsWith(chargePrefix)) || [];
     let dummyKey: number = i + 1;
     if (invoiceInCharges.length > 0) {
+      let totalAmount: number = 0;
       let overAmount: number = 0;
-      let approvedAmount: number = 0;
       invoiceInCharges.forEach((invoiceInCharge) => {
         if (invoiceInCharge.chrgitem.endsWith("1")) {
-          approvedAmount = invoiceInCharge.amount;
+          totalAmount = invoiceInCharge.amount;
           return;
         }
         if (invoiceInCharge.chrgitem.endsWith("2")) {
@@ -59,15 +60,13 @@ export async function genarateAllCharges(
           return;
         }
       });
-      let totalAmount: number = Number(overAmount.toString()) + Number(approvedAmount.toString());
       let invoiceItem = invoiceInCharges[0];
       let data: InvoiceItemEditorModel = {
         ...invoiceItem,
         dummyKey,
         isDurty: false,
-        totalAmount: totalAmount,
-        overAmount,
-        approvedAmount,
+        totalAmount: Number(totalAmount.toString()) + Number(overAmount.toString()),
+        overAmount: overAmount,
         chargeDetail: getChargeDetails(invoiceItem.chrgitem),
         status: 1,
         valid: [],
@@ -82,7 +81,6 @@ export async function genarateAllCharges(
         isDurty: false,
         totalAmount: 0.0,
         overAmount: 0.0,
-        approvedAmount: 0.0,
         chrgitem: chrgitem,
         chargeDetail: getChargeDetails(chrgitem),
         status: 0,
@@ -183,15 +181,50 @@ export function getStatusDisplayType(status: number) {
 export function convertEditorToCha(chaEditors: InvoiceItemEditorModel[]): InvoiceItemModel[] {
   let results: InvoiceItemModel[] = [];
   let chaItems: InvoiceItemEditorModel[] = [...chaEditors].filter(t => t.seq != '0');
-  let excludeProps = ['dummyKey', 'isDurty', 'totalAmount', 'overAmount', 'approvedAmount', 'status', 'valid'];
+  let excludeProps = ['dummyKey', 'isDurty', 'totalAmount', 'overAmount', 'status', 'valid'];
   chaItems.forEach(item => {
-    let data: InvoiceItemModel;
-    Object.keys(item).forEach((prop) => {
-      if (!excludeProps.includes(prop)) data = { ...data, [prop]: item[prop] };
+    let overAmount: number = Number(item.overAmount.toString());
+    let totalAmount: number = overAmount > 0 ? Number(item.totalAmount.toString()) - overAmount : Number(item.totalAmount.toString());
+
+    let dataSuffix1: InvoiceItemModel;
+    Object.keys(item).forEach((prop1) => {
+      if (!excludeProps.includes(prop1)) dataSuffix1 = { ...dataSuffix1, [prop1]: item[prop1] };
     });
-    data.amount = item.totalAmount;
-    results.push(data);
+    results.push({
+      ...dataSuffix1,
+      id: uuidv4(),
+      chrgitem: item.chrgitem[0] + '1',
+      amount: totalAmount,
+    });
+
+    if (overAmount > 0) {
+      let dataSuffix2: InvoiceItemModel;
+      Object.keys(item).forEach((prop2) => {
+        if (!excludeProps.includes(prop2)) dataSuffix2 = { ...dataSuffix2, [prop2]: item[prop2] };
+      });
+      results.push({
+        ...dataSuffix2,
+        id: uuidv4(),
+        chrgitem: item.chrgitem[0] + '2',
+        amount: overAmount,
+      });
+    }
+
   });
   return results;
 }
 
+export function convertEditorToCht(chtOriginals: InvoiceModel[], chaEditors: InvoiceItemEditorModel[]): InvoiceModel[] {
+  let results: InvoiceModel[] = [];
+  chtOriginals.forEach((cht) => {
+    let items = [...chaEditors.filter(t => t.seq == cht.seq)];
+    let totalAmount: number = items.length > 0
+      ? items.filter(t => t.seq == cht.seq).map(a => a.totalAmount).reduce(function (a, b) { return Number(a.toString()) + Number(b.toString()); })
+      : 0;
+    results.push({
+      ...cht,
+      total: totalAmount
+    });
+  });
+  return results;
+}

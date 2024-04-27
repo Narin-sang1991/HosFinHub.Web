@@ -11,7 +11,6 @@ export async function genarateAdditPaymentEditors(
       ...adpItem,
       dummyKey,
       isDurty: false,
-      totalreq: 0.00,
       hasError: false,
       typeDisplay: getAdpDisplay(adpItem.type),
       freeDrug: { id: adpItem.id, code: adpItem.code, unitPrice: adpItem.rate.toString() }
@@ -48,7 +47,7 @@ export function getAdpDisplay(type: string) {
 
 export function convertEditorToAdp(adtEditors: AdditPaymentModelEditorModel[]): AdditionalPaymentModel[] {
   let results: AdditionalPaymentModel[] = [];
-  let excludeProps = ['dummyKey', 'totalreq', 'isDurty', 'freeDrug', 'typeDisplay', 'hasError'];
+  let excludeProps = ['dummyKey', 'isDurty', 'freeDrug', 'typeDisplay', 'hasError'];
   adtEditors.forEach(item => {
     let data: AdditionalPaymentModel;
     Object.keys(item).forEach((prop) => {

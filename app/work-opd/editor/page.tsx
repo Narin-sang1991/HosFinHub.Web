@@ -41,7 +41,7 @@ import {
 } from "@/client.constant/patient.constant";
 import { getColResponsive } from "@/client.component/antd.col.resposive";
 import { dateDisplayFormat } from "@/client.constant/format.constant";
-import { convertEditorToCha, genarateAllCharges } from "@/client.constant/invoice.billing.constant";
+import { convertEditorToCha, convertEditorToCht, genarateAllCharges } from "@/client.constant/invoice.billing.constant";
 import { convertEditorToDru, genarateDrugEditors } from "@/client.constant/invoice.drug.constant";
 import { convertEditorToAdp, genarateAdditPaymentEditors } from "@/client.constant/invoice.addit.payment.constant";
 import { recalcAdpCharges } from "@/client.constant/invoice.additional.constant";
@@ -141,12 +141,13 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         const data = formEditor.getFieldValue("InvoiceBilling");
         console.log("data=>", data);
         if (data == undefined) return;
+
         const opdData: OpdDetailModel[] = editingData != undefined ? [{ ...editingData.opdDetail }] : [];
         const patData: PatientDetailModel[] = editingData != undefined ? [{ ...editingData.patient }] : [];
         const savedata: OpdDataModel = {
             adp: convertEditorToAdp(data.adpItems),
             aer: originData.additionEmergencies,
-            cht: editingData?.invoices || [],
+            cht: convertEditorToCht(editingData?.invoices || [], data.invoiceItems),
             cha: convertEditorToCha(data.invoiceItems),
             dru: convertEditorToDru(data.drugItems),
             ins: editingData?.insureItems || [],

@@ -85,9 +85,9 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ additionalItems = [],
                 if (row.freeDrug.code.length > 0) row.code = row.freeDrug.code || row.code;
                 if (isNumber(Number(row.freeDrug.unitPrice))) {
                     let unitPrice = Number(row.freeDrug.unitPrice);
+                    let totalreq = unitPrice * Number(item.qty.toString());
                     row.rate = unitPrice
-                    row.totalreq = row.totalreq > 0 ? row.totalreq : unitPrice * Number(item.qty.toString());
-                    row.totcopay = Number(item.total) - Number(row.totalreq);
+                    row.total = totalreq;
                 }
                 newData.splice(index, 1, {
                     ...item,
@@ -158,14 +158,6 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ additionalItems = [],
             key: "total",
             width: 15,
             ellipsis: true,
-        },
-        {
-            title: "ขอเบิก",
-            dataIndex: "totalreq",
-            key: "totalreq",
-            width: 15,
-            ellipsis: true,
-            editable: true,
         },
         {
             title: "ส่วนเกิน",
@@ -242,7 +234,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ additionalItems = [],
                 onCell: (record: AdditPaymentModelEditorModel) => ({ className: record.hasError ? 'Col-Table-Row-Error' : '', })
             } as TableColumnProps<AdditPaymentModelEditorModel>;
         }
-        let numTypes = ["totcopay", "totalreq"];
+        let numTypes = ["totcopay"];
         let selectorTypes = ["freeDrug"];
         return {
             ...col,

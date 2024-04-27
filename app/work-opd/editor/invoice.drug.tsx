@@ -181,14 +181,6 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
       ellipsis: true,
     },
     {
-      title: "ขอเบิก",
-      dataIndex: "totalreq",
-      key: "totalreq",
-      width: 30,
-      ellipsis: true,
-      editable: true,
-    },
-    {
       title: "ส่วนเกิน",
       dataIndex: "totcopay",
       key: "totcopay",
@@ -294,7 +286,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
         onCell: (record: InvoiceDrugEditorModel) => ({ className: record.hasError ? 'Col-Table-Row-Error' : '', })
       } as TableColumnProps<InvoiceDrugEditorModel>;
     }
-    let numTypes = ["totcopay", "totalreq"];
+    let numTypes = ["totcopay"];
     return {
       ...col,
       onCell: (record: InvoiceDrugEditorModel) => ({
