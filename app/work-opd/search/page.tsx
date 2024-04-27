@@ -2,19 +2,20 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Card, Form, Table, DatePicker, Tag, Flex, Segmented, message, Badge, Modal, } from "antd";
-import type { TableProps, TableColumnsType } from "antd";
+import { Button, Card, Form, Table, DatePicker, Tag, message, Badge, Space, } from "antd";
+import type { TableProps, TableColumnsType, } from "antd";
 import { SearchOutlined, EditOutlined, SendOutlined, } from "@ant-design/icons";
 import moment from "moment";
 import withTheme from "../../../theme";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { searchAsync, selectResult, selectStatus, } from "@/store/work-opd/workOpdSlice";
+import { searchAsync, selectResult, selectStatus, selectTabletResult } from "@/store/work-opd/workOpdSlice";
 import type { OpdSearchModel } from "@/store/work-opd/opdSearchModel";
 import { getPatientID } from "@/client.constant/patient.constant";
 import { dateDisplayFormat, dateInterfaceFormat, } from "@/client.constant/format.constant";
 import "@/app/globals.css";
 import { claimOpd } from "@/services/send.fhd.prioviver";
 import ButtonSent from "./button.send";
+import Fillter from "./filler";
 
 // moment.locale('th');
 type OpdSearchProps = {};
@@ -27,11 +28,9 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
   const [pageSize] = useState(15);
   const [filterValue, setFilterValue] = useState<FilterType[]>([]);
   const status = useAppSelector(selectStatus);
-  const searchResult = useAppSelector(selectResult);
-
+  const searchTabletResult = useAppSelector(selectTabletResult);
   //claim  FDH
   const onClickClaim = async (seq: string, countSend: number) => {
-
     const resultClaim = await claimOpd([seq]) as unknown as any
     if (resultClaim.status === 200) {
       message.success(resultClaim.message_th)
@@ -40,9 +39,9 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
     }
   }
   // set errorfilter
-  const setFilter = (searchResult: OpdSearchModel[]) => {
+  const setFilterError = (searchTabletResult: OpdSearchModel[]) => {
     const fillter: FilterType[] = [];
-    searchResult.forEach((pat) => {
+    searchTabletResult.forEach((pat) => {
       if (pat.error.length > 0) {
         pat.error.map((e) => {
           const index = fillter.findIndex((f) => f.text === e.code_error);
@@ -60,8 +59,8 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
   };
 
   useEffect(() => {
-    setFilter(searchResult);
-  }, [searchResult]);
+    setFilterError(searchTabletResult);
+  }, [searchTabletResult]);
   //#region Search
   async function onSearch(index?: number, sorter?: any) {
     // console.log("page-searchAsync-->");
@@ -137,6 +136,7 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
       fixed: "left",
       ellipsis: true,
       sorter: (a, b) => a.hn.localeCompare(b.hn),
+
     },
     {
       title: "OPD Date",
@@ -180,6 +180,7 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
       key: "seq",
       width: 40,
       ellipsis: true,
+      onFilter: (value, record) => record.error.map((item) => item.code_error).indexOf(value as string) === 0,
     },
     {
       title: "Error",
@@ -221,13 +222,16 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
   ];
   //#endregion
 
+
+  const findOnFillter = () => { }
   return (
-    <>
+    <Space direction="vertical">
       <Card
         bordered={true}
         style={{ borderBottomColor: "LightGray" }}
         className={"MasterBackground"}
       >
+
         <Form
           layout="inline"
           name="criteriaFormSearch"
@@ -257,19 +261,23 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
             </Button>
           </Form.Item>
           <Form.Item label="" name="send_data">
-            <ButtonSent opd={searchResult} />
+            <ButtonSent opd={searchTabletResult} />
           </Form.Item>
         </Form>
+
       </Card>
+
+      <Fillter />
+
       <Table
         rowKey={(record) => record.id}
         loading={status === "loading"}
         columns={columns}
-        dataSource={searchResult || []}
+        dataSource={searchTabletResult || []}
         pagination={{
           current: pageIndex,
           pageSize: pageSize,
-          total: searchResult?.length || 10,
+          total: searchTabletResult?.length || 10,
           showSizeChanger: true,
         }}
         onChange={onTableCriteriaChange}
@@ -279,7 +287,8 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
         sticky
         scroll={{ x: 1000 }}
       />
-    </>
+    </Space>
+
   );
 };
 

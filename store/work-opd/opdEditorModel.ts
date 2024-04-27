@@ -60,7 +60,7 @@ export interface OpdEditorModel {
   * #origin => ORF
   **/
   opdReferItems: OpdReferModel[];
- 
+
   /**
   * #origin => PAT
   **/
@@ -117,7 +117,7 @@ export interface OpdDetailModel {
   clinic: string; // code of clinic or service point
   dateopd: Date;
   timeopd: string;
-  uuc: number;
+  uuc: string;
   seq: string; // transaction key
   detail?: string;
 

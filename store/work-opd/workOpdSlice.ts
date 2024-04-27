@@ -2,14 +2,11 @@ import { createAppSlice } from "@/store/createAppSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { fetchSearch, fetchGet, fetchSave } from "@/services/work.opd.provider";
 import type { OpdSearchModel } from "@/store/work-opd/opdSearchModel";
-import type {
-  OpdDataModel,
-  OpdResponse,
-  OpdValidModel,
-} from "@/store/work-opd/opdEditorModel";
+import type { OpdDataModel, OpdResponse, OpdValidModel, } from "@/store/work-opd/opdEditorModel";
 
 export interface WorkOpdSliceState {
   searchResult: OpdSearchModel[];
+  tableResult: OpdSearchModel[];
   searchStatus: "idle" | "loading" | "failed";
   getResult?: OpdDataModel;
   getStatus: "idle" | "loading" | "failed";
@@ -20,6 +17,7 @@ export interface WorkOpdSliceState {
 
 const initialState: WorkOpdSliceState = {
   searchResult: [],
+  tableResult: [],
   searchStatus: "idle",
   getResult: undefined,
   getStatus: "idle",
@@ -44,6 +42,7 @@ export const workOpdSlice = createAppSlice({
         fulfilled: (state, action: PayloadAction<OpdSearchModel[]>) => {
           state.searchStatus = "idle";
           state.searchResult = action.payload;
+          state.tableResult = action.payload
         },
         rejected: (state) => {
           state.searchStatus = "failed";
@@ -63,7 +62,6 @@ export const workOpdSlice = createAppSlice({
         fulfilled: (state, action: PayloadAction<OpdResponse>) => {
           state.getStatus = "idle";
           state.getResult = action.payload.data;
-
           state.getValid = action.payload.error;
         },
         rejected: (state) => {
@@ -90,21 +88,32 @@ export const workOpdSlice = createAppSlice({
       }
     ),
 
+    fillterAsync: create.asyncThunk(async (body: any) => { return body },
+
+      {
+        pending: (state) => {
+          state.getStatus = "loading";
+        },
+        fulfilled: (state, action) => {
+          state.tableResult = action.payload;
+        }, rejected: (state) => {
+          state.getStatus = "failed";
+        },
+      }
+    )
   }),
 
   selectors: {
     selectResult: (workOpd) => workOpd.searchResult,
+    selectTabletResult: (workOpd) => workOpd.tableResult,
     selectStatus: (workOpd) => workOpd.searchStatus,
     getResult: (workOpd) => workOpd.getResult,
     getStatus: (workOpd) => workOpd.getStatus,
-
     getValid: (workOpd) => workOpd.getValid,
-
     saveStatus: (workOpd) => workOpd.saveStatus,
   },
 });
 
-export const { searchAsync, getAsync, saveAsync } = workOpdSlice.actions;
+export const { searchAsync, getAsync, saveAsync, fillterAsync } = workOpdSlice.actions;
 
-export const { selectResult, selectStatus, getResult, getStatus, getValid, saveStatus } =
-  workOpdSlice.selectors;
+export const { selectResult, selectStatus, getResult, getStatus, getValid, saveStatus, selectTabletResult } = workOpdSlice.selectors;

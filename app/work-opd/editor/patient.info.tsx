@@ -6,7 +6,6 @@ import { getColResponsive } from "@/client.component/antd.col.resposive";
 
 
 const PatientInfoTab = function PatientInfo() {
-
     return (
         <Row gutter={[16, 4]} >
             {
