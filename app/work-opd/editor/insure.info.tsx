@@ -1,19 +1,14 @@
 import { getColResponsive } from "@/client.component/antd.col.resposive";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { getResult, saveAsync } from "@/store/work-opd/workOpdSlice";
-
-
+import { selectUccOption } from "@/store/insure/insureOpdSlice";
 import { Divider, Form, Input, Row, Select } from "antd";
 import React from "react";
 
 const InsureInfo = () => {
   const dispatch = useAppDispatch();
   const originData = useAppSelector(getResult);
-
-  const options = [
-    { value: '2', label: 'ไม่ใช้สิทธิ์' },
-    { value: '1', label: 'ใช้สิทธิ์' },
-  ]
+  const selectUccOptions = useAppSelector(selectUccOption);
 
   const onChangeOpdUuc = async (value: string) => {
     const newOpd = originData?.opd.map((itemOpd) => {
@@ -25,7 +20,7 @@ const InsureInfo = () => {
     const updatedOriginData = { ...originData, opd: newOpd };
     await dispatch(saveAsync({ ...updatedOriginData }));
   }
-  
+
   return (
     <React.Fragment>
       <Divider orientation="left" plain><h3>ข้อมูลสิทธิ</h3></Divider>
@@ -36,7 +31,7 @@ const InsureInfo = () => {
             children: <Form.Item label="การใช้สิทธิ์" name="UUC" >
               <Select
                 onChange={onChangeOpdUuc}
-                options={options}>
+                options={selectUccOptions}>
               </Select>
             </Form.Item>
           })

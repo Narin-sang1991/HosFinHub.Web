@@ -4,7 +4,6 @@ import React from 'react';
 import { Form, Row, Input, Select, } from 'antd';
 import { getColResponsive } from "@/client.component/antd.col.resposive";
 
-
 const PatientInfoTab = function PatientInfo() {
     return (
         <Row gutter={[16, 4]} >

@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Card, Form, Table, DatePicker, Tag, message, Badge, Space, } from "antd";
+import { Button, Card, Form, Table, DatePicker, Tag, message, Badge, Space, Select, } from "antd";
 import type { TableProps, TableColumnsType, } from "antd";
 import { SearchOutlined, EditOutlined, SendOutlined, } from "@ant-design/icons";
 import moment from "moment";
 import withTheme from "../../../theme";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { searchAsync, selectResult, selectStatus, selectTabletResult } from "@/store/work-opd/workOpdSlice";
+import { getResult, saveAsync, searchAsync, getAsync, selectStatus, selectTabletResult } from "@/store/work-opd/workOpdSlice";
 import type { OpdSearchModel } from "@/store/work-opd/opdSearchModel";
 import { getPatientID } from "@/client.constant/patient.constant";
 import { dateDisplayFormat, dateInterfaceFormat, } from "@/client.constant/format.constant";
@@ -16,10 +16,12 @@ import "@/app/globals.css";
 import { claimOpd } from "@/services/send.fhd.prioviver";
 import ButtonSent from "./button.send";
 import Fillter from "./filler";
+import { selectUccOption } from "@/store/insure/insureOpdSlice";
 
 // moment.locale('th');
 type OpdSearchProps = {};
 type FilterType = { text: string; value: string };
+
 const OpdSearch = function OpdSearch(props: OpdSearchProps) {
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -28,7 +30,10 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
   const [pageSize] = useState(15);
   const [filterValue, setFilterValue] = useState<FilterType[]>([]);
   const status = useAppSelector(selectStatus);
+  const selectUccOptions = useAppSelector(selectUccOption);
   const searchTabletResult = useAppSelector(selectTabletResult);
+  const originData = useAppSelector(getResult);
+  const [uuc, setUuc] = useState<string>("1")
   //claim  FDH
   const onClickClaim = async (seq: string, countSend: number) => {
     const resultClaim = await claimOpd([seq]) as unknown as any
@@ -61,6 +66,8 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
   useEffect(() => {
     setFilterError(searchTabletResult);
   }, [searchTabletResult]);
+
+  
   //#region Search
   async function onSearch(index?: number, sorter?: any) {
     // console.log("page-searchAsync-->");
@@ -117,16 +124,62 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
     }
   }
 
+
+  const onChangeOpdUuc = async (value: string, record: OpdSearchModel) => {
+    console.log(value);
+
+    setUuc(value)
+    dispatch(getAsync({ seq: record.seq }))
+  }
+
+  const updateUuc = async () => {
+    console.log("effect orgindata");
+    console.log(uuc);
+
+    if (originData === undefined) return
+
+    const newOpd = originData?.opd.map((itemOpd) => {
+      const newItemOpd = { ...itemOpd }
+      newItemOpd.uuc = uuc
+      return newItemOpd;
+    });
+
+    const updatedOriginData = { ...originData, opd: newOpd };
+    console.log(updatedOriginData);
+
+    await dispatch(saveAsync({ ...updatedOriginData }));
+  }
+  useEffect(() => {
+    updateUuc()
+  }, [originData])
+
   const columns: TableColumnsType<OpdSearchModel> = [
     {
       title: "Calim",
       dataIndex: "seq",
       key: "seq",
-      fixed: 'left', width: 60,
+      fixed: 'left',
+      width: 50,
       render: (seq, record: OpdSearchModel) =>
         <Badge count={record.opd_claim_log.length} color="green">
           <Button onClick={() => onClickClaim(seq, record.opd_claim_log.length)} icon={<SendOutlined />}>ส่งข้อมูลFDH</Button>
         </Badge>
+    },
+    {
+      title: "เบิก",
+      dataIndex: "uuc",
+      key: "uuc",
+      width: 50,
+      fixed: "left",
+      ellipsis: true,
+      render: (_value, record: OpdSearchModel) => (
+        <Select
+          onChange={(valueNumber) => onChangeOpdUuc(valueNumber, record)}
+          options={selectUccOptions}
+          defaultValue={_value}
+ 
+        />
+      )
     },
     {
       title: "HN",
@@ -222,8 +275,6 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
   ];
   //#endregion
 
-
-  const findOnFillter = () => { }
   return (
     <Space direction="vertical">
       <Card
@@ -231,7 +282,6 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
         style={{ borderBottomColor: "LightGray" }}
         className={"MasterBackground"}
       >
-
         <Form
           layout="inline"
           name="criteriaFormSearch"
@@ -264,7 +314,6 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
             <ButtonSent opd={searchTabletResult} />
           </Form.Item>
         </Form>
-
       </Card>
 
       <Fillter />
@@ -288,11 +337,11 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
         scroll={{ x: 1000 }}
       />
     </Space>
-
   );
 };
 
 const OpdSearchPage = () => {
   return withTheme(<OpdSearch />);
 };
+
 export default OpdSearchPage;

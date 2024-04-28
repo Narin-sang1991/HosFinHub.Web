@@ -8,6 +8,7 @@ export interface OpdSearchModel {
   seq: string;
   dateopd: Date;
   opd_pat: OpdPatientModel;
+  uuc: string,
   error: OpdValids[]
   opd_claim_log: any[]
 }

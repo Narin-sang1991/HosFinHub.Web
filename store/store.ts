@@ -4,7 +4,7 @@ import { counterSlice } from "./counter/counterSlice";
 import { quotesApiSlice } from "./quotes/quotesApiSlice";
 import { workOpdSlice } from "./work-opd/workOpdSlice";
 import { freeAdditionalSlice } from "./free-additional/freeAdditionalSlice";
-
+import { insureSelectOptionSlice } from './insure/insureOpdSlice'
 // `combineSlices` automatically combines the reducers using
 // their `reducerPath`s, therefore we no longer need to call `combineReducers`.
 const rootReducer = combineSlices(
@@ -12,6 +12,7 @@ const rootReducer = combineSlices(
   quotesApiSlice,
   workOpdSlice,
   freeAdditionalSlice,
+  insureSelectOptionSlice,
 );
 // Infer the `RootState` type from the root reducer
 export type RootState = ReturnType<typeof rootReducer>;

@@ -28,11 +28,7 @@ type InvoiceBillingProps = {
 };
 const { Text } = Typography;
 
-const InvoiceBillingTab = function InvoiceBilling({
-  seqKey, clinicCode,
-  invoiceItems, drugItems, additPaymentItems,
-  onChange,
-}: InvoiceBillingProps) {
+const InvoiceBillingTab = function InvoiceBilling({ seqKey, clinicCode, invoiceItems, drugItems, additPaymentItems,nuresItems, onChange, }: InvoiceBillingProps) {
 
   const [formBillingEditor] = Form.useForm();
   const [invoiceData, setInvoiceData] = useState<InvoiceItemEditorModel[]>(invoiceItems);

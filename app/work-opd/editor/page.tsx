@@ -86,8 +86,6 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
 
   useEffect(() => {
     if (originData === undefined) return;
-
-
     (async () => {
       let opdDetail = { ...originData.opd[0] };
       let patientDetail = { ...originData.pat[0] };
@@ -182,11 +180,10 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
     return defaultStrEmpty;
   }
 
-  const getCardInTab = <T extends { title: string; children: any }>(
-    propCard: T
-  ) => {
+  const getCardInTab = <T extends { title: string; children: any }>(propCard: T) => {
     return (
       <Card
+        key={propCard.title}
         title={propCard.title}
         style={{ width: "100%", }}
         headStyle={{ backgroundColor: "lightgray", marginBottom: "-15px" }}
@@ -203,7 +200,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       icon: <IdcardOutlined />,
       children: getCardInTab({
         title: "ข้อมูลผู้ป่วย",
-        children: [<PatientInfoTab />, <InsureInfo />],
+        children: <div><PatientInfoTab /> <InsureInfo /></div>,
       }),
     },
     {
@@ -259,7 +256,6 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
             <Button type="text" onClick={onClose}
               icon={<CloseCircleTwoTone twoToneColor={'#f5222d'} style={{ fontSize: '30px' }} />}
             />
-
           </Col>
         </Row>
         </Affix>
@@ -269,7 +265,6 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
           form={formEditor}
         // onFinish={onSave}
         >
-
           <Collapse
             size="small"
             style={{ margin: -10, marginBottom: 5 }}
