@@ -6,7 +6,7 @@ import { Button, Typography, Table, Statistic, Modal, Tag, Badge, Form, Space } 
 import type { TableColumnsType } from "antd";
 import { FileDoneOutlined, FileExclamationTwoTone } from "@ant-design/icons";
 import { InvoiceItemEditorModel } from "@/store/financial/invoiceItemModel";
-import { AdditPaymentModelEditorModel } from "@/store/free-additional/additionalModel";
+import { AdditPaymentModelEditorModel } from "@/store/fee-additional/additionalModel";
 import type { InvoiceDrugEditorModel } from "@/store/financial/invoiceDrugModel";
 import { MoveInvoiceItemModel } from "@/store/financial/moveItemModel";
 import { getStatusDisplayType, getClaimStatusText, drugFileCode, drugInChargePrefix, drugExChargePrefix, additionalPaymentChargePrefix, } from "@/client.constant/invoice.billing.constant";
@@ -16,10 +16,11 @@ import InvoiceAdditionalPage from "./invoice.additional";
 import "@/app/globals.css";
 import { adpTypeNonGroup, recalcAdpCharges } from "@/client.constant/invoice.additional.constant";
 import { recalcDrugCharges } from "@/client.constant/invoice.drug.constant";
+import { OpdDetailModel } from "@/store/work-opd/opdEditorModel";
 //#endregion
 
 type InvoiceBillingProps = {
-  seqKey: string,
+  opdData?: OpdDetailModel,
   clinicCode?: string,
   invoiceItems: InvoiceItemEditorModel[],
   drugItems: InvoiceDrugEditorModel[],
@@ -28,7 +29,7 @@ type InvoiceBillingProps = {
 };
 const { Text } = Typography;
 
-const InvoiceBillingTab = function InvoiceBilling({ seqKey, clinicCode, invoiceItems, drugItems, additPaymentItems,nuresItems, onChange, }: InvoiceBillingProps) {
+const InvoiceBillingTab = function InvoiceBilling({ opdData, clinicCode, invoiceItems, drugItems, additPaymentItems, onChange, }: InvoiceBillingProps) {
 
   const [formBillingEditor] = Form.useForm();
   const [invoiceData, setInvoiceData] = useState<InvoiceItemEditorModel[]>(invoiceItems);
@@ -40,7 +41,7 @@ const InvoiceBillingTab = function InvoiceBilling({ seqKey, clinicCode, invoiceI
   useEffect(() => {
     // formBillingEditor.resetFields(["InvoiceAdp"]);
     recalcAdpCharges({
-      seqKey,
+      seqKey: opdData?.seq || "",
       invoiceEditors: invoiceData,
       adtEditors: additPaymentData,
       reconcile: false
@@ -52,7 +53,7 @@ const InvoiceBillingTab = function InvoiceBilling({ seqKey, clinicCode, invoiceI
   useEffect(() => {
     // formBillingEditor.resetFields(["InvoiceDrug"]);
     recalcDrugCharges({
-      seqKey,
+      seqKey: opdData?.seq || "",
       invoiceEditors: invoiceData,
       drugEditors: drugData,
     }).then((invoiceUtdDrug) => {
@@ -87,7 +88,7 @@ const InvoiceBillingTab = function InvoiceBilling({ seqKey, clinicCode, invoiceI
 
   async function saveInvoiceDrug(): Promise<void> {
     const drugEditing = formBillingEditor.getFieldValue("InvoiceDrug");
-    console.log("drugEditing.drugItems=>", drugEditing.drugItems);
+    // console.log("drugEditing.drugItems=>", drugEditing.drugItems);
     setDruData(drugEditing.drugItems);
     if (drugEditing.moveInvoiceItems.length > 0) {
       let moveInvoiceItems = drugEditing.moveInvoiceItems as MoveInvoiceItemModel[];
@@ -106,18 +107,21 @@ const InvoiceBillingTab = function InvoiceBilling({ seqKey, clinicCode, invoiceI
       if (drugIndex < 0) return;
 
       let drug = drugItems[drugIndex];
+      let feeDrug = { id: drug.id, code: '', name: drug.didname, unitPrice: drug.drugprice.toString() };
       let newItem: AdditPaymentModelEditorModel = {
         dummyKey: (newPaymentData?.length || 0) + 1,
         isDurty: false,
         hasError: drug.hasError,
         id: drug.id,
-        seq: seqKey,
+        seq: opdData?.seq || "",
         hn: drug.hn,
         dateopd: drug.date_serv,
         type: adpTypeNonGroup,
         typeDisplay: getAdpDisplay(adpTypeNonGroup),
         code: drug.did,
-        freeDrug: { id: drug.id, code: '', name: drug.didname, unitPrice: drug.drugprice.toString() },
+        feeDrug: { ...feeDrug },
+        feeEditor: { ...feeDrug },
+        isFeeDrug: true,
         qty: drug.amount,
         rate: drug.drugprice,
         dose: drug.unit,
@@ -143,7 +147,7 @@ const InvoiceBillingTab = function InvoiceBilling({ seqKey, clinicCode, invoiceI
 
   async function saveInvoiceAdditPayment(): Promise<void> {
     const adpEditing = formBillingEditor.getFieldValue("InvoiceAdp");
-    console.log("adpEditing.adpItems=>", adpEditing.adpItems);
+    // console.log("adpEditing.adpItems=>", adpEditing.adpItems);
     if (adpEditing?.adpItems.length > 0 || false) {
       let editingAdpItems = adpEditing.adpItems as AdditPaymentModelEditorModel[];
       setAdditPaymentData(editingAdpItems);
@@ -335,7 +339,7 @@ const InvoiceBillingTab = function InvoiceBilling({ seqKey, clinicCode, invoiceI
           okText="นำไปใช้"
         >
           <Form.Item name="InvoiceAdp">
-            <InvoiceAdditionalPage additionalItems={additPaymentData} />
+            <InvoiceAdditionalPage opdData={opdData} additionalItems={additPaymentData} />
           </Form.Item>
         </Modal>
       </Form>

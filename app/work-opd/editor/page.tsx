@@ -45,14 +45,11 @@ import { convertEditorToCha, convertEditorToCht, genarateAllCharges } from "@/cl
 import { convertEditorToDru, genarateDrugEditors } from "@/client.constant/invoice.drug.constant";
 import { convertEditorToAdp, genarateAdditPaymentEditors } from "@/client.constant/invoice.addit.payment.constant";
 import { recalcAdpCharges } from "@/client.constant/invoice.additional.constant";
-import { InvoiceItemModel } from "@/store/financial/invoiceItemModel";
-import { InvoiceDrugModel } from "@/store/financial/invoiceDrugModel";
-import { AdditionalPaymentModel } from "@/store/free-additional/additionalModel";
 import PatientInfoTab from "./patient.info";
 import InvoiceBillingTab from "./invoice.billing";
+import InsureInfo from "./insure.info";
 import withTheme from "../../../theme";
 import "@/app/globals.css";
-import InsureInfo from "./insure.info";
 //#endregion
 
 interface OpdEditorProps { }
@@ -70,6 +67,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
   const valid: OpdValidModel[] | undefined = useAppSelector(getValid);
   const [editingData, setEditData] = useState<OpdEditorModel>();
   const [editKey, setEditKey] = useState<any>(undefined);
+
 
   //#region Internal Effect
   useEffect(() => {
@@ -229,7 +227,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         title: "ข้อมูลค่ารักษาพยาบาล",
         children: (
           <Form.Item name={"InvoiceBilling"}>
-            <InvoiceBillingTab seqKey={editingData?.opdDetail.seq || '0'}
+            <InvoiceBillingTab opdData={editingData?.opdDetail || undefined}
               clinicCode={editingData?.opdDetail.clinic}
               invoiceItems={editingData?.invoiceItems || []}
               drugItems={editingData?.drugItems || []}

@@ -6,6 +6,7 @@ import { additionalPaymentChargePrefix, getChargeDetails } from "./invoice.billi
 
 //#region Additional Payment Type
 export const adpTypeNonGroup = "3";
+export const adpTypeFreeSchedule = "8";
 //#endregion
 
 type CalcAdpChargesProps = {

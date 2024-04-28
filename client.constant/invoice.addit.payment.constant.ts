@@ -1,4 +1,4 @@
-import type { AdditionalPaymentModel, AdditPaymentModelEditorModel } from "@/store/free-additional/additionalModel";
+import type { AdditionalPaymentModel, AdditPaymentModelEditorModel } from "@/store/fee-additional/additionalModel";
 
 export async function genarateAdditPaymentEditors(
   adpItems: AdditionalPaymentModel[]
@@ -7,13 +7,16 @@ export async function genarateAdditPaymentEditors(
   await adpItems.forEach((adpItem, i) => {
 
     let dummyKey: number = i + 1;
+    let newFeeDrug = { id: adpItem.id, code: adpItem.code, unitPrice: adpItem.rate.toString() };
     let data: AdditPaymentModelEditorModel = {
       ...adpItem,
       dummyKey,
       isDurty: false,
       hasError: false,
       typeDisplay: getAdpDisplay(adpItem.type),
-      freeDrug: { id: adpItem.id, code: adpItem.code, unitPrice: adpItem.rate.toString() }
+      feeDrug: { ...newFeeDrug },
+      feeEditor: { ...newFeeDrug },
+      isFeeDrug: true,
     };
     results.push(data);
   });
@@ -47,7 +50,7 @@ export function getAdpDisplay(type: string) {
 
 export function convertEditorToAdp(adtEditors: AdditPaymentModelEditorModel[]): AdditionalPaymentModel[] {
   let results: AdditionalPaymentModel[] = [];
-  let excludeProps = ['dummyKey', 'isDurty', 'freeDrug', 'typeDisplay', 'hasError'];
+  let excludeProps = ['dummyKey', 'isDurty', 'freeDrug', 'feeSchedule', 'feeEditor', 'isFeeDrug', 'typeDisplay', 'hasError'];
   adtEditors.forEach(item => {
     let data: AdditionalPaymentModel = {
       id: "",

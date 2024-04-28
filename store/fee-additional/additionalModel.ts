@@ -1,4 +1,5 @@
-import { FreeDrugSelectorModel } from "./freeDrugModel";
+import { FeeDrugSelectorModel } from "./FeeDrugModel";
+import { FeeScheduleSelectorModel } from "./feeScheduleModel";
 
 
 export interface AdditionalPaymentModel {
@@ -33,7 +34,10 @@ export interface AdditionalPaymentModel {
 export interface AdditPaymentModelEditorModel extends AdditionalPaymentModel {
     dummyKey: number; // dummy key for UI component
     isDurty: boolean;
-    freeDrug: FreeDrugSelectorModel
+    feeDrug?: FeeDrugSelectorModel,
+    feeSchedule?: FeeScheduleSelectorModel,
+    feeEditor: FeeDrugSelectorModel | FeeScheduleSelectorModel,
     typeDisplay?: string;
+    isFeeDrug: boolean;
     hasError: boolean;
 }

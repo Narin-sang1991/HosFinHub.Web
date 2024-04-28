@@ -3,7 +3,7 @@ import { combineSlices, configureStore } from "@reduxjs/toolkit";
 import { counterSlice } from "./counter/counterSlice";
 import { quotesApiSlice } from "./quotes/quotesApiSlice";
 import { workOpdSlice } from "./work-opd/workOpdSlice";
-import { freeAdditionalSlice } from "./free-additional/freeAdditionalSlice";
+import { feeAdditionalSlice } from "./fee-additional/feeAdditionalSlice";
 import { insureSelectOptionSlice } from './insure/insureOpdSlice'
 // `combineSlices` automatically combines the reducers using
 // their `reducerPath`s, therefore we no longer need to call `combineReducers`.
@@ -11,7 +11,7 @@ const rootReducer = combineSlices(
   counterSlice,
   quotesApiSlice,
   workOpdSlice,
-  freeAdditionalSlice,
+  feeAdditionalSlice,
   insureSelectOptionSlice,
 );
 // Infer the `RootState` type from the root reducer
