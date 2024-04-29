@@ -228,7 +228,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         children: (
           <Form.Item name={"InvoiceBilling"}>
             <InvoiceBillingTab opdData={editingData?.opdDetail || undefined}
-              clinicCode={editingData?.opdDetail.clinic}
+              patientData={editingData?.patient || undefined}
               invoiceItems={editingData?.invoiceItems || []}
               drugItems={editingData?.drugItems || []}
               additPaymentItems={editingData?.additPayments || []}

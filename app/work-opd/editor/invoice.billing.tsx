@@ -2,14 +2,14 @@
 
 //#region Import
 import React, { useState, useEffect } from "react";
-import { Button, Typography, Table, Statistic, Modal, Tag, Badge, Form, Space } from "antd";
+import { Button, Typography, Table, Statistic, Modal, Tag, Badge, Form, Space, InputNumber, Divider } from "antd";
 import type { TableColumnsType } from "antd";
 import { FileDoneOutlined, FileExclamationTwoTone } from "@ant-design/icons";
 import { InvoiceItemEditorModel } from "@/store/financial/invoiceItemModel";
 import { AdditPaymentModelEditorModel } from "@/store/fee-additional/additionalModel";
 import type { InvoiceDrugEditorModel } from "@/store/financial/invoiceDrugModel";
 import { MoveInvoiceItemModel } from "@/store/financial/moveItemModel";
-import { getStatusDisplayType, getClaimStatusText, drugFileCode, drugInChargePrefix, drugExChargePrefix, additionalPaymentChargePrefix, } from "@/client.constant/invoice.billing.constant";
+import { getStatusDisplayType, getClaimStatusText, drugFileCode, drugInChargePrefix, drugExChargePrefix, additionalPaymentChargePrefix, getChargeDetails, } from "@/client.constant/invoice.billing.constant";
 import { getAdpDisplay } from "@/client.constant/invoice.addit.payment.constant";
 import InvoiceDrugPage from "./invoice.drug";
 import InvoiceAdditionalPage from "./invoice.additional";
@@ -17,11 +17,12 @@ import "@/app/globals.css";
 import { adpTypeNonGroup, recalcAdpCharges } from "@/client.constant/invoice.additional.constant";
 import { recalcDrugCharges } from "@/client.constant/invoice.drug.constant";
 import { OpdDetailModel } from "@/store/work-opd/opdEditorModel";
+import { PatientDetailModel } from "@/store/patient/patientModel";
 //#endregion
 
 type InvoiceBillingProps = {
   opdData?: OpdDetailModel,
-  clinicCode?: string,
+  patientData?: PatientDetailModel,
   invoiceItems: InvoiceItemEditorModel[],
   drugItems: InvoiceDrugEditorModel[],
   additPaymentItems?: AdditPaymentModelEditorModel[],
@@ -29,7 +30,7 @@ type InvoiceBillingProps = {
 };
 const { Text } = Typography;
 
-const InvoiceBillingTab = function InvoiceBilling({ opdData, clinicCode, invoiceItems, drugItems, additPaymentItems, onChange, }: InvoiceBillingProps) {
+const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoiceItems, drugItems, additPaymentItems, onChange, }: InvoiceBillingProps) {
 
   const [formBillingEditor] = Form.useForm();
   const [invoiceData, setInvoiceData] = useState<InvoiceItemEditorModel[]>(invoiceItems);
@@ -37,11 +38,15 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, clinicCode, invoice
   const [additPaymentData, setAdditPaymentData] = useState<AdditPaymentModelEditorModel[]>(additPaymentItems || []);
   const [isModalDrugOpen, setModalDrugOpen] = useState(false);
   const [isAdditPaymentOpen, setModalAdditPaymentOpen] = useState(false);
+  const [isAdjustOpen, setModaAdjustOpen] = useState(false);
+  const defaultCharge = { code: "", display: "" };
+  const [chargeAdjust, setChargeAdjust] = useState(defaultCharge);
 
   useEffect(() => {
     // formBillingEditor.resetFields(["InvoiceAdp"]);
     recalcAdpCharges({
-      seqKey: opdData?.seq || "",
+      opdData: opdData,
+      patientData: patientData,
       invoiceEditors: invoiceData,
       adtEditors: additPaymentData,
       reconcile: false
@@ -77,12 +82,17 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, clinicCode, invoice
   function takeAction(chargeCode: string) {
     if (chargeCode.startsWith(drugInChargePrefix) || chargeCode.startsWith(drugExChargePrefix)) {
       setModalDrugOpen(true);
+      setChargeAdjust(defaultCharge);
       return;
     }
-
     if (chargeCode.startsWith(additionalPaymentChargePrefix)) {
       setModalAdditPaymentOpen(true);
+      setChargeAdjust(defaultCharge);
       return;
+    }
+    if (chargeCode != "" && chargeCode != chargeAdjust.code) {
+      openChargeAdjust(chargeCode);
+      openChargeAdjust
     }
   }
 
@@ -127,7 +137,7 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, clinicCode, invoice
         dose: drug.unit,
         total: drug.total,
         totcopay: drug.totcopay,
-        clinic: clinicCode || "09900",
+        clinic: opdData?.clinic || "09900",
         itemsrc: 2,
       };
       let adpIndex = newPaymentData.findIndex(a => a.id === t.id);
@@ -155,6 +165,42 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, clinicCode, invoice
       setAdditPaymentData([]);
     }
     setModalAdditPaymentOpen(false);
+  }
+
+  async function saveInvoiceAdjust(): Promise<void> {
+    if (chargeAdjust.code == "" || chargeAdjust.code == undefined) return;
+
+    let invoiceItems = [...invoiceData];
+    const index = invoiceItems.findIndex(t => t.chrgitem == chargeAdjust.code);
+    if (index <  0) return;
+    let invoiceItem = invoiceItems[index];
+    const totalRequest = formBillingEditor.getFieldValue("TotalRequest");
+    const totalOver = formBillingEditor.getFieldValue("TotalOver");
+
+    invoiceItems.splice(index, 1, {
+      ...invoiceItem,
+      totalAmount : totalRequest,
+      overAmount : totalOver,
+    });
+    setInvoiceData(invoiceItems);
+    setModaAdjustOpen(false);
+  }
+
+  function openChargeAdjust(chargeCode: string) {
+    let invoiceItems = [...invoiceData];
+    const index = invoiceItems.findIndex(t => t.chrgitem == chargeCode);
+    if (index > -1) {
+      const invoiceItem = invoiceItems[index];
+      formBillingEditor.setFieldValue('TotalRequest', invoiceItem.totalAmount);
+      formBillingEditor.setFieldValue('TotalOver', invoiceItem.overAmount);
+      setChargeAdjust({ code: chargeCode, display: getChargeDetails(chargeCode) });
+      setModaAdjustOpen(true);
+    }
+  }
+
+  function closeChargeAdjust() {
+    setModaAdjustOpen(false);
+    setChargeAdjust(defaultCharge);
   }
   //#endregion
 
@@ -309,7 +355,7 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, clinicCode, invoice
         sticky
         scroll={{ x: 400 }}
       />
-      <Form form={formBillingEditor}
+      <Form form={formBillingEditor} layout="inline"
         initialValues={{
           InvoiceDrug: { drugItems: drugItems },
           InvoiceAdp: { additionalItems: additPaymentData },
@@ -341,6 +387,26 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, clinicCode, invoice
           <Form.Item name="InvoiceAdp">
             <InvoiceAdditionalPage opdData={opdData} additionalItems={additPaymentData} />
           </Form.Item>
+        </Modal>
+        <Modal
+          title={<Space>
+            <FileExclamationTwoTone twoToneColor="#ffab00" />
+            {`แก้ไขรายการขอเบิก: ${chargeAdjust.display}`}
+          </Space>}
+          open={isAdjustOpen} centered width={"90%"}
+          onCancel={closeChargeAdjust} cancelText={"ปิด"}
+          onOk={saveInvoiceAdjust}
+          okText="นำไปใช้"
+        >
+          <Space style={{ width: '100%' }} direction="horizontal" size="large" align="center" >
+            <Form.Item label="ขอเบิก" name="TotalRequest" style={{ marginTop: '20px' }} >
+              <InputNumber style={{ width: '100%' }} />
+            </Form.Item>
+            <Divider type="vertical" orientation="center" style={{ height: '20px' }} />
+            <Form.Item label="เบิกไม่ได้" name="TotalOver" style={{ marginTop: '20px' }} >
+              <InputNumber style={{ width: '100%' }} />
+            </Form.Item>
+          </Space>
         </Modal>
       </Form>
     </>

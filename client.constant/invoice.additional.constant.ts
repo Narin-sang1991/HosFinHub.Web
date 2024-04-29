@@ -1,8 +1,10 @@
 
 import { v4 as uuidv4 } from "uuid";
 import type { InvoiceItemEditorModel, } from "@/store/financial/invoiceItemModel";
-import { AdditPaymentModelEditorModel, AdditionalPaymentModel } from "@/store/free-additional/additionalModel";
+import { AdditPaymentModelEditorModel, AdditionalPaymentModel } from "@/store/fee-additional/additionalModel";
 import { additionalPaymentChargePrefix, getChargeDetails } from "./invoice.billing.constant";
+import { OpdDetailModel } from "@/store/work-opd/opdEditorModel";
+import { PatientDetailModel } from "@/store/patient/patientModel";
 
 //#region Additional Payment Type
 export const adpTypeNonGroup = "3";
@@ -10,13 +12,14 @@ export const adpTypeFreeSchedule = "8";
 //#endregion
 
 type CalcAdpChargesProps = {
-  seqKey: string,
+  opdData?: OpdDetailModel,
+  patientData?: PatientDetailModel,
   invoiceEditors: InvoiceItemEditorModel[],
   adtEditors: AdditPaymentModelEditorModel[],
   reconcile?: boolean,
 };
 export async function recalcAdpCharges({
-  seqKey, invoiceEditors, adtEditors, reconcile }: CalcAdpChargesProps
+  opdData, patientData, invoiceEditors, adtEditors, reconcile }: CalcAdpChargesProps
 ): Promise<InvoiceItemEditorModel[]> {
   // if (adtEditors.length == 0) return invoiceEditors;
 
@@ -37,9 +40,13 @@ export async function recalcAdpCharges({
     let chrgitem = additionalPaymentChargePrefix + '1';
     let newInvoiceItem: InvoiceItemEditorModel = {
       id: uuidv4(),
-      seq: seqKey,
+      seq: opdData?.seq || "",
+      hn: opdData?.hn || "",
+      person_id: patientData?.person_id || "",
+      date: opdData?.dateopd || new Date,
       dummyKey: (invoiceEditors.length || 0) + 1,
       isDurty: true,
+      amount: sumTotal,
       totalAmount: sumTotal,
       overAmount: overAmount,
       chrgitem: chrgitem,
@@ -56,8 +63,7 @@ export async function recalcAdpCharges({
       ? Number(sumTotal.toString()) + Number(invoiceAdp.totalAmount.toString())
       : sumTotal);
     let editItem: InvoiceItemEditorModel = {
-      ...invoiceAdp,
-      seq: seqKey,
+      ...invoiceAdp, 
       totalAmount: calcResult,
       overAmount: overAmount,
       status: 1,
