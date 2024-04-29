@@ -10,7 +10,8 @@ import {
   Col, Tabs, Space,
   Avatar, Typography, Collapse,
   Skeleton, Affix, Button,
-  Divider
+  Divider,
+  message
 } from "antd";
 import {
   ManOutlined, WomanOutlined, MehOutlined,
@@ -18,6 +19,7 @@ import {
   MedicineBoxOutlined, DollarOutlined,
   SaveTwoTone,
   CloseCircleTwoTone,
+  SendOutlined,
 } from "@ant-design/icons";
 import {
   getAsync, getResult, getStatus, getValid,
@@ -50,6 +52,7 @@ import InvoiceBillingTab from "./invoice.billing";
 import InsureInfo from "./insure.info";
 import withTheme from "../../../theme";
 import "@/app/globals.css";
+import { claimOpd } from "@/services/send.fhd.prioviver";
 //#endregion
 
 interface OpdEditorProps { }
@@ -264,10 +267,34 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
   ];
   //#endregion
 
+  const onClickClaim = async () => {
+ 
+    const seq = editKey
+    console.log(seq);
+    
+    if (seq !== undefined) {
+      const resultClaim = await claimOpd([seq]) as unknown as any
+      if (resultClaim.status === 200) {
+        message.success(resultClaim.message_th)
+      } else {
+        message.error(resultClaim.message_th)
+      }
+    }else{
+      message.error('seq undefined.')
+    }
+
+  }
+
   return (
     <Skeleton active loading={status === "loading"} >
       <Space size={"small"} direction="vertical" align="end">
         <Affix offsetTop={50}  ><Row style={{ margin: -10, marginBottom: 10 }} justify="end" align="middle" gutter={[4, 4]}>
+          <Col>
+            <Button type="text" onClick={onClickClaim}
+              icon={<SendOutlined style={{ fontSize: '30px' }} color="blue" />}
+            />
+          </Col>
+          <Col> <Divider type="vertical" style={{ height: 20 }} /> </Col>
           <Col>
             <Button type="text" onClick={onSave} loading={saveState === "loading"}
               icon={<SaveTwoTone twoToneColor={'#52c41a'} style={{ fontSize: '30px' }} />}
