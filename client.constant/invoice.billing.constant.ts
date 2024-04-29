@@ -185,7 +185,8 @@ export function convertEditorToCha(chaEditors: InvoiceItemEditorModel[], opdData
   let excludeProps = ['dummyKey', 'isDurty', 'totalAmount', 'overAmount', 'chargeDetail', 'status', 'valid'];
   chaItems.forEach(item => {
     let overAmount: number = Number(item.overAmount.toString());
-    let totalAmount: number = overAmount > 0 ? Number(item.totalAmount.toString()) - overAmount : Number(item.totalAmount.toString());
+    // let totalAmount: number = overAmount > 0 ? Number(item.totalAmount.toString()) - overAmount : Number(item.totalAmount.toString());
+    let totalAmount: number = Number(item.totalAmount.toString());
 
     let dataSuffix1: InvoiceItemModel = getNewInvoiceItemData(opdData, patData);
     Object.keys(item).forEach((prop1) => {
@@ -195,7 +196,7 @@ export function convertEditorToCha(chaEditors: InvoiceItemEditorModel[], opdData
       ...dataSuffix1,
       id: uuidv4(),
       chrgitem: item.chrgitem[0] + '1',
-      amount: totalAmount,
+      amount: (totalAmount < 0 ? 0 : totalAmount),
     });
 
     if (overAmount > 0) {
@@ -212,7 +213,7 @@ export function convertEditorToCha(chaEditors: InvoiceItemEditorModel[], opdData
     }
 
   });
-  return results;
+  return results.filter(t => t.amount != 0);
 }
 
 function getNewInvoiceItemData(opdData: OpdDetailModel, patData: PatientDetailModel): InvoiceItemModel {

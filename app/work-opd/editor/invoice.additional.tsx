@@ -145,12 +145,13 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
       let hasCode: boolean = (row.code != '');
       if (index > -1) {
         const item = newData[index];
+        console.log("item=>", item);
         if (item.isFeeDrug) {
           let rowFeeDrug = row.feeEditor as FeeDrugSelectorModel;
           row.feeDrug = { ...rowFeeDrug };
           if ((rowFeeDrug.code).length > 0) row.code = rowFeeDrug.code || row.code;
           if (isNumber(Number(rowFeeDrug.unitPrice))) {
-            let unitPrice = Number(rowFeeDrug.unitPrice);
+            let unitPrice = Number(rowFeeDrug.unitPrice) == 0 ? Number(row.rate) : Number(rowFeeDrug.unitPrice);
             let totalreq = unitPrice * Number(row.qty);
             row.rate = unitPrice
             row.total = totalreq;
@@ -162,7 +163,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
           row.feeSchedule = { ...rowFeeSchedule };
           if ((rowFeeSchedule.item_code).length > 0) row.code = rowFeeSchedule.item_code || row.code;
           if (isNumber(Number(rowFeeSchedule.price))) {
-            let unitPrice = Number(rowFeeSchedule.price);
+            let unitPrice = Number(rowFeeSchedule.price) == 0 ? Number(row.rate) : Number(rowFeeSchedule.price);
             let totalreq = unitPrice * Number(row.qty);
             row.rate = unitPrice
             row.total = totalreq;

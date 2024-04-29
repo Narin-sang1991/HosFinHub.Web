@@ -22,7 +22,6 @@ export async function recalcAdpCharges({
   opdData, patientData, invoiceEditors, adtEditors, reconcile }: CalcAdpChargesProps
 ): Promise<InvoiceItemEditorModel[]> {
   // if (adtEditors.length == 0) return invoiceEditors;
-
   let results: InvoiceItemEditorModel[] = [...invoiceEditors];
   let overAmount: number = adtEditors.length > 0
     ? adtEditors.map(a => a.totcopay).reduce(function (a, b) { return Number(a.toString()) + Number(b.toString()); })
@@ -36,7 +35,6 @@ export async function recalcAdpCharges({
 
   let invoiceAdpIndex = invoiceEditors.findIndex(t => t.chrgitem.startsWith(additionalPaymentChargePrefix));
   if (invoiceAdpIndex <= -1) {
-
     let chrgitem = additionalPaymentChargePrefix + '1';
     let newInvoiceItem: InvoiceItemEditorModel = {
       id: uuidv4(),
@@ -54,7 +52,6 @@ export async function recalcAdpCharges({
       status: 1,
       valid: adtErr ? getErrorToAdpCharges() : [],
     };
-
     results.push(newInvoiceItem);
   }
   else {
@@ -63,7 +60,8 @@ export async function recalcAdpCharges({
       ? Number(sumTotal.toString()) + Number(invoiceAdp.totalAmount.toString())
       : sumTotal);
     let editItem: InvoiceItemEditorModel = {
-      ...invoiceAdp, 
+      ...invoiceAdp,
+      seq: opdData?.seq || "",
       totalAmount: calcResult,
       overAmount: overAmount,
       status: 1,
