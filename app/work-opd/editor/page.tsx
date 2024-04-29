@@ -91,7 +91,8 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       let adtItems = await genarateAdditPaymentEditors(originData.adp);
       let invoiceItems = await genarateAllCharges(originData.cha, valid);
       invoiceItems = await recalcAdpCharges({
-        seqKey: opdDetail.seq,
+        opdData: opdDetail,
+        patientData: patientDetail,
         invoiceEditors: invoiceItems,
         adtEditors: adtItems,
         reconcile: true
@@ -127,6 +128,13 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         Premitno: insureDetail.permitno,
         UUC: opdDetail.uuc,
         SubType: insureDetail.subinscl,
+        InvoiceBilling: {
+          opdData: editingData?.opdDetail || undefined,
+          patientData: editingData?.patient || undefined,
+          invoiceItems: editingData?.invoiceItems || [],
+          drugItems: editingData?.drugItems || [],
+          additPaymentItems: editingData?.additPayments || [],
+        }
       });
     })();
   }, [originData]);
@@ -140,18 +148,34 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
   }
 
   async function onSave() {
-    const data = formEditor.getFieldValue("InvoiceBilling");
-    console.log("data=>", data);
-    if (data == undefined) return;
 
-    const opdData: OpdDetailModel[] = editingData != undefined ? [{ ...editingData.opdDetail }] : [];
+    let invoicedata = formEditor.getFieldValue("InvoiceBilling");
+    // console.log("InvoiceBilling=>", invoicedata);
+    if (invoicedata == undefined
+      || (invoicedata.invoiceItems.length == 0
+        && invoicedata.drugItems.length == 0
+        && invoicedata.opdData == undefined
+      )) {
+      invoicedata = {
+        opdData: editingData?.opdDetail || undefined,
+        patientData: editingData?.patient || undefined,
+        invoiceItems: editingData?.invoiceItems || [],
+        drugItems: editingData?.drugItems || [],
+        additPaymentItems: editingData?.additPayments || [],
+      }
+    }
+    const uucEditing = formEditor.getFieldValue("UUC");
+    // console.log("invoicedata=>", invoicedata);
+    // console.log("uuc=>", uucEuucEditingditind);
+
+    const opdData: OpdDetailModel[] = editingData != undefined ? [{ ...editingData.opdDetail, uuc: uucEditing }] : [];
     const patData: PatientDetailModel[] = editingData != undefined ? [{ ...editingData.patient }] : [];
     const savedata: OpdDataModel = {
-      adp: convertEditorToAdp(data.adpItems),
-      aer: originData.additionEmergencies,
-      cht: convertEditorToCht(editingData?.invoices || [], data.invoiceItems),
-      cha: convertEditorToCha(data.invoiceItems, opdData[0], patData[0]),
-      dru: convertEditorToDru(data.drugItems),
+      adp: convertEditorToAdp(invoicedata.adpItems || invoicedata.additPaymentItems),
+      aer: editingData?.additionEmergencies || [],
+      cht: convertEditorToCht(editingData?.invoices || [], invoicedata.invoiceItems),
+      cha: convertEditorToCha(invoicedata.invoiceItems, opdData[0], patData[0]),
+      dru: convertEditorToDru(invoicedata.drugItems),
       ins: editingData?.insureItems || [],
       labfu: editingData?.labfuItems || [],
       odx: editingData?.diagnosisItems || [],

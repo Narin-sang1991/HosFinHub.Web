@@ -1,25 +1,25 @@
 import { getColResponsive } from "@/client.component/antd.col.resposive";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { getResult, saveAsync } from "@/store/work-opd/workOpdSlice";
+// import { getResult, saveAsync } from "@/store/work-opd/workOpdSlice";
 import { selectUccOption } from "@/store/insure/insureOpdSlice";
 import { Divider, Form, Input, Row, Select } from "antd";
 import React from "react";
 
 const InsureInfo = () => {
   const dispatch = useAppDispatch();
-  const originData = useAppSelector(getResult);
+  // const originData = useAppSelector(getResult);
   const selectUccOptions = useAppSelector(selectUccOption);
 
-  const onChangeOpdUuc = async (value: string) => {
-    const newOpd = originData?.opd.map((itemOpd) => {
-      const newItemOpd = { ...itemOpd }
-      newItemOpd.uuc = value
-      return newItemOpd;
-    });
+  // const onChangeOpdUuc = async (value: string) => {
+  //   const newOpd = originData?.opd.map((itemOpd) => {
+  //     const newItemOpd = { ...itemOpd }
+  //     newItemOpd.uuc = value
+  //     return newItemOpd;
+  //   });
 
-    const updatedOriginData = { ...originData, opd: newOpd };
-    await dispatch(saveAsync({ ...updatedOriginData }));
-  }
+  //   const updatedOriginData = { ...originData, opd: newOpd };
+  //   await dispatch(saveAsync({ ...updatedOriginData }));
+  // }
 
   return (
     <React.Fragment>
@@ -30,7 +30,7 @@ const InsureInfo = () => {
             key: 'UUC',
             children: <Form.Item label="การใช้สิทธิ์" name="UUC" >
               <Select
-                onChange={onChangeOpdUuc}
+                // onChange={onChangeOpdUuc}
                 options={selectUccOptions}>
               </Select>
             </Form.Item>
@@ -40,7 +40,7 @@ const InsureInfo = () => {
           getColResponsive({
             key: 'PatientSInsclex',
             children: <Form.Item label="สิทธิประโยชน์" name="Inscl" >
-              <Input readOnly />
+              <Input readOnly variant="filled" />
             </Form.Item>
           })
         }
@@ -48,16 +48,15 @@ const InsureInfo = () => {
           getColResponsive({
             key: 'SubType',
             children: <Form.Item label="โครงการพิเศษ" name="SubType" >
-              <Input readOnly />
+              <Input readOnly variant="filled" />
             </Form.Item>
           })
         }
-
         {
           getColResponsive({
             key: 'Premitno',
             children: <Form.Item label="รหัส Authen Code / เลขอนุมัติ" name="Premitno" >
-              <Input readOnly />
+              <Input readOnly variant="filled" />
             </Form.Item>
           })
         }

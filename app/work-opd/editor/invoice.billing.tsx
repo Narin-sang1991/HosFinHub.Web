@@ -13,11 +13,12 @@ import { getStatusDisplayType, getClaimStatusText, drugFileCode, drugInChargePre
 import { getAdpDisplay } from "@/client.constant/invoice.addit.payment.constant";
 import InvoiceDrugPage from "./invoice.drug";
 import InvoiceAdditionalPage from "./invoice.additional";
-import "@/app/globals.css";
+import InvoiceAdjustPage from "./invoice.item.adjust";
 import { adpTypeNonGroup, recalcAdpCharges } from "@/client.constant/invoice.additional.constant";
 import { recalcDrugCharges } from "@/client.constant/invoice.drug.constant";
 import { OpdDetailModel } from "@/store/work-opd/opdEditorModel";
 import { PatientDetailModel } from "@/store/patient/patientModel";
+import "@/app/globals.css";
 //#endregion
 
 type InvoiceBillingProps = {
@@ -172,15 +173,15 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
 
     let invoiceItems = [...invoiceData];
     const index = invoiceItems.findIndex(t => t.chrgitem == chargeAdjust.code);
-    if (index <  0) return;
+    if (index < 0) return;
     let invoiceItem = invoiceItems[index];
     const totalRequest = formBillingEditor.getFieldValue("TotalRequest");
     const totalOver = formBillingEditor.getFieldValue("TotalOver");
 
     invoiceItems.splice(index, 1, {
       ...invoiceItem,
-      totalAmount : totalRequest,
-      overAmount : totalOver,
+      totalAmount: totalRequest,
+      overAmount: totalOver,
     });
     setInvoiceData(invoiceItems);
     setModaAdjustOpen(false);
@@ -398,15 +399,7 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
           onOk={saveInvoiceAdjust}
           okText="นำไปใช้"
         >
-          <Space style={{ width: '100%' }} direction="horizontal" size="large" align="center" >
-            <Form.Item label="ขอเบิก" name="TotalRequest" style={{ marginTop: '20px' }} >
-              <InputNumber style={{ width: '100%' }} />
-            </Form.Item>
-            <Divider type="vertical" orientation="center" style={{ height: '20px' }} />
-            <Form.Item label="เบิกไม่ได้" name="TotalOver" style={{ marginTop: '20px' }} >
-              <InputNumber style={{ width: '100%' }} />
-            </Form.Item>
-          </Space>
+          <InvoiceAdjustPage />
         </Modal>
       </Form>
     </>

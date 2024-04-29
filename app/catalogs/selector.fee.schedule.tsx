@@ -35,7 +35,7 @@ export function FeeScheduleSelector({ propKey, showCode, showPrice, value, onCha
         if (initInfo?.item_code === undefined || initInfo?.item_code === "") return;
 
         if (initInfo.item_code !== selectedValue) {
-            console.log(initInfo.item_code, '<=>', selectedValue);
+            // console.log(initInfo.item_code, '<=>', selectedValue);
             setSelectedValue(initInfo.item_code);
         }
     }, [value]);

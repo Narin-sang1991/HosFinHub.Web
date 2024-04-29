@@ -36,7 +36,7 @@ export function FeeDrugSelector({ propKey, showCode, showPrice, value, onChange 
         if (initInfo?.code === undefined || initInfo?.code === "") return;
 
         if (initInfo.code !== selectedValue) {
-            console.log(initInfo.code, '<=>', selectedValue);
+            // console.log(initInfo.code, '<=>', selectedValue);
             setSelectedValue(initInfo.code);
         }
     }, [value]);

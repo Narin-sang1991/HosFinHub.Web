@@ -1,8 +1,10 @@
 "use client";
 
 import React from 'react';
-import { Form, Row, Input, Select, } from 'antd';
+import { Form, Row, Input, Select, Typography } from 'antd';
 import { getColResponsive } from "@/client.component/antd.col.resposive";
+
+const { Text } = Typography;
 
 const PatientInfoTab = function PatientInfo() {
     return (
@@ -29,7 +31,7 @@ const PatientInfoTab = function PatientInfo() {
                 getColResponsive({
                     key: 'PersonID',
                     children: <Form.Item label="เลขบัตรประชาชน" name="PersonID" >
-                        <Input readOnly />
+                        <Input readOnly variant="filled" />
                     </Form.Item>
                 })
             }
@@ -37,7 +39,7 @@ const PatientInfoTab = function PatientInfo() {
                 getColResponsive({
                     key: 'AgeAtOPD',
                     children: <Form.Item label="อายุ" name="AgeAtOPD" >
-                        <Input readOnly />
+                        <Input readOnly variant="filled" />
                     </Form.Item>
                 })
             }
@@ -45,7 +47,7 @@ const PatientInfoTab = function PatientInfo() {
                 getColResponsive({
                     key: 'PrefixName ',
                     children: <Form.Item label="คำนำหน้า" name="PrefixName" >
-                        <Input readOnly />
+                        <Input readOnly variant="filled" />
                     </Form.Item>
                 })
             }
@@ -53,7 +55,7 @@ const PatientInfoTab = function PatientInfo() {
                 getColResponsive({
                     key: 'FirstName',
                     children: <Form.Item label="ชื่อ" name="FirstName" >
-                        <Input readOnly />
+                        <Input readOnly variant="filled" />
                     </Form.Item>
                 })
             }
@@ -61,7 +63,7 @@ const PatientInfoTab = function PatientInfo() {
                 getColResponsive({
                     key: 'LastName',
                     children: <Form.Item label="นามสกุล" name="LastName" >
-                        <Input readOnly />
+                        <Input readOnly variant="filled" />
                     </Form.Item>
                 })
             }
@@ -69,7 +71,7 @@ const PatientInfoTab = function PatientInfo() {
                 getColResponsive({
                     key: 'DateOfBorn',
                     children: <Form.Item label="วัน/เดือน/ปี เกิด" name="DateOfBorn" >
-                        <Input readOnly />
+                        <Input readOnly variant="filled" />
                     </Form.Item>
                 })
             }
@@ -77,7 +79,7 @@ const PatientInfoTab = function PatientInfo() {
                 getColResponsive({
                     key: 'Nation',
                     children: <Form.Item label="สัญชาติ" name="Nation" >
-                        <Input readOnly />
+                        <Input readOnly variant="filled" />
                     </Form.Item>
                 })
             }
@@ -85,7 +87,7 @@ const PatientInfoTab = function PatientInfo() {
                 getColResponsive({
                     key: 'Marriage',
                     children: <Form.Item label="สถานภาพ" name="Marriage" >
-                        <Input readOnly />
+                        <Input readOnly variant="filled" />
                     </Form.Item>
                 })
             }
@@ -93,7 +95,7 @@ const PatientInfoTab = function PatientInfo() {
                 getColResponsive({
                     key: 'PatientSex',
                     children: <Form.Item label="เพศ" name="PatientSex" >
-                        <Input readOnly />
+                        <Input readOnly variant="filled" />
                     </Form.Item>
                 })
             }
@@ -101,7 +103,7 @@ const PatientInfoTab = function PatientInfo() {
                 getColResponsive({
                     key: 'Occupation',
                     children: <Form.Item label="อาชีพ" name="Occupation" >
-                        <Input readOnly />
+                        <Input readOnly variant="filled" />
                     </Form.Item>
                 })
             }
