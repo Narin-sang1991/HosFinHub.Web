@@ -43,6 +43,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
   }, [additionalItems]);
 
   const triggerChange = (additionalData: AdditPaymentModelEditorModel[]) => {
+    // console.log('additionalData', additionalData)
     onChange?.({ adpItems: additionalData });
   };
 
@@ -81,6 +82,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
       }
       additionalData.push(newData);
       setEditingData(additionalData);
+      triggerChange(additionalData);
     }
   };
 
@@ -114,6 +116,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
       }
       additionalData.push(newData);
       setEditingData(additionalData);
+      triggerChange(additionalData);
     }
   };
 
@@ -130,6 +133,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
     if (index > -1) {
       newData.splice(index, 1);
       setEditingData(newData);
+      triggerChange(newData);
     }
   };
 
