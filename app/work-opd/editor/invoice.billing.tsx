@@ -185,6 +185,7 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
     });
     setInvoiceData(invoiceItems);
     setModaAdjustOpen(false);
+    setChargeAdjust(defaultCharge);
   }
 
   function openChargeAdjust(chargeCode: string) {
