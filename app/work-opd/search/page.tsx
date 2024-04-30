@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Card, Form, Table, DatePicker, Tag, message, Badge, Space, Select, } from "antd";
+import { Button, Card, Form, Table, DatePicker, Tag, message, Badge, Space, Select, Input, } from "antd";
 import type { TableProps, TableColumnsType, } from "antd";
 import { SearchOutlined, EditOutlined, SendOutlined, } from "@ant-design/icons";
 import moment from "moment";
@@ -34,6 +34,7 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
   const searchTabletResult = useAppSelector(selectTabletResult);
   const originData = useAppSelector(getResult);
   const [uuc, setUuc] = useState<string>("1")
+
   //claim  FDH
   const onClickClaim = async (seq: string, countSend: number) => {
     const resultClaim = await claimOpd([seq]) as unknown as any
@@ -67,7 +68,7 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
     setFilterError(searchTabletResult);
   }, [searchTabletResult]);
 
-  
+
   //#region Search
   async function onSearch(index?: number, sorter?: any) {
     // console.log("page-searchAsync-->");
@@ -177,7 +178,7 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
           onChange={(valueNumber) => onChangeOpdUuc(valueNumber, record)}
           options={selectUccOptions}
           defaultValue={_value}
- 
+
         />
       )
     },
@@ -298,6 +299,7 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
           <Form.Item label="To: " name="DateTo" rules={[{ required: true }]}>
             <DatePicker placeholder="Select Date" allowClear />
           </Form.Item>
+
           <Form.Item label="" name="load_data">
             <Button
               key="load_data"
@@ -309,12 +311,19 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
             >
               {"ค้นหา"}
             </Button>
+
+            <Form.Item label="ค้นหา HN" name="hn">
+              <Input.Search />
+            </Form.Item>
           </Form.Item>
-          <Form.Item label="" name="send_data">
+          {/* <Form.Item label="" name="send_data">
             <ButtonSent opd={searchTabletResult} />
-          </Form.Item>
+          </Form.Item> */}
+
+
         </Form>
       </Card>
+
 
       <Fillter />
 
