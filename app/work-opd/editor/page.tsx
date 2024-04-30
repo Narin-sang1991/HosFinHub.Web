@@ -289,12 +289,12 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
     <Skeleton active loading={status === "loading"} >
       <Space size={"small"} direction="vertical" align="end">
         <Affix offsetTop={50}  ><Row style={{ margin: -10, marginBottom: 10 }} justify="end" align="middle" gutter={[4, 4]}>
-          <Col>
+          {/* <Col>
             <Button type="text" onClick={onClickClaim}
               icon={<SendOutlined style={{ fontSize: '30px' }} color="blue" />}
             />
-          </Col>
-          <Col> <Divider type="vertical" style={{ height: 20 }} /> </Col>
+          </Col> 
+          <Col> <Divider type="vertical" style={{ height: 20 }} /> </Col>*/}
           <Col>
             <Button type="text" onClick={onSave} loading={saveState === "loading"}
               icon={<SaveTwoTone twoToneColor={'#52c41a'} style={{ fontSize: '30px' }} />}
