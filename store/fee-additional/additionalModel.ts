@@ -38,6 +38,7 @@ export interface AdditPaymentModelEditorModel extends AdditionalPaymentModel {
     feeSchedule?: FeeScheduleSelectorModel,
     feeEditor: FeeDrugSelectorModel | FeeScheduleSelectorModel,
     typeDisplay?: string;
+    typeEditor: { id: string, text: string },
     isFeeDrug: boolean;
     hasError: boolean;
 }

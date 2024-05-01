@@ -47,8 +47,6 @@ export async function genarateAllCharges(
 
   await allCharges.forEach((chargePrefix, i) => {
     let invoiceInCharges = [...invoiceItems.filter((t) => t.chrgitem.startsWith(chargePrefix))] || [];
-    console.log("chargePrefix=>", chargePrefix);
-    console.log("invoiceInCharges=>", invoiceInCharges);
     let dummyKey: number = i + 1;
     if (invoiceInCharges.length > 0) {
       let totalAmount: number = 0;
@@ -88,6 +86,10 @@ export async function genarateAllCharges(
         chargeDetail: getChargeDetails(chrgitem),
         status: 0,
         valid: [],
+        hn: "",
+        date: new Date,
+        amount: 0,
+        person_id: ""
       };
       results.push(data);
     }

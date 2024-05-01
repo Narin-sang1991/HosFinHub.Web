@@ -340,7 +340,7 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
         className={"MasterBackground"}
         style={{ margin: "10px 0", width: "100%" }}
         sticky
-        scroll={{ x: 1000 }}
+        scroll={{ x: 800 }}
       />
     </Space>
   );

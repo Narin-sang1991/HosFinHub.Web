@@ -1,5 +1,38 @@
 import type { AdditionalPaymentModel, AdditPaymentModelEditorModel } from "@/store/fee-additional/additionalModel";
 
+export const allAdditTypes: { id: string, text: string }[] = [
+  { id: "1", text: "HC (OPD)" },
+  { id: "2", text: "อวัยวะเทียม/อุปกรณ์บำบัดรักษา" },
+  { id: "3", text: "บริการอื่นๆที่ยังไม่ได้จัดหมวด" },
+  { id: "4", text: "ค่าส่งเสริมป้องกัน/บริการเฉพาะ" },
+  { id: "5", text: "Project code" },
+  { id: "6", text: "การรักษามะเร็งตามโปรโตคอล" },
+  { id: "7", text: "การรักษามะเร็งด้วยรังสีวิทยา" },
+  { id: "8", text: "OP REFER และรายการ Fee Schedule" },
+  { id: "9", text: "ตรวจวินิจฉัยด้วยวิธีพิเศษอื่นๆ" },
+  { id: "10", text: "ค่าห้อง/ค่าอาหาร" },
+  { id: "11", text: "เวชภัณฑ์ที่ไม่ใช่ยา" },
+  { id: "12", text: "บริการทางทัตนกรรม" },
+  { id: "13", text: "บริการสงเข็ม" },
+  { id: "14", text: "บริการโลหิตและส่วนประกอบของโลหิต" },
+  { id: "15", text: "ตรวจวินิจฉัยทางเทคนิคการแพทย์และพยาธิวิทยา" },
+  { id: "16", text: "ตรวจวินิจฉัยและรักษาทางรังสีวิทยา" },
+  { id: "17", text: "ค่าบริการทางการพยาบาล" },
+  { id: "18", text: "อุปกรณ์ของใช้และเครื่องมือทางการแพทย์" },
+  { id: "19", text: "ทำหัตถการ และบริการวิสัญญี" },
+  { id: "20", text: "บริการทางกายภาพบำบัด และเวชกรรมฟื้นฟู" },
+];
+
+export const adpOptionalObj = {
+  CagCode: undefined,
+  CaType: undefined,
+  CagText: undefined,
+  SerialNo: undefined,
+  Gravida: undefined,
+  GravidaWeek: undefined,
+  LMP: undefined,
+};
+
 export async function genarateAdditPaymentEditors(
   adpItems: AdditionalPaymentModel[]
 ) {
@@ -8,12 +41,14 @@ export async function genarateAdditPaymentEditors(
 
     let dummyKey: number = i + 1;
     let newFeeDrug = { id: adpItem.id, code: adpItem.code, unitPrice: adpItem.rate.toString() };
-    let data: AdditPaymentModelEditorModel = {
+    let typeText = getAdpDisplay(adpItem.type);
+    const data: AdditPaymentModelEditorModel = {
       ...adpItem,
       dummyKey,
       isDurty: false,
       hasError: false,
-      typeDisplay: getAdpDisplay(adpItem.type),
+      typeDisplay: typeText,
+      typeEditor: { id: adpItem.type, text: typeText },
       feeDrug: { ...newFeeDrug },
       feeEditor: { ...newFeeDrug },
       isFeeDrug: true,
@@ -24,27 +59,11 @@ export async function genarateAdditPaymentEditors(
 }
 
 export function getAdpDisplay(type: string) {
-  if (type.startsWith("1")) return "HC (OPD)";
-  if (type.startsWith("2")) return "อวัยวะเทียม/อุปกรณ์บำบัดรักษา";
-  if (type.startsWith("3")) return "บริการอื่นๆที่ยังไม่ได้จัดหมวด";
-  if (type.startsWith("4")) return "ค่าส่งเสริมป้องกัน/บริการเฉพาะ";
-  if (type.startsWith("5")) return "Project code";
-  if (type.startsWith("6")) return "การรักษามะเร็งตามโปรโตคอล";
-  if (type.startsWith("7")) return "การรักษามะเร็งด้วยรังสีวิทยา";
-  if (type.startsWith("8")) return "OP REFER และรายการ Fee Schedule";
-  if (type.startsWith("9")) return "ตรวจวินิจฉัยด้วยวิธีพิเศษอื่นๆ";
-  if (type.startsWith("10")) return "ค่าห้อง/ค่าอาหาร";
-  if (type.startsWith("11")) return "เวชภัณฑ์ที่ไม่ใช่ยา";
-  if (type.startsWith("12")) return "บริการทางทัตนกรรม";
-  if (type.startsWith("13")) return "บริการสงเข็ม";
-  if (type.startsWith("14")) return "บริการโลหิตและส่วนประกอบของโลหิต";
-  if (type.startsWith("15")) return "ตรวจวินิจฉัยทางเทคนิคการแพทย์และพยาธิวิทยา";
-  if (type.startsWith("16")) return "ตรวจวินิจฉัยและรักษาทางรังสีวิทยา";
-  if (type.startsWith("17")) return "ค่าบริการทางการพยาบาล";
-  if (type.startsWith("18")) return "อุปกรณ์ของใช้และเครื่องมือทางการแพทย์";
-  if (type.startsWith("19")) return "ทำหัตถการ และบริการวิสัญญี";
-  if (type.startsWith("20")) return "บริการทางกายภาพบำบัด และเวชกรรมฟื้นฟู";
-
+  const index = allAdditTypes.findIndex(t => t.id == type);
+  if (index > -1) {
+    const allAdditType = allAdditTypes[index];
+    return allAdditType.text;
+  }
   return "-";
 }
 

@@ -268,10 +268,10 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
   //#endregion
 
   const onClickClaim = async () => {
- 
+
     const seq = editKey
     console.log(seq);
-    
+
     if (seq !== undefined) {
       const resultClaim = await claimOpd([seq]) as unknown as any
       if (resultClaim.status === 200) {
@@ -279,7 +279,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       } else {
         message.error(resultClaim.message_th)
       }
-    }else{
+    } else {
       message.error('seq undefined.')
     }
 
