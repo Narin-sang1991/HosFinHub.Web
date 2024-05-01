@@ -133,55 +133,55 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
     dispatch(getAsync({ seq: record.seq }))
   }
 
-  const updateUuc = async () => {
-    console.log("effect orgindata");
-    console.log(uuc);
+  // const updateUuc = async () => {
+  //   console.log("effect orgindata");
+  //   console.log(uuc);
 
-    if (originData === undefined) return
+  //   if (originData === undefined) return
 
-    const newOpd = originData?.opd.map((itemOpd) => {
-      const newItemOpd = { ...itemOpd }
-      newItemOpd.uuc = uuc
-      return newItemOpd;
-    });
+  //   const newOpd = originData?.opd.map((itemOpd) => {
+  //     const newItemOpd = { ...itemOpd }
+  //     newItemOpd.uuc = uuc
+  //     return newItemOpd;
+  //   });
 
-    const updatedOriginData = { ...originData, opd: newOpd };
-    console.log(updatedOriginData);
+  //   const updatedOriginData = { ...originData, opd: newOpd };
+  //   console.log(updatedOriginData);
 
-    await dispatch(saveAsync({ ...updatedOriginData }));
-  }
-  useEffect(() => {
-    updateUuc()
-  }, [originData])
+  //   await dispatch(saveAsync({ ...updatedOriginData }));
+  // }
+  // useEffect(() => {
+  //   updateUuc()
+  // }, [originData])
 
   const columns: TableColumnsType<OpdSearchModel> = [
-    {
-      title: "Calim",
-      dataIndex: "seq",
-      key: "seq",
-      fixed: 'left',
-      width: 50,
-      render: (seq, record: OpdSearchModel) =>
-        <Badge count={record.opd_claim_log.length} color="green">
-          <Button onClick={() => onClickClaim(seq, record.opd_claim_log.length)} icon={<SendOutlined />}>ส่งข้อมูลFDH</Button>
-        </Badge>
-    },
-    {
-      title: "เบิก",
-      dataIndex: "uuc",
-      key: "uuc",
-      width: 50,
-      fixed: "left",
-      ellipsis: true,
-      render: (_value, record: OpdSearchModel) => (
-        <Select
-          onChange={(valueNumber) => onChangeOpdUuc(valueNumber, record)}
-          options={selectUccOptions}
-          defaultValue={_value}
+    // {
+    //   title: "Calim",
+    //   dataIndex: "seq",
+    //   key: "seq",
+    //   fixed: 'left',
+    //   width: 50,
+    //   render: (seq, record: OpdSearchModel) =>
+    //     <Badge count={record.opd_claim_log.length} color="green">
+    //       <Button onClick={() => onClickClaim(seq, record.opd_claim_log.length)} icon={<SendOutlined />}>ส่งข้อมูลFDH</Button>
+    //     </Badge>
+    // },
+    // {
+    //   title: "เบิก",
+    //   dataIndex: "uuc",
+    //   key: "uuc",
+    //   width: 50,
+    //   fixed: "left",
+    //   ellipsis: true,
+    //   render: (_value, record: OpdSearchModel) => (
+    //     <Select
+    //       onChange={(valueNumber) => onChangeOpdUuc(valueNumber, record)}
+    //       options={selectUccOptions}
+    //       defaultValue={_value}
 
-        />
-      )
-    },
+    //     />
+    //   )
+    // },
     {
       title: "HN",
       dataIndex: "hn",
@@ -323,12 +323,9 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
 
         </Form>
       </Card>
-
-
       <Fillter />
-
       <Table
-        rowKey={(record) => record.id}
+        rowKey={'seq'}
         loading={status === "loading"}
         columns={columns}
         dataSource={searchTabletResult || []}
