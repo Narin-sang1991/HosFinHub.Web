@@ -39,12 +39,17 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
   const [feeDrugSelected, setDrugSelected] = useState<FeeDrugSelectorModel>(defaultFeeDrug);
   const defaultFeeSchedule = { item_code: "", item_name: "" };
   const [feeScheduleSelected, setScheduleSelected] = useState<FeeScheduleSelectorModel>(defaultFeeSchedule);
-  const [showDetail, setShowDetail] = useState(true);
+  const [showDetail, setShowDetail] = useState(false);
   const adding = useRef(false);
+
+  useEffect(() => {
+    formAdpAdding.setFieldsValue({ ...adpOptionalObj });
+  }, []);
 
   useEffect(() => {
     // console.log('invoice.additional', additionalItems);
     setEditingData(additionalItems);
+    formAdpAdding.setFieldsValue({ ...adpOptionalObj.TypeEditor });
   }, [additionalItems]);
 
   const triggerChange = (additionalData: AdditPaymentModelEditorModel[]) => {
@@ -134,35 +139,46 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
   //#endregion
 
   //#region Adding
-  const addItemFeeDrug = () => {
+  const addItemFeeDrug = async () => {
+    const formData = (await formAdpAdding.validateFields());
     const additionalData = [...editingAdditionalData];
     let newId = uuidv4();
     if (feeDrugSelected.code != "" && feeDrugSelected.code != undefined) {
-      let unitPrice = isNumber(Number(feeDrugSelected.unitPrice)) ? Number(feeDrugSelected.unitPrice) : 0;
-      let qty = 1;
-      let typeText = getAdpDisplay(adpTypeInstrument);
       const newData: AdditPaymentModelEditorModel = {
         dummyKey: (additionalData?.length || 0) + 1,
-        isDurty: false,
+        isDurty: true,
         hasError: false,
         id: newId,
         seq: opdData?.seq || "",
         hn: opdData?.hn || "",
         dateopd: opdData?.dateopd || new Date,
-        type: adpTypeInstrument,
-        typeDisplay: typeText,
-        typeEditor: { id: adpTypeInstrument, text: typeText },
-        code: feeDrugSelected.code,
+        type: formData.TypeEditor.id,
+        typeDisplay: formData.TypeEditor.text,
+        typeEditor: { id: formData.TypeEditor.id, text: formData.TypeEditor.text },
+        code: formData.Code,
         feeDrug: { ...feeDrugSelected },
         feeEditor: { ...feeDrugSelected },
         isFeeDrug: true,
-        qty: qty,
-        rate: unitPrice,
-        dose: feeDrugSelected.strength,
-        total: Number(unitPrice) * Number(qty),
-        totcopay: 0,
+        qty: Number(formData.Qty),
+        rate: Number(formData.Rate),
+        dose: formData.Dose,
+        total: Number(formData.Total),
+        totcopay: Number(formData.OverPayment),
         clinic: opdData?.clinic || "",
-        itemsrc: 2,
+        itemsrc: formData.ItemSource,
+        cagcode: formData.CagCode,
+        ca_type: formData.CaType,
+        serialno: formData.SerialNo,
+        use_status: formData.UseStatus,
+        tmltcode: formData.TmltCode,
+        status1: formData.Status1,
+        bi: formData.BI,
+        provider: formData.Provider,
+        gravida: formData.Gravida,
+        ga_week: formData.GravidaWeek,
+        dcip_e_screen: formData.ScreenCode,
+        lmp: formData.LMP,
+        qtyday: formData.QtyDay,
       }
       additionalData.push(newData);
       setEditingData(additionalData);
@@ -170,36 +186,46 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
     }
   };
 
-  const addItemFeeSchedule = () => {
+  const addItemFeeSchedule = async () => {
+    const formData = (await formAdpAdding.validateFields());
     const additionalData = [...editingAdditionalData];
     let newId = uuidv4();
     if (feeScheduleSelected.item_code != "" && feeScheduleSelected.item_code != undefined) {
-      let unitPrice = isNumber(Number(feeScheduleSelected.price)) ? Number(feeScheduleSelected.price) : 0;
-      let qty = 1;
-      let typeSelected = feeScheduleSelected.type || adpTypeFreeSchedule;
-      let typeText = getAdpDisplay(typeSelected);
       const newData: AdditPaymentModelEditorModel = {
         dummyKey: (additionalData?.length || 0) + 1,
-        isDurty: false,
+        isDurty: true,
         hasError: false,
         id: newId,
         seq: opdData?.seq || "",
         hn: opdData?.hn || "",
         dateopd: opdData?.dateopd || new Date,
-        type: typeSelected,
-        typeDisplay: typeText,
-        typeEditor: { id: typeSelected, text: typeText },
-        code: feeScheduleSelected.item_code,
+        type: formData.TypeEditor.id,
+        typeDisplay: formData.TypeEditor.text,
+        typeEditor: { id: formData.TypeEditor.id, text: formData.TypeEditor.text },
+        code: formData.Code,
         feeSchedule: { ...feeScheduleSelected },
         feeEditor: { ...feeScheduleSelected },
         isFeeDrug: false,
-        qty: qty,
-        rate: unitPrice,
-        dose: feeScheduleSelected.unit,
-        total: Number(unitPrice) * Number(qty),
-        totcopay: 0,
+        qty: Number(formData.Qty),
+        rate: Number(formData.Rate),
+        dose: formData.Dose,
+        total: Number(formData.Total),
+        totcopay: Number(formData.OverPayment),
         clinic: opdData?.clinic || "",
-        itemsrc: 2,
+        itemsrc: formData.ItemSource,
+        cagcode: formData.CagCode,
+        ca_type: formData.CaType,
+        serialno: formData.SerialNo,
+        use_status: formData.UseStatus,
+        tmltcode: formData.TmltCode,
+        status1: formData.Status1,
+        bi: formData.BI,
+        provider: formData.Provider,
+        gravida: formData.Gravida,
+        ga_week: formData.GravidaWeek,
+        dcip_e_screen: formData.ScreenCode,
+        lmp: formData.LMP,
+        qtyday: formData.QtyDay,
       }
       additionalData.push(newData);
       setEditingData(additionalData);
@@ -224,7 +250,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
         OverPayment: 0,
         Rate: unitPrice,
         Dose: selected.strength || "",
-        ItemSource: "2",
+        ItemSource: 2,
       });
     } else {
       formAdpAdding.setFieldsValue({ ...adpOptionalObj });
@@ -246,7 +272,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
         OverPayment: 0,
         Rate: selected.price || 0,
         Dose: selected.unit || "",
-        ItemSource: "2",
+        ItemSource: 2,
       });
     } else {
       formAdpAdding.setFieldsValue({ ...adpOptionalObj });
@@ -340,8 +366,8 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
               type="text" size="small" block
               icon={<CheckOutlined style={{ color: 'green' }} />}
             />
-            <Popconfirm
-              title="Sure to cancel?"
+            <Popconfirm okText="ใช่" cancelText="ไม่"
+              title="แน่ใจการ[ยกเลิก] ?"
               placement="bottom"
               onConfirm={cancel}
             >
@@ -405,8 +431,8 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
         editing: isEditing(record),
         selectorNode: col.dataIndex == "typeEditor"
           ? <AdditPaymentTypeSelector propKey="inlineTypeEditor" /> : record.isFeeDrug
-            ? <FeeDrugSelector propKey="inlineAdd" showCode />
-            : <FeeScheduleSelector propKey="inlineAdd" showCode />,
+            ? <FeeDrugSelector propKey="inlineAdd" showPrice />
+            : <FeeScheduleSelector propKey="inlineAdd" showPrice />,
         styleClass: record.hasError ? 'Col-Table-Row-Error' : '',
       }),
     } as TableColumnProps<AdditPaymentModelEditorModel>;
@@ -418,7 +444,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
       <Form form={formAdpAdding} layout="horizontal">
         <Row gutter={[16, 16]} style={{ width: '100%' }} justify={"space-between"} >
           <Col span={9}>
-            <FeeDrugSelector propKey="manualDrugAdd" showCode showPrice
+            <FeeDrugSelector propKey="manualDrugAdd" showCode
               onChange={onManualFreeDrugChange} value={feeDrugSelected}
             />
           </Col>
@@ -510,8 +536,8 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
                       name="ItemSource" rules={[{ required: true }]}>
                       <Select style={{ width: '100%' }} disabled={!adding.current} popupMatchSelectWidth={200}
                         options={[
-                          { value: '1', label: 'รหัสหน่วยบริการ' },
-                          { value: '2', label: 'รหัสกรมบัญชีกลาง/รหัสที่ สปสช. กำหนด' },
+                          { value: 1, label: 'รหัสหน่วยบริการ' },
+                          { value: 2, label: 'รหัสกรมบัญชีกลาง/รหัสที่ สปสช. กำหนด' },
                         ]}
                       />
                     </Form.Item>

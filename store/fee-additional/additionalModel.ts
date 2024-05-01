@@ -29,6 +29,7 @@ export interface AdditionalPaymentModel {
     ga_week?: string;
     dcip_e_screen?: string;
     lmp?: string;
+    qtyday: number;
 }
 
 export interface AdditPaymentModelEditorModel extends AdditionalPaymentModel {
