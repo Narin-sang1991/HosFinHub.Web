@@ -82,6 +82,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
   async function saveItem(key: React.Key): Promise<void> {
     try {
       const row = (await formAdpEditor.validateFields()) as AdditPaymentModelEditorModel;
+      console.log("row=>", row);
       const newData = [...editingAdditionalData];
       const index = newData.findIndex((item) => key === item.id);
       let hasCode: boolean = (row.code != '');
@@ -92,7 +93,8 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
           row.feeDrug = { ...rowFeeDrug };
           if ((rowFeeDrug.code).length > 0) row.code = rowFeeDrug.code || row.code;
           if (isNumber(Number(rowFeeDrug.unitPrice))) {
-            let unitPrice = Number(rowFeeDrug.unitPrice) == 0 ? Number(row.rate) : Number(rowFeeDrug.unitPrice);
+            let rowFeeDrugPrice = Number(rowFeeDrug.unitPrice);
+            let unitPrice = (rowFeeDrugPrice == 0 || rowFeeDrugPrice < Number(row.rate)) ? Number(row.rate) : rowFeeDrugPrice;
             let totalreq = unitPrice * Number(row.qty);
             row.rate = unitPrice
             row.total = totalreq;
@@ -104,7 +106,8 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
           row.feeSchedule = { ...rowFeeSchedule };
           if ((rowFeeSchedule.item_code).length > 0) row.code = rowFeeSchedule.item_code || row.code;
           if (isNumber(Number(rowFeeSchedule.price))) {
-            let unitPrice = Number(rowFeeSchedule.price) == 0 ? Number(row.rate) : Number(rowFeeSchedule.price);
+            let rowFeeSchedulePrice = Number(rowFeeSchedule.price);
+            let unitPrice = (rowFeeSchedulePrice == 0 || rowFeeSchedulePrice < Number(row.rate)) ? Number(row.rate) : rowFeeSchedulePrice;
             let totalreq = unitPrice * Number(row.qty);
             row.rate = unitPrice
             row.total = totalreq;
