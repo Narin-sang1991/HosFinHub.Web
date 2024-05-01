@@ -15,8 +15,7 @@ import { claimOpd } from '@/services/send.fhd.prioviver';
 
 const OpdTransfer = () => {
   const dispatch = useAppDispatch();
-  const [formDateFind] = Form.useForm();
-  const router = useRouter();
+  const [formDateFind] = Form.useForm(); 
   const searchTabletResult = useAppSelector(selectTabletResult);
   const [readyTable, setReadyTable] = useState<any[]>()
   const [selectionType, setSelectionType] = useState<'checkbox' | 'radio'>('checkbox');
@@ -153,16 +152,16 @@ const OpdTransfer = () => {
     }),
   };
 
-  const sentDataToFinance =async () => {
+  const sentDataToFinance = async () => {
     const getSeq = selectData?.map(item => item.seq)
-    if (getSeq.length > 0) { 
+    if (getSeq.length > 0) {
       const resultClaim = await claimOpd(getSeq) as unknown as any
       if (resultClaim.status === 200) {
         message.success(resultClaim.message_th)
       } else {
         message.error(resultClaim.message_th)
       }
-    }else{
+    } else {
       message.warning('เลือกรายการที่ต้องการส่ง')
     }
 
@@ -200,8 +199,8 @@ const OpdTransfer = () => {
         rowSelection={{ type: selectionType, ...rowSelection }}
         columns={columns}
         dataSource={readyTable}
-        rowKey={"seq"} />
-
+        rowKey={"seq"}
+      />
 
     </React.Fragment>
   )
