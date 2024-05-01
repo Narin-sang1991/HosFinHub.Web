@@ -33,7 +33,6 @@ const OpdTransfer = () => {
         if (filterItem.length > 0) {
           valueReady.push(item)
           console.log(item);
-
         }
       }
     })
