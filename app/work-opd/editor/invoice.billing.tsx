@@ -14,7 +14,7 @@ import { getAdpDisplay } from "@/client.constant/invoice.addit.payment.constant"
 import InvoiceDrugPage from "./invoice.drug";
 import InvoiceAdditionalPage from "./invoice.additional";
 import InvoiceAdjustPage from "./invoice.item.adjust";
-import { adpTypeNonGroup, recalcAdpCharges } from "@/client.constant/invoice.additional.constant";
+import { adpTypeInstrument, recalcAdpCharges } from "@/client.constant/invoice.additional.constant";
 import { recalcDrugCharges } from "@/client.constant/invoice.drug.constant";
 import { OpdDetailModel } from "@/store/work-opd/opdEditorModel";
 import { PatientDetailModel } from "@/store/patient/patientModel";
@@ -119,6 +119,7 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
 
       let drug = drugItems[drugIndex];
       let feeDrug = { id: drug.id, code: '', name: drug.didname, unitPrice: drug.drugprice.toString() };
+      const typeText = getAdpDisplay(adpTypeInstrument)
       let newItem: AdditPaymentModelEditorModel = {
         dummyKey: (newPaymentData?.length || 0) + 1,
         isDurty: false,
@@ -127,8 +128,9 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
         seq: opdData?.seq || "",
         hn: drug.hn,
         dateopd: drug.date_serv,
-        type: adpTypeNonGroup,
-        typeDisplay: getAdpDisplay(adpTypeNonGroup),
+        type: adpTypeInstrument,
+        typeDisplay: typeText,
+        typeEditor: { id: adpTypeInstrument, text: typeText },
         code: drug.did,
         feeDrug: { ...feeDrug },
         feeEditor: { ...feeDrug },
@@ -158,7 +160,7 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
 
   async function saveInvoiceAdditPayment(): Promise<void> {
     const adpEditing = formBillingEditor.getFieldValue("InvoiceAdp");
-    // console.log("adpEditing.adpItems=>", adpEditing.adpItems);
+    console.log("adpEditing.adpItems=>", adpEditing.adpItems);
     if (adpEditing?.adpItems.length > 0 || false) {
       let editingAdpItems = adpEditing.adpItems as AdditPaymentModelEditorModel[];
       setAdditPaymentData(editingAdpItems);

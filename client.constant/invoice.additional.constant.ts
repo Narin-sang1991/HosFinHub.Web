@@ -7,6 +7,7 @@ import { OpdDetailModel } from "@/store/work-opd/opdEditorModel";
 import { PatientDetailModel } from "@/store/patient/patientModel";
 
 //#region Additional Payment Type
+export const adpTypeInstrument = "2";
 export const adpTypeNonGroup = "3";
 export const adpTypeFreeSchedule = "8";
 //#endregion
