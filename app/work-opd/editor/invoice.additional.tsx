@@ -82,7 +82,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
   async function saveItem(key: React.Key): Promise<void> {
     try {
       const row = (await formAdpEditor.validateFields()) as AdditPaymentModelEditorModel;
-      console.log("row=>", row);
+      // console.log("row=>", row);
       const newData = [...editingAdditionalData];
       const index = newData.findIndex((item) => key === item.id);
       let hasCode: boolean = (row.code != '');
