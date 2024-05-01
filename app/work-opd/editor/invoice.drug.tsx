@@ -226,8 +226,8 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
               type="text" size="small" block
               icon={<CheckOutlined style={{ color: 'green' }} />}
             />
-            <Popconfirm
-              title="Sure to cancel?"
+            <Popconfirm okText="ใช่" cancelText="ยกเลิก"
+              title="แน่ใจการ[ลบ] ?"
               placement="bottom"
               onConfirm={cancel}
             >
