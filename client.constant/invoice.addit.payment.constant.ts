@@ -24,13 +24,28 @@ export const allAdditTypes: { id: string, text: string }[] = [
 ];
 
 export const adpOptionalObj = {
+  Code: undefined,
+  TypeEditor: { id: undefined, text: "", disabled: true },
+  Qty: undefined,
+  Total: undefined,
+  OverPayment: undefined,
+  Rate: undefined,
+  Dose: undefined,
   CagCode: undefined,
   CaType: undefined,
   CagText: undefined,
   SerialNo: undefined,
+  TmltCode: undefined,
+  Provider: undefined,
+  BI: undefined,
+  ItemSource: undefined,
   Gravida: undefined,
   GravidaWeek: undefined,
   LMP: undefined,
+  ScreenCode: undefined,
+  UseStatus: undefined,
+  Status1: undefined,
+  QtyDay: undefined,
 };
 
 export async function genarateAdditPaymentEditors(
