@@ -54,12 +54,10 @@ const Process: React.FC = () => {
   const [formDateProcess] = Form.useForm();
 
   const onChangeDate: FormProps['onFinish'] = (value) => {
-    if (value.dateVisit === undefined) return
-   
+    if (value.dateProcess === undefined) return
     const startDate = new Date(value.dateProcess[0].$d).toLocaleDateString('fr-CA', { year: 'numeric', month: '2-digit', day: "2-digit" })
     const endDate = new Date(value.dateProcess[1].$d).toLocaleDateString('fr-CA', { year: 'numeric', month: '2-digit', day: "2-digit" })
     const url = `http://183.88.219.85:5200/process/new-processing?dateStart=${startDate}&dateEnd=${endDate}`;
-  
     fetch(url, {
       method: "get",
     });
