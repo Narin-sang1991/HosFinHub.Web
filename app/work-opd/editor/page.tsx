@@ -5,19 +5,12 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import moment from "moment";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import {
-  Card, Form, Row,
-  Col, Tabs, Space,
-  Avatar, Typography, Collapse,
-  Skeleton, Affix, Button,
-  Divider,
-  message
-} from "antd";
+import { Card, Form, Row, Col, Tabs, Space, Avatar, Typography, Collapse, Skeleton, Affix, Button, Divider, message } from "antd";
 import {
   ManOutlined, WomanOutlined, MehOutlined,
   IdcardOutlined, TruckOutlined, ExperimentOutlined,
   MedicineBoxOutlined, DollarOutlined,
-  SaveTwoTone, CloseCircleTwoTone, SendOutlined,
+  SaveTwoTone, CloseCircleTwoTone
 } from "@ant-design/icons";
 import {
   getAsync, getResult, getStatus, getValid,
@@ -185,9 +178,9 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       pat: patData,
     };
     console.log("savedata=>", savedata);
-    // (async () => {
-    //   await dispatch(saveAsync({ ...savedata }));
-    // })();
+    (async () => {
+      await dispatch(saveAsync({ ...savedata }));
+    })();
   }
 
   function onClose() {

@@ -1,8 +1,4 @@
-import {
-  Button,
-  Space,
-  Divider,
-} from 'antd';
+import { Button, Space, Divider, } from 'antd';
 
 const Home = function Home() {
   return (

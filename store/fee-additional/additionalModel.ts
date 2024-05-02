@@ -1,4 +1,5 @@
-import { FeeDrugSelectorModel } from "./FeeDrugModel";
+
+import { FeeDrugSelectorModel } from "./feeDrugModel";
 import { FeeScheduleSelectorModel } from "./feeScheduleModel";
 
 
@@ -29,7 +30,7 @@ export interface AdditionalPaymentModel {
     ga_week?: string;
     dcip_e_screen?: string;
     lmp?: string;
-    qtyday: number;
+    qtyday?: number;
 }
 
 export interface AdditPaymentModelEditorModel extends AdditionalPaymentModel {

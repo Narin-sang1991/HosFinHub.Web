@@ -3,11 +3,11 @@ import type { InvoiceDrugModel, InvoiceDrugEditorModel } from "@/store/financial
 import type { InsureDetailModel } from "@/store/financial/insureModel";
 import type { InvoiceModel, } from "@/store/financial/invoiceModel";
 import type { InvoiceItemModel, InvoiceItemEditorModel } from "@/store/financial/invoiceItemModel";
-import { AdditionalPaymentModel, AdditPaymentModelEditorModel, } from "@/store/free-additional/additionalModel";
 import { DianosisModel } from "../dianosis/dianosisModel";
 import { LabfuModel } from "../medical-tech/labfuModel";
 import { AdditionEmergencyModel } from "../refer/referEmergencyModel";
 import { OpdReferModel } from "../refer/referModel";
+import { AdditionalPaymentModel, AdditPaymentModelEditorModel } from "../fee-additional/additionalModel";
 
 export interface OpdEditorModel {
 

@@ -1,4 +1,3 @@
-
 export interface FeeDrugModel {
     id: string; // unique key of data
     gpuid: string;

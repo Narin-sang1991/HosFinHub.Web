@@ -7,19 +7,9 @@ import React from "react";
 
 const InsureInfo = () => {
   const dispatch = useAppDispatch();
-  // const originData = useAppSelector(getResult);
+
   const selectUccOptions = useAppSelector(selectUccOption);
 
-  // const onChangeOpdUuc = async (value: string) => {
-  //   const newOpd = originData?.opd.map((itemOpd) => {
-  //     const newItemOpd = { ...itemOpd }
-  //     newItemOpd.uuc = value
-  //     return newItemOpd;
-  //   });
-
-  //   const updatedOriginData = { ...originData, opd: newOpd };
-  //   await dispatch(saveAsync({ ...updatedOriginData }));
-  // }
 
   return (
     <React.Fragment>
@@ -30,7 +20,6 @@ const InsureInfo = () => {
             key: 'UUC',
             children: <Form.Item label="การใช้สิทธิ์" name="UUC" >
               <Select
-                // onChange={onChangeOpdUuc}
                 options={selectUccOptions}>
               </Select>
             </Form.Item>

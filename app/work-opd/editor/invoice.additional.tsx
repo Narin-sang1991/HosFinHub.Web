@@ -516,7 +516,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
           </Col>
           <Col span={6}>
             <Form.Item label="ปริมาณ" tooltip="DOSE: 10(เว้นวรรค)mg | 20(เว้นวรรค)mg"
-              name="Dose" rules={[{ required: true }]}>
+              name="Dose" /*rules={[{ required: true }]}*/>
               <Input allowClear readOnly={!adding.current} variant={adding.current ? "outlined" : "filled"} />
             </Form.Item>
           </Col>
@@ -547,7 +547,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
                   </Col>
                   <Col span={6}>
                     <Form.Item label="TMLT CODE" tooltip="TMLTCODE: รหัสการตรวจ ตามบัญชีรายการ TMLT ที่ประกาศโดย สมสท."
-                      name="TmltCode" rules={[{ required: true }]}>
+                      name="TmltCode" /*</Col>rules={[{ required: true }]}*/>
                       <Input allowClear readOnly={!adding.current} variant={adding.current ? "outlined" : "filled"} />
                     </Form.Item>
                   </Col>

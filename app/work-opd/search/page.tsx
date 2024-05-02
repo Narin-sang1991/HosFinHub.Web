@@ -30,20 +30,9 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
   const [pageSize] = useState(15);
   const [filterValue, setFilterValue] = useState<FilterType[]>([]);
   const status = useAppSelector(selectStatus);
-  const selectUccOptions = useAppSelector(selectUccOption);
   const searchTabletResult = useAppSelector(selectTabletResult);
   const originData = useAppSelector(getResult);
-  const [uuc, setUuc] = useState<string>("1")
 
-  //claim  FDH
-  const onClickClaim = async (seq: string, countSend: number) => {
-    const resultClaim = await claimOpd([seq]) as unknown as any
-    if (resultClaim.status === 200) {
-      message.success(resultClaim.message_th)
-    } else {
-      message.error(resultClaim.message_th)
-    }
-  }
   // set errorfilter
   const setFilterError = (searchTabletResult: OpdSearchModel[]) => {
     const fillter: FilterType[] = [];
@@ -126,62 +115,7 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
   }
 
 
-  const onChangeOpdUuc = async (value: string, record: OpdSearchModel) => {
-    console.log(value);
-
-    setUuc(value)
-    dispatch(getAsync({ seq: record.seq }))
-  }
-
-  // const updateUuc = async () => {
-  //   console.log("effect orgindata");
-  //   console.log(uuc);
-
-  //   if (originData === undefined) return
-
-  //   const newOpd = originData?.opd.map((itemOpd) => {
-  //     const newItemOpd = { ...itemOpd }
-  //     newItemOpd.uuc = uuc
-  //     return newItemOpd;
-  //   });
-
-  //   const updatedOriginData = { ...originData, opd: newOpd };
-  //   console.log(updatedOriginData);
-
-  //   await dispatch(saveAsync({ ...updatedOriginData }));
-  // }
-  // useEffect(() => {
-  //   updateUuc()
-  // }, [originData])
-
-  const columns: TableColumnsType<OpdSearchModel> = [
-    // {
-    //   title: "Calim",
-    //   dataIndex: "seq",
-    //   key: "seq",
-    //   fixed: 'left',
-    //   width: 50,
-    //   render: (seq, record: OpdSearchModel) =>
-    //     <Badge count={record.opd_claim_log.length} color="green">
-    //       <Button onClick={() => onClickClaim(seq, record.opd_claim_log.length)} icon={<SendOutlined />}>ส่งข้อมูลFDH</Button>
-    //     </Badge>
-    // },
-    // {
-    //   title: "เบิก",
-    //   dataIndex: "uuc",
-    //   key: "uuc",
-    //   width: 50,
-    //   fixed: "left",
-    //   ellipsis: true,
-    //   render: (_value, record: OpdSearchModel) => (
-    //     <Select
-    //       onChange={(valueNumber) => onChangeOpdUuc(valueNumber, record)}
-    //       options={selectUccOptions}
-    //       defaultValue={_value}
-
-    //     />
-    //   )
-    // },
+  const columns: TableColumnsType<OpdSearchModel> = [   
     {
       title: "HN",
       dataIndex: "hn",
@@ -235,6 +169,17 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
       width: 40,
       ellipsis: true,
       onFilter: (value, record) => record.error.map((item) => item.code_error).indexOf(value as string) === 0,
+    },    
+    {
+      title: "Status",
+      dataIndex: "opd_claim_log",
+      key: 'seq',
+      width: 40,
+      ellipsis: true,
+      render: (_: any, record: OpdSearchModel) => <div>
+        {record.opd_claim_log.length===0?'รอตรวจสอบ':record.opd_claim_log.map(i => i.status.description)[0]}
+        
+        </div>
     },
     {
       title: "Error",
@@ -315,12 +260,7 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
             <Form.Item label="ค้นหา HN" name="hn">
               <Input.Search />
             </Form.Item>
-          </Form.Item>
-          {/* <Form.Item label="" name="send_data">
-            <ButtonSent opd={searchTabletResult} />
-          </Form.Item> */}
-
-
+          </Form.Item>   
         </Form>
       </Card>
       <Fillter />

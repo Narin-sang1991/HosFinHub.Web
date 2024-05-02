@@ -101,10 +101,12 @@ const MenuLayout = function MenuLayout({
             margin: 2,
             textAlign: "center",
             borderRadius: borderRadiusLG,
-            background: "gray",
+            background: "green",
+            fontWeight: "bold",
+            fontSize:"18px"
           }}
         >
-          LOGO
+          {"Financial Data \n HospitalOS"}
         </div>
         <Menu
           theme="light"
