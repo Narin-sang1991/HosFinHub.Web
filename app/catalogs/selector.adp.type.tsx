@@ -8,14 +8,15 @@ type AdditPaymentTypeSelectorProps = {
     propKey: string,
     showCode?: boolean,
     allowNull?: boolean,
-    value?: { id: string, text: string },
+    value?: { id: string, text: string, disabled: boolean },
     onChange?: any,
 }
 
-export function AdditPaymentTypeSelector({ propKey, showCode,allowNull, value, onChange }: AdditPaymentTypeSelectorProps) {
+export function AdditPaymentTypeSelector({ propKey, showCode, allowNull, value, onChange }: AdditPaymentTypeSelectorProps) {
 
     const [additTypes, setAdditTypes] = useState(allAdditTypes);
     const [isLoading, setLoading] = useState(false);
+    const [isDisabled, setDisabled] = useState(false);
     const [searchText, setSearchText] = useState<string>("");
     const [selectedValue, setSelectedValue] = useState<string>();
     const isPoked = useRef(false)
@@ -28,7 +29,8 @@ export function AdditPaymentTypeSelector({ propKey, showCode,allowNull, value, o
     useEffect(() => {
         let initInfo = { ...value };
         if (initInfo === undefined || initInfo === null) return;
-        if (!allowNull &&( initInfo?.id === undefined || initInfo?.id === "")) return;
+        if (!allowNull && (initInfo?.id === undefined || initInfo?.id === "")) return;
+        if (initInfo.disabled !== undefined) setDisabled(initInfo.disabled);
 
         if (initInfo.id !== selectedValue) {
             // console.log(initInfo.item_code, '<=>', selectedValue);
@@ -93,14 +95,14 @@ export function AdditPaymentTypeSelector({ propKey, showCode,allowNull, value, o
         <Select key={propKey}
             showSearch={true} allowClear={true}
             onClear={() => setSearchText("")}
-            style={{ width: '100%' }}
+            style={{ width: '100%' }} popupMatchSelectWidth={300}
+            optionLabelProp="" optionFilterProp="children"
             placeholder="ประเภท [ค้นหาและเลือก]"
-            optionFilterProp="children"
+            disabled={isDisabled}
             loading={isLoading}
             value={selectedValue}
             onSearch={(eText) => setSearchText(eText)}
-            onChange={setSelectedValue}
-            filterOption={false}
+            onChange={setSelectedValue} filterOption={false}
         >
             {
                 additTypes.length > 0

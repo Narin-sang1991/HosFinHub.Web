@@ -17,9 +17,7 @@ import {
   ManOutlined, WomanOutlined, MehOutlined,
   IdcardOutlined, TruckOutlined, ExperimentOutlined,
   MedicineBoxOutlined, DollarOutlined,
-  SaveTwoTone,
-  CloseCircleTwoTone,
-  SendOutlined,
+  SaveTwoTone, CloseCircleTwoTone, SendOutlined,
 } from "@ant-design/icons";
 import {
   getAsync, getResult, getStatus, getValid,
@@ -187,9 +185,9 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       pat: patData,
     };
     console.log("savedata=>", savedata);
-    (async () => {
-      await dispatch(saveAsync({ ...savedata }));
-    })();
+    // (async () => {
+    //   await dispatch(saveAsync({ ...savedata }));
+    // })();
   }
 
   function onClose() {

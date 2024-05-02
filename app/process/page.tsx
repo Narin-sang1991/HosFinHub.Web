@@ -1,8 +1,8 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
-import { DatePicker, Spin, Table, Tag } from "antd";
+import { Button, DatePicker, Form, Spin, Table, Tag } from "antd";
 import { io } from "socket.io-client";
-import type { TableProps } from "antd";
+import type { FormProps, TableProps } from "antd";
 
 type process = {
   procesName: string;
@@ -51,9 +51,13 @@ const columns: TableProps<process>["columns"] = [
 const Process: React.FC = () => {
   const [processing, setProcessing] = useState<process[]>([]);
   const [dateDisabel, setDateDisable] = useState<boolean>(false);
-  const onChangeDate = (_date: any, dateString: string[]) => {
-    const url = `http://183.88.219.85:5200/process/new-processing?dateStart=${dateString[0]}&dateEnd=${dateString[1]}`;
+  const [formDateProcess] = Form.useForm();
 
+  const onChangeDate: FormProps['onFinish'] = (value) => {
+    if (value.dateProcess === undefined) return
+    const startDate = new Date(value.dateProcess[0].$d).toLocaleDateString('fr-CA', { year: 'numeric', month: '2-digit', day: "2-digit" })
+    const endDate = new Date(value.dateProcess[1].$d).toLocaleDateString('fr-CA', { year: 'numeric', month: '2-digit', day: "2-digit" })
+    const url = `http://183.88.219.85:5200/process/new-processing?dateStart=${startDate}&dateEnd=${endDate}`;
     fetch(url, {
       method: "get",
     });
@@ -76,12 +80,25 @@ const Process: React.FC = () => {
 
   return (
     <React.Fragment>
-      <RangePicker onChange={onChangeDate} disabled={dateDisabel} />
+      <Form
+        layout="inline"
+        form={formDateProcess}
+        onFinish={onChangeDate}
+      >
+        <Form.Item name="dateProcess">
+          <RangePicker disabled={dateDisabel} />
+        </Form.Item>
+        <Form.Item>
+          <Button htmlType="submit">ประมวลผล</Button>
+        </Form.Item>
+      </Form>
+
       <Table
         columns={columns}
         dataSource={processing}
         size="small"
         pagination={false}
+        rowKey={"procesName"}
       />
     </React.Fragment>
   );

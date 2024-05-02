@@ -226,8 +226,8 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
               type="text" size="small" block
               icon={<CheckOutlined style={{ color: 'green' }} />}
             />
-            <Popconfirm
-              title="Sure to cancel?"
+            <Popconfirm okText="ใช่" cancelText="ไม่"
+              title="แน่ใจการ[ยกเลิก] ?"
               placement="bottom"
               onConfirm={cancel}
             >
@@ -249,8 +249,8 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
               />
             </Tooltip>
             <Tooltip title="ลบออก">
-              <Popconfirm
-                title="Sure to delete?"
+              <Popconfirm okText="ใช่" cancelText="ไม่"
+              title="แน่ใจการ[ลบ] ?"
                 placement="bottom"
                 onConfirm={() => moveItemToCharge(record)}
               >
