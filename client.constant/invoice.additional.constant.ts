@@ -55,23 +55,22 @@ export async function recalcAdpCharges({
     };
     results.push(newInvoiceItem);
   }
-  else {
-    let invoiceAdp = invoiceEditors[invoiceAdpIndex];
-    let calcResult: number = (reconcile === true
-      ? Number(sumTotal.toString()) + Number(invoiceAdp.totalAmount.toString())
-      : sumTotal);
-    let editItem: InvoiceItemEditorModel = {
-      ...invoiceAdp,
-      seq: opdData?.seq || "",
-      totalAmount: calcResult,
-      overAmount: overAmount,
-      status: 1,
-      isDurty: true,
-      valid: adtErr ? getErrorToAdpCharges() : [],
-    };
-
-    results.splice(invoiceAdpIndex, 1, editItem);
-  }
+  //  else {
+  //   let invoiceAdp = invoiceEditors[invoiceAdpIndex];
+  //   let calcResult: number = (reconcile === true
+  //     ? Number(sumTotal.toString()) + Number(invoiceAdp.totalAmount.toString())
+  //     : sumTotal);
+  //   let editItem: InvoiceItemEditorModel = {
+  //     ...invoiceAdp,
+  //     seq: opdData?.seq || "",
+  //     totalAmount: calcResult,
+  //     overAmount: overAmount,
+  //     status: 1,
+  //     isDurty: true,
+  //     valid: adtErr ? getErrorToAdpCharges() : [],
+  //   };
+  //   results.splice(invoiceAdpIndex, 1, editItem);
+  // }
   return await results;
 }
 
