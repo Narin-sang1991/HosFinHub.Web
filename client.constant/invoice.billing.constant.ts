@@ -96,21 +96,20 @@ export async function genarateAllCharges(
   });
 
   //#region Assign error to charge.
+  console.log('validItem=>', validItem);
   results = await results.map((item) => {
-    if (item.chrgitem === "41") {
-
-      //item 41 = ยาที่นำไปใช้ต่อที่บ้าน
+    if (item.chrgitem.startsWith(drugExChargePrefix)) {
+      //item 41 | 42 = ยาที่นำไปใช้ต่อที่บ้าน
       validItem?.forEach((v) => {
-        //dru error
-        if (v.dru && item.totalAmount > 0) {
+        if (v.dru && (item.totalAmount > 0 || item.overAmount > 0)) {
           item.valid = item.valid?.concat(v.dru);
         }
       });
       return item;
-    } else if (item.chrgitem === "31") {
-      //item 31 = ยาและสารอาหารทางเส้นเลือดที่ใช้ในโรงพยาบาล
+    } else if (item.chrgitem.startsWith(drugInChargePrefix)) {
+      //item 31 | 32 = ยาและสารอาหารทางเส้นเลือดที่ใช้ในโรงพยาบาล
       validItem?.forEach((v) => {
-        if (v.dru && item.totalAmount > 0) {
+        if (v.dru && (item.totalAmount > 0 || item.overAmount > 0)) {
           item.valid = item.valid?.concat(v.dru);
         }
       });
