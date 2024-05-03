@@ -9,7 +9,7 @@ import { InvoiceItemEditorModel } from "@/store/financial/invoiceItemModel";
 import { AdditPaymentModelEditorModel } from "@/store/fee-additional/additionalModel";
 import type { InvoiceDrugEditorModel } from "@/store/financial/invoiceDrugModel";
 import { MoveInvoiceItemModel } from "@/store/financial/moveItemModel";
-import { getStatusDisplayType, getClaimStatusText, drugFileCode, drugInChargePrefix, drugExChargePrefix, additionalPaymentChargePrefix, getChargeDetails, } from "@/client.constant/invoice.billing.constant";
+import { getStatusDisplayType, getClaimStatusText, drugFileCode, drugInChargePrefix, drugExChargePrefix, additionalPaymentChargePrefix, getChargeDetails, dentServicePayment } from "@/client.constant/invoice.billing.constant";
 import { getAdpDisplay } from "@/client.constant/invoice.addit.payment.constant";
 import InvoiceDrugPage from "./invoice.drug";
 import InvoiceAdditionalPage from "./invoice.additional";
@@ -19,6 +19,7 @@ import { recalcDrugCharges } from "@/client.constant/invoice.drug.constant";
 import { OpdDetailModel } from "@/store/work-opd/opdEditorModel";
 import { PatientDetailModel } from "@/store/patient/patientModel";
 import "@/app/globals.css";
+import InvoiceServices, { InvoiceServicesProps } from "./invoice.services";
 //#endregion
 
 type InvoiceBillingProps = {
@@ -30,7 +31,7 @@ type InvoiceBillingProps = {
   onChange?: any,
 };
 const { Text } = Typography;
-
+const defaultCharge = { code: "", display: "" };
 const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoiceItems, drugItems, additPaymentItems, onChange, }: InvoiceBillingProps) {
 
   const [formBillingEditor] = Form.useForm();
@@ -40,9 +41,8 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
   const [isModalDrugOpen, setModalDrugOpen] = useState(false);
   const [isAdditPaymentOpen, setModalAdditPaymentOpen] = useState(false);
   const [isAdjustOpen, setModaAdjustOpen] = useState(false);
-  const defaultCharge = { code: "", display: "" };
   const [chargeAdjust, setChargeAdjust] = useState(defaultCharge);
-
+  const [invoiceService, setInvoiceService] = useState<InvoiceServicesProps>()
   useEffect(() => {
     // formBillingEditor.resetFields(["InvoiceAdp"]);
     recalcAdpCharges({
@@ -81,19 +81,27 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
 
   //#region Editor
   function takeAction(chargeCode: string) {
+
     if (chargeCode.startsWith(drugInChargePrefix) || chargeCode.startsWith(drugExChargePrefix)) {
       setModalDrugOpen(true);
       setChargeAdjust(defaultCharge);
       return;
     }
-    if (chargeCode.startsWith(additionalPaymentChargePrefix)) {
+    else if (chargeCode.startsWith(additionalPaymentChargePrefix)) {
       setModalAdditPaymentOpen(true);
       setChargeAdjust(defaultCharge);
       return;
     }
-    if (chargeCode != "" && chargeCode != chargeAdjust.code) {
+    else if (chargeCode != "" && chargeCode != chargeAdjust.code) {
       openChargeAdjust(chargeCode);
       openChargeAdjust
+    }
+    else {
+      console.log(additPaymentData);
+      const setDataInvoice: InvoiceServicesProps = {
+        modelServiceOpen: true,
+       
+      }
     }
   }
 
@@ -404,9 +412,14 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
         >
           <InvoiceAdjustPage />
         </Modal>
+
+        <InvoiceServices
+          modelServiceData={invoiceService?.modelServiceData}
+          modelServiceOpen={invoiceService?.modelServiceOpen}
+        />
       </Form>
     </>
   );
 };
 
-export default InvoiceBillingTab;
+export default InvoiceBillingTab

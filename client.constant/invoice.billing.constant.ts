@@ -14,6 +14,11 @@ export const drugFileCode = "DRU";
 
 export const additionalPaymentChargePrefix = "J";
 export const additionalPaymentFileCode = "ADP";
+
+export const dentServicePayment = {
+  dentPaymentChargePrefix: 'D',
+  dentPaymentFileCode: "ADP"
+}
 //#endregion
 
 const allCharges: string[] = [
