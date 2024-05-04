@@ -2,7 +2,7 @@ import { createAppSlice } from "@/store/createAppSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { fetchSearchDrug, fetchSearchFeeSchedule } from "@/services/free.additional.provider";
 import type { FeeDrugModel } from "@/store/fee-additional/feeDrugModel";
-import { FeeScheduleModel } from "./feeScheduleModel";
+import  { FeeScheduleModel } from "./feeScheduleModel";
 
 
 export interface FeeAdditionalSliceState {
@@ -52,7 +52,7 @@ export const feeAdditionalSlice = createAppSlice({
         pending: (state) => {
           state.searchFeeStatus = "loading";
         },
-        fulfilled: (state, action: PayloadAction<FreeScheduleModel[]>) => {
+        fulfilled: (state, action: PayloadAction<FeeScheduleModel[]>) => {
           state.searchFeeStatus = "idle";
           state.searchFeeResult = action.payload;
         },

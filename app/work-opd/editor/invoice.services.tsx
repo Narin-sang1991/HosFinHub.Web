@@ -1,7 +1,11 @@
 "use client";
 import { allServicePayment } from "@/client.constant/invoice.map.service";
 import { AdditPaymentModelEditorModel } from "@/store/fee-additional/additionalModel";
-import { Modal, Table } from "antd";
+import { useAppSelector } from "@/store/hooks";
+import { OpdValidModel, OpdValids } from "@/store/work-opd/opdEditorModel";
+import { getValid } from "@/store/work-opd/workOpdSlice";
+import { WarningTwoTone } from "@ant-design/icons";
+import { Modal, Table, Tooltip } from "antd";
 //#region Import
 import React, { useEffect, useState } from "react";
 
@@ -15,19 +19,20 @@ interface InvoiceServicesType {
 
 export interface InvoiceServicesProps {
   modelServiceOpen?: boolean;
-  modelServoceDisplay?: string
   modelServiceData?: InvoiceServicesType
 }
 //#region DataTyep
 
 //#region React FC
-const InvoiceServices: React.FC<InvoiceServicesProps> = ({ modelServiceOpen, modelServiceData, modelServoceDisplay }) => {
+const InvoiceServices: React.FC<InvoiceServicesProps> = ({ modelServiceOpen, modelServiceData }) => {
+  const valid: OpdValidModel[] | undefined = useAppSelector(getValid);
   const [adpList, setAdpList] = useState<any[]>()
   const [modelOpen, setModelOpen] = useState<boolean | undefined>(false)
+  const [modelServoceDisplay, setModelServoceDisplay] = useState<string | undefined>("")
   useEffect(() => {
     setAdditional(modelServiceData?.chargeItemData)
     setModelOpen(modelServiceOpen)
-    console.log(modelServiceData?.chargeItemNumber);
+    //console.log(modelServiceData?.chargeItemNumber);
 
   }, [modelServiceData, modelServiceOpen])
 
@@ -37,11 +42,38 @@ const InvoiceServices: React.FC<InvoiceServicesProps> = ({ modelServiceOpen, mod
 
   const setAdditional = (itemValues: AdditPaymentModelEditorModel[] | undefined) => {
     if (modelServiceData === undefined) return
-
+    const getItemAdp: any[] = []
     const getAdpType = allServicePayment.find(i => i.paymentFileCode === (modelServiceData.chargeItemNumber.substring(0, 1)))
-    const getItemAdp = itemValues?.filter(item => item.type === getAdpType?.chargeItemType)
-    console.log(getItemAdp);
-    setAdpList(getItemAdp)
+    itemValues?.forEach(valuse => {
+      const getListType = getAdpType?.chargeItemType.filter(i => i === valuse.type) as unknown as string[]
+      if (getListType.length > 0) {
+        getItemAdp.push(valuse)
+      }
+    })
+
+    setModelServoceDisplay(getAdpType?.paymentName)
+    setAdpList(mappingAdpError(getItemAdp))
+  }
+
+  const mappingAdpError = (itemAdp: any[]) => {
+    const itemAdpError = valid?.filter((i) => i.adp)[0]["adp"] as unknown as OpdValids[];
+
+    console.log(itemAdpError);
+
+    return itemAdp.map(adp => {
+      const getValidItem = itemAdpError.filter(valid => valid.id === adp.id)
+
+      console.log(getValidItem);
+
+      adp.validError.concat(getValidItem)
+
+      let data = {
+        ...adp,
+        validError: getValidItem
+      }
+      return data
+    })
+
   }
   //#columns
   const columns = [
@@ -110,7 +142,23 @@ const InvoiceServices: React.FC<InvoiceServicesProps> = ({ modelServiceOpen, mod
       width: 15,
       ellipsis: true,
       editable: true,
-    }]
+    }, {
+      title: "ไม่ผ่าน",
+      dataIndex: "validError",
+      key: "validError",
+      className: "Center",
+      width: 20,
+      ellipsis: true,
+      render: (_: any, record: AdditPaymentModelEditorModel) => {
+        return record.validError?.map((i) => {
+          return (
+            <Tooltip title={`${i.code_error}: ${i.code_error_descriptions}`} >
+              <WarningTwoTone twoToneColor="#ffab00" style={{ fontSize: '20px' }} />
+            </Tooltip>
+          );
+        });
+      },
+    },]
 
   //#render
   return (

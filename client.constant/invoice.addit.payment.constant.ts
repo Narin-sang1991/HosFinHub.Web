@@ -62,6 +62,7 @@ export async function genarateAdditPaymentEditors(
       dummyKey,
       isDurty: false,
       hasError: false,
+      validError: [],
       typeDisplay: typeText,
       typeEditor: { id: adpItem.type, text: typeText },
       feeDrug: { ...newFeeDrug },

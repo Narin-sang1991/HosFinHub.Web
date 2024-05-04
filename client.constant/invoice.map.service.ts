@@ -1,67 +1,85 @@
 interface ServicePayment {
-
-    chargeItemType: string
+    chargeItemType: string[]
     paymentFileCode: string
+    paymentName?: string
 }
 
 export const allServicePayment: ServicePayment[] = [
     {
+        paymentName: "ค่าห้อง/ค่าอาหาร",
         paymentFileCode: "1",
-        chargeItemType: "10"
+        chargeItemType: ["10"]
     }, {
+        paymentName: "Instrument",
         paymentFileCode: "2",
-        chargeItemType: "2"
+        chargeItemType: ["2"]
     }, {
+        paymentName: "เวชภัณฑ์ที่ไม่ใช่ยา",
         paymentFileCode: "5",
-        chargeItemType: "11"
+        chargeItemType: ["11"]
     }, {
+        paymentName: "บริการโลหิตและส่วนประกอบของโลหิต",
         paymentFileCode: "6",
-        chargeItemType: "14"
+        chargeItemType: ["14"]
     }, {
+        paymentName: "ตรวจวินิฉัยทางเทคนิคการแพทย์และพยาธิวิทยา",
         paymentFileCode: "7",
-        chargeItemType: "15"
+        chargeItemType: ["15"]
     }, {
+        paymentName: "ตรวจวินิจฉัยและรักษาทางรังสีวิทยา",
         paymentFileCode: "8",
-        chargeItemType: "16"
+        chargeItemType: ["16"]
     }, {
+        paymentName: "ตรวจวินิจฉัยด้วยวิธีพิเศษอื่นๆ",
         paymentFileCode: "9",
-        chargeItemType: "9"
+        chargeItemType: ["9"]
     }, {
+        paymentName: "อุปการณ์และเครื่องมือทางการแพทย์",
         paymentFileCode: "A",
-        chargeItemType: "18"
+        chargeItemType: ["18"]
     }, {
+        paymentName: "ทำหัตถการและวิสัญญี",
         paymentFileCode: "B",
-        chargeItemType: "19"
+        chargeItemType: ["19"]
     }, {
+        paymentName: "ค่าบริการทางการพยาบาล",
         paymentFileCode: "C",
-        chargeItemType: "17"
+        chargeItemType: ["17"]
     }, {
+        paymentName: "ค่าบริการทันตกรรม",
         paymentFileCode: "D",
-        chargeItemType: "12"
+        chargeItemType: ["12"]
     }, {
+        paymentName: "บริการทางการกายภาพบำบัด/เวชกรรมฟื้นฟู",
         paymentFileCode: "E",
-        chargeItemType: "13"
+        chargeItemType: ["20"]
     },
     {
+        paymentName: "ค่าฝังเข็ม",
         paymentFileCode: "F",
-        chargeItemType: "null"
+        chargeItemType: ["13"]
     },
     {
+        paymentName: "",
         paymentFileCode: "G",
-        chargeItemType: "13"
+        chargeItemType: [""]
     }, {
+        paymentName: "",
         paymentFileCode: "H",
-        chargeItemType: "13"
+        chargeItemType: [""]
     },
     {
+        paymentName: "",
         paymentFileCode: "I",
-        chargeItemType: "null"
+        chargeItemType: ["null"]
     }, {
+        paymentName: "บริการอื่นๆที่ไม่ได้จัดหมวดหมู่",
         paymentFileCode: "J",
-        chargeItemType: "null"
+        chargeItemType: ["1", "3", "4", "5", "6", "7", "8"]
     }, {
+        paymentName: "",
         paymentFileCode: "K",
-        chargeItemType: "null"
+        chargeItemType: ["null"]
     },
 
 

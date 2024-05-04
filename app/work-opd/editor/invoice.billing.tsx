@@ -77,7 +77,6 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
       drugItems: drugData,
       adpItems: additPaymentData,
     });
-    
   };
 
   //#region Editor
@@ -101,7 +100,6 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
       console.log(additPaymentData);
       const setDataInvoice: InvoiceServicesProps = {
         modelServiceOpen: true,
-        modelServoceDisplay:chargeCode.chrgitem,
         modelServiceData: {
           chargeItemData: additPaymentData,
           chargeItemNumber: chargeCode.chrgitem
@@ -422,7 +420,6 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
         <InvoiceServices
           modelServiceData={invoiceService?.modelServiceData}
           modelServiceOpen={invoiceService?.modelServiceOpen}
-          modelServoceDisplay={invoiceService?.modelServoceDisplay}
         />
       </Form>
     </>

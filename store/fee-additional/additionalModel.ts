@@ -1,4 +1,5 @@
 
+import { OpdValids } from "../work-opd/opdEditorModel";
 import { FeeDrugSelectorModel } from "./feeDrugModel";
 import { FeeScheduleSelectorModel } from "./feeScheduleModel";
 
@@ -43,4 +44,5 @@ export interface AdditPaymentModelEditorModel extends AdditionalPaymentModel {
     typeEditor: { id: string, text: string },
     isFeeDrug: boolean;
     hasError: boolean;
+    validError?: OpdValids[];
 }
