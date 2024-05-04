@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Typography, Table, Statistic, Modal, Tag, Badge, Form, Space, InputNumber, Divider } from "antd";
 import type { TableColumnsType } from "antd";
 import { FileDoneOutlined, FileExclamationTwoTone } from "@ant-design/icons";
-import { InvoiceItemEditorModel } from "@/store/financial/invoiceItemModel";
+import { InvoiceItemEditorModel, InvoiceItemModel } from "@/store/financial/invoiceItemModel";
 import { AdditPaymentModelEditorModel } from "@/store/fee-additional/additionalModel";
 import type { InvoiceDrugEditorModel } from "@/store/financial/invoiceDrugModel";
 import { MoveInvoiceItemModel } from "@/store/financial/moveItemModel";
@@ -80,28 +80,33 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
   };
 
   //#region Editor
-  function takeAction(chargeCode: string) {
-
-    if (chargeCode.startsWith(drugInChargePrefix) || chargeCode.startsWith(drugExChargePrefix)) {
+  function takeAction(chargeCode: InvoiceItemModel) {
+    const { chrgitem } = chargeCode
+    if (chrgitem.startsWith(drugInChargePrefix) || chrgitem.startsWith(drugExChargePrefix)) {
       setModalDrugOpen(true);
       setChargeAdjust(defaultCharge);
       return;
     }
-    else if (chargeCode.startsWith(additionalPaymentChargePrefix)) {
+    else if (chrgitem.startsWith(additionalPaymentChargePrefix)) {
       setModalAdditPaymentOpen(true);
       setChargeAdjust(defaultCharge);
       return;
     }
-    else if (chargeCode != "" && chargeCode != chargeAdjust.code) {
-      openChargeAdjust(chargeCode);
-      openChargeAdjust
-    }
+    // else if (chrgitem != "" && chargeCode != chargeAdjust.code) {
+    //   openChargeAdjust(chargeCode);
+    //   openChargeAdjust
+    // }
     else {
       console.log(additPaymentData);
       const setDataInvoice: InvoiceServicesProps = {
         modelServiceOpen: true,
-       
+        modelServoceDisplay:chargeCode.chrgitem,
+        modelServiceData: {
+          chargeItemData: additPaymentData,
+          chargeItemNumber: chargeCode.chrgitem
+        }
       }
+      setInvoiceService(setDataInvoice)
     }
   }
 
@@ -300,7 +305,7 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
             block
             style={{ border: 0 }}
             icon={<FileDoneOutlined />}
-            onClick={() => takeAction(record.chrgitem)}
+            onClick={() => takeAction(record)}
           />
         ),
     },
@@ -325,7 +330,7 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
                 <Tag color="#f5222d">ไม่ผ่าน</Tag>
               </Badge>
             }
-            onClick={() => takeAction(record.chrgitem)}
+            onClick={() => takeAction(record)}
           />
         ),
     },
@@ -416,6 +421,7 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
         <InvoiceServices
           modelServiceData={invoiceService?.modelServiceData}
           modelServiceOpen={invoiceService?.modelServiceOpen}
+          modelServoceDisplay={invoiceService?.modelServoceDisplay}
         />
       </Form>
     </>
