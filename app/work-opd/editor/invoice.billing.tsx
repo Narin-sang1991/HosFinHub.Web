@@ -77,6 +77,7 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
       drugItems: drugData,
       adpItems: additPaymentData,
     });
+    
   };
 
   //#region Editor
