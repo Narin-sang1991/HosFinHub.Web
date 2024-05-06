@@ -10,11 +10,13 @@ type FreeScheduleSelectorProps = {
     propKey: string,
     showCode?: boolean,
     showPrice?: boolean,
+    allowNull?: boolean,
     value?: FeeScheduleSelectorModel,
+    types: string[],
     onChange?: any,
 }
 
-export function FeeScheduleSelector({ propKey, showCode, showPrice, value, onChange }: FreeScheduleSelectorProps) {
+export function FeeScheduleSelector({ propKey, showCode, showPrice, allowNull, value, types, onChange }: FreeScheduleSelectorProps) {
 
     const dispatch = useAppDispatch();
     const status = useAppSelector(searchFeeStatus);
@@ -26,17 +28,18 @@ export function FeeScheduleSelector({ propKey, showCode, showPrice, value, onCha
     const firstLoad = useRef(false)
 
     useEffect(() => {
-        firstLoad.current = true; 
+        firstLoad.current = true;
     }, []);
 
     useEffect(() => {
         let initInfo = { ...value };
         if (initInfo === undefined || initInfo === null) return;
-        if (initInfo?.item_code === undefined || initInfo?.item_code === "") return;
+        if (!allowNull && (initInfo?.item_code === undefined || initInfo?.item_code === "")) return;
 
         if (initInfo.item_code !== selectedValue) {
             // console.log(initInfo.item_code, '<=>', selectedValue);
             setSelectedValue(initInfo.item_code);
+            if (initInfo?.item_code != undefined && initInfo?.item_code != "") onGetSchedule(initInfo.item_code);
         }
     }, [value]);
 
@@ -58,7 +61,7 @@ export function FeeScheduleSelector({ propKey, showCode, showPrice, value, onCha
             isPoked.current = false;
             return;
         }
-        
+
         if (searchResult.length > 0) {
             let index = searchResult.findIndex(t => t.item_code == selectedValue);
             let itemSelected = searchResult[index];
@@ -66,7 +69,7 @@ export function FeeScheduleSelector({ propKey, showCode, showPrice, value, onCha
                 let changedObj: FeeScheduleSelectorModel = {
                     item_code: (itemSelected.item_code || selectedValue || ""),
                     item_name: itemSelected.item_name,
-                    type : itemSelected.type,
+                    type: itemSelected.type,
                     price: itemSelected.price,
                     unit: itemSelected.unit,
                 };
@@ -77,7 +80,7 @@ export function FeeScheduleSelector({ propKey, showCode, showPrice, value, onCha
     }, [selectedValue]);
 
     function onChangeWithNullObj() {
-        onChange?.({ 
+        onChange?.({
             item_code: selectedValue,
             item_name: "",
             type: "",
@@ -89,7 +92,19 @@ export function FeeScheduleSelector({ propKey, showCode, showPrice, value, onCha
     //#region Async
     async function onSearchSchedule(text: string) {
         (async () => {
-            await dispatch(searchFeeAsync({ adpKeyWord: text }));
+            await dispatch(searchFeeAsync({
+                adpKeyWord: text,
+                types: types
+            }));
+        })();
+    }
+    async function onGetSchedule(code: string) {
+        (async () => {
+            await dispatch(searchFeeAsync({
+                adpKeyWord: "",
+                item_code: code,
+                types: types
+            }));
         })();
     }
     //#endregion

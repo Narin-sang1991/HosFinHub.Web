@@ -35,7 +35,7 @@ export interface AdditionalPaymentModel {
 }
 
 export interface AdditPaymentModelEditorModel extends AdditionalPaymentModel {
-    dummyKey: number; // dummy key for UI component
+    dummyKey: string; // dummy key for UI component
     isDurty: boolean;
     feeDrug?: FeeDrugSelectorModel,
     feeSchedule?: FeeScheduleSelectorModel,

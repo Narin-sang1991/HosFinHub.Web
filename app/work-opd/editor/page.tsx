@@ -82,14 +82,14 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       let opdDetail = { ...originData.opd[0] };
       let patientDetail = { ...originData.pat[0] };
       let insureDetail = { ...originData.ins[0] }
-      let adtItems = await genarateAdditPaymentEditors(originData.adp);
+      let adtItems = await genarateAdditPaymentEditors(originData.adp, valid);
       let invoiceItems = await genarateAllCharges(originData.cha, valid);
       invoiceItems = await recalcAdpCharges({
         opdData: opdDetail,
         patientData: patientDetail,
         invoiceEditors: invoiceItems,
         adtEditors: adtItems,
-        reconcile: true
+        reconcile: false
       });
       let transformData: OpdEditorModel = {
         additPayments: adtItems,

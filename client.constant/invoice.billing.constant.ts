@@ -4,45 +4,106 @@ import type { InvoiceItemModel, InvoiceItemEditorModel, } from "@/store/financia
 import { OpdDetailModel, OpdValidModel } from "@/store/work-opd/opdEditorModel";
 import { InvoiceModel } from "@/store/financial/invoiceModel";
 import { PatientDetailModel } from "@/store/patient/patientModel";
+import { ChargeModel } from "@/store/financial/chargeModel";
 const defaultStrEmpty: string = "-";
 
 //#region File and Code
+export const roomAndFoodChargePrefix = "1";
+export const roomAndFoodAdpType = ["10"];
+
+export const instrumentChargePrefix = "2";
+export const instrumentAdpType = ["2"];
+
 export const drugInChargePrefix = "3";
 export const drugExChargePrefix = "4";
 export const drugFileCode = "DRU";
+export const drugAdpType = [];
 
+export const nonDrugChargePrefix = "5";
+export const nonDrugAdpType = ["11"];
+
+export const bloodAndCpnChargePrefix = "6";
+export const bloodAndCpnAdpType = ["14"];
+
+export const diagnosisMedChargePrefix = "7";
+export const diagnosisMedAdpType = ["15"];
+
+export const diagnosisXrayChargePrefix = "8";
+export const diagnosisXrayAdpType = ["16"];
+
+export const diagnosisSpecialChargePrefix = "9";
+export const diagnosisSpecialAdpType = ["9"];
+
+export const equipmentMedChargePrefix = "A";
+export const equipmentMedAdpType = ["18"];
+
+export const phyProcedureChargePrefix = "B";
+export const phyProcedureAdpType = ["19"];
+
+export const feeServicesMedChargePrefix = "C";
+export const feeServicesMedAdpType = ["17"];
+
+export const dentistryChargePrefix = "D";
+export const dentistryAdpType = ["12"];
+
+export const phyTherapyMedChargePrefix = "E";
+export const phyTherapyMedAdpType = ["20"];
+
+export const otherTherapyMedChargePrefix = "F";
+export const otherTherapyMedAdpType = ["13"];
+
+export const operRoomChargePrefix = "G";
+export const operRoomAdpType = [];
+
+export const personnelMedChargePrefix = "H";
+export const personnelMedAdpType = [];
+
+export const diseasePreventChargePrefix = "I";
+export const diseasePreventAdpType = [];
 
 export const additionalPaymentChargePrefix = "J";
+export const additionalPaymentAdpType = ["1", "3", "4", "5", "6", "7", "8", "0", "00"];
 export const additionalPaymentFileCode = "ADP";
 
-export const dentServicePayment = {
-  dentPaymentChargePrefix: 'D',
-  dentPaymentFileCode: "ADP"
-}
+export const statuteChargePrefix = "K";
+export const statuteAdpType = [];
 //#endregion
 
+
+//#region All Charge Items
 const allCharges: string[] = [
-  "1",
-  "2",
+  roomAndFoodChargePrefix,
+  instrumentChargePrefix,
   drugInChargePrefix,
   drugExChargePrefix,
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "A",
-  "B",
-  "C",
-  "D",
-  "E",
-  "F",
-  "G",
-  "H",
-  "I",
-  "J",
-  "K",
+  nonDrugChargePrefix,
+  bloodAndCpnChargePrefix,
+  diagnosisMedChargePrefix,
+  diagnosisXrayChargePrefix,
+  diagnosisSpecialChargePrefix,
+  equipmentMedChargePrefix,
+  phyProcedureChargePrefix,
+  feeServicesMedChargePrefix,
+  dentistryChargePrefix,
+  phyTherapyMedChargePrefix,
+  otherTherapyMedChargePrefix,
+  operRoomChargePrefix,
+  personnelMedChargePrefix,
+  diseasePreventChargePrefix,
+  additionalPaymentChargePrefix,
+  statuteChargePrefix,
 ];
+
+export const allChargeItems: ChargeModel[] = allCharges.map(chargePrefix => {
+  let item: ChargeModel = {
+    prefix: chargePrefix,
+    name: getChargeText(chargePrefix),
+    chargeTypes: getChargeTypes(chargePrefix),
+  }
+  return item;
+})
+
+//#endregion
 
 export async function genarateAllCharges(
   invoiceItems: InvoiceItemModel[],
@@ -73,7 +134,7 @@ export async function genarateAllCharges(
         isDurty: false,
         totalAmount: totalAmount,
         overAmount: overAmount,
-        chargeDetail: getChargeDetails(invoiceItem.chrgitem),
+        chargeDetail: getChargeText(invoiceItem.chrgitem),
         status: 1,
         valid: [],
       };
@@ -88,7 +149,7 @@ export async function genarateAllCharges(
         totalAmount: 0.0,
         overAmount: 0.0,
         chrgitem: chrgitem,
-        chargeDetail: getChargeDetails(chrgitem),
+        chargeDetail: getChargeText(chrgitem),
         status: 0,
         valid: [],
         hn: "",
@@ -101,7 +162,7 @@ export async function genarateAllCharges(
   });
 
   //#region Assign error to charge.
-  console.log('validItem=>', validItem);
+  // console.log('validItem=>', validItem);
   results = await results.map((item) => {
     if (item.chrgitem.startsWith(drugExChargePrefix)) {
       //item 41 | 42 = ยาที่นำไปใช้ต่อที่บ้าน
@@ -119,6 +180,14 @@ export async function genarateAllCharges(
         }
       });
       return item;
+    } else if (item.chrgitem.startsWith(additionalPaymentChargePrefix)) {
+      //item J1 | J2
+      validItem?.forEach((v) => {
+        if (v.adp) {
+          item.valid = item.valid?.concat(v.adp);
+        }
+      });
+      return item;
     } else {
       return item;
     }
@@ -128,33 +197,52 @@ export async function genarateAllCharges(
   return results;
 }
 
-export function getChargeDetails(chargeCode: string) {
-  if (chargeCode.startsWith("1")) return "ค่าห้อง/ค่าอาหาร";
-  if (chargeCode.startsWith("2")) return "อวัยวะเทียม/อุปกรณ์ในการบำบัดรักษา";
-  if (chargeCode.startsWith("3"))
-    return "ยาและสารอาหารทางเส้นเลือดที่ใช้ในโรงพยาบาล";
-  if (chargeCode.startsWith("4")) return "ยาที่นำไปใช้ต่อที่บ้าน";
-  if (chargeCode.startsWith("5")) return "เวชภัณฑ์ที่ไม่ใช่ยา";
-  if (chargeCode.startsWith("6")) return "บริการโลหิตและส่วนประกอบของโลหิต";
-  if (chargeCode.startsWith("7"))
-    return "ตรวจวินิจฉัยทางเทคนิคการแพทย์และพยาธิวิทยา";
-  if (chargeCode.startsWith("8")) return "ตรวจวินิจฉัยและรักษาทางรังสีวิทยา";
-  if (chargeCode.startsWith("9")) return "ตรวจวินิจฉัยด้วยวิธีพิเศษอื่นๆ";
-  if (chargeCode.startsWith("A"))
-    return "อุปกรณ์ของใช้และเครื่องมือทางการแพทย์";
-  if (chargeCode.startsWith("B")) return "ทำหัตถการ และบริการวิสัญญี";
-  if (chargeCode.startsWith("C")) return "ค่าบริการทางการพยาบาล";
-  if (chargeCode.startsWith("D")) return "บริการทางทัตนกรรม";
-  if (chargeCode.startsWith("E"))
-    return "บริการทางกายภาพบำบัด และเวชกรรมฟื้นฟู";
-  if (chargeCode.startsWith("F"))
-    return "บริการสงเข็ม/การบำบัดของผู้ประกอบโรคศิลปะอื่นๆ";
-  if (chargeCode.startsWith("G")) return "ค่าห้องผ่าตัดและห้องคลอด";
-  if (chargeCode.startsWith("H")) return "ค่าธรรมเนียมบุคลกรทางการแพทย์";
-  if (chargeCode.startsWith("I")) return "บริการอื่นๆ และส่งเสริมป้องกันโรค";
-  if (chargeCode.startsWith("J")) return "บริการอื่นๆ ที่ยังไม่ได้จัดหมวด";
-  if (chargeCode.startsWith("K")) return "พรบ.";
+export function getChargeText(chargeCode: string) {
+  if (chargeCode.startsWith(roomAndFoodChargePrefix)) return "ค่าห้อง/ค่าอาหาร";
+  if (chargeCode.startsWith(instrumentChargePrefix)) return "อวัยวะเทียม/อุปกรณ์ในการบำบัดรักษา";
+  if (chargeCode.startsWith(drugInChargePrefix)) return "ยาและสารอาหารทางเส้นเลือดที่ใช้ในโรงพยาบาล";
+  if (chargeCode.startsWith(drugExChargePrefix)) return "ยาที่นำไปใช้ต่อที่บ้าน";
+  if (chargeCode.startsWith(nonDrugChargePrefix)) return "เวชภัณฑ์ที่ไม่ใช่ยา";
+  if (chargeCode.startsWith(bloodAndCpnChargePrefix)) return "บริการโลหิตและส่วนประกอบของโลหิต";
+  if (chargeCode.startsWith(diagnosisMedChargePrefix)) return "ตรวจวินิจฉัยทางเทคนิคการแพทย์และพยาธิวิทยา";
+  if (chargeCode.startsWith(diagnosisXrayChargePrefix)) return "ตรวจวินิจฉัยและรักษาทางรังสีวิทยา";
+  if (chargeCode.startsWith(diagnosisSpecialChargePrefix)) return "ตรวจวินิจฉัยด้วยวิธีพิเศษอื่นๆ";
+  if (chargeCode.startsWith(equipmentMedChargePrefix)) return "อุปกรณ์ของใช้และเครื่องมือทางการแพทย์";
+  if (chargeCode.startsWith(phyProcedureChargePrefix)) return "ทำหัตถการ และบริการวิสัญญี";
+  if (chargeCode.startsWith(feeServicesMedChargePrefix)) return "ค่าบริการทางการพยาบาล";
+  if (chargeCode.startsWith(dentistryChargePrefix)) return "บริการทางทัตนกรรม";
+  if (chargeCode.startsWith(phyTherapyMedChargePrefix)) return "บริการทางกายภาพบำบัด และเวชกรรมฟื้นฟู";
+  if (chargeCode.startsWith(otherTherapyMedChargePrefix)) return "บริการสงเข็ม/การบำบัดของผู้ประกอบโรคศิลปะอื่นๆ";
+  if (chargeCode.startsWith(operRoomChargePrefix)) return "ค่าห้องผ่าตัดและห้องคลอด";
+  if (chargeCode.startsWith(personnelMedChargePrefix)) return "ค่าธรรมเนียมบุคลกรทางการแพทย์";
+  if (chargeCode.startsWith(diseasePreventChargePrefix)) return "บริการอื่นๆ และส่งเสริมป้องกันโรค";
+  if (chargeCode.startsWith(additionalPaymentChargePrefix)) return "บริการอื่นๆ ที่ยังไม่ได้จัดหมวด";
+  if (chargeCode.startsWith(statuteChargePrefix)) return "พรบ.";
   return defaultStrEmpty;
+}
+
+export function getChargeTypes(chargeCode: string): string[] {
+  if (chargeCode.startsWith(roomAndFoodChargePrefix)) return roomAndFoodAdpType;
+  if (chargeCode.startsWith(instrumentChargePrefix)) return instrumentAdpType;
+  if (chargeCode.startsWith(drugInChargePrefix)) return drugAdpType;
+  if (chargeCode.startsWith(drugExChargePrefix)) return drugAdpType;
+  if (chargeCode.startsWith(nonDrugChargePrefix)) return nonDrugAdpType;
+  if (chargeCode.startsWith(bloodAndCpnChargePrefix)) return bloodAndCpnAdpType;
+  if (chargeCode.startsWith(diagnosisMedChargePrefix)) return diagnosisMedAdpType;
+  if (chargeCode.startsWith(diagnosisXrayChargePrefix)) return diagnosisXrayAdpType;
+  if (chargeCode.startsWith(diagnosisSpecialChargePrefix)) return diagnosisSpecialAdpType;
+  if (chargeCode.startsWith(equipmentMedChargePrefix)) return equipmentMedAdpType;
+  if (chargeCode.startsWith(phyProcedureChargePrefix)) return phyProcedureAdpType;
+  if (chargeCode.startsWith(feeServicesMedChargePrefix)) return feeServicesMedAdpType;
+  if (chargeCode.startsWith(dentistryChargePrefix)) return dentistryAdpType;
+  if (chargeCode.startsWith(phyTherapyMedChargePrefix)) return phyTherapyMedAdpType;
+  if (chargeCode.startsWith(otherTherapyMedChargePrefix)) return otherTherapyMedAdpType;
+  if (chargeCode.startsWith(operRoomChargePrefix)) return operRoomAdpType;
+  if (chargeCode.startsWith(personnelMedChargePrefix)) return personnelMedAdpType;
+  if (chargeCode.startsWith(diseasePreventChargePrefix)) return diseasePreventAdpType;
+  if (chargeCode.startsWith(additionalPaymentChargePrefix)) return additionalPaymentAdpType;
+  if (chargeCode.startsWith(statuteChargePrefix)) return statuteAdpType;
+  return [];
 }
 
 export function getClaimStatusText(status: number) {

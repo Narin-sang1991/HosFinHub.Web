@@ -1,3 +1,4 @@
+import { OpdValids } from "../work-opd/opdEditorModel";
 
 export interface InvoiceItemModel {
   id: string; // unique key of data
@@ -17,5 +18,5 @@ export interface InvoiceItemEditorModel extends InvoiceItemModel {
   overAmount: number;
   chargeDetail: string;
   status: number;
-  valid?: any[];
+  valid?: OpdValids[];
 }

@@ -81,7 +81,5 @@ export const allServicePayment: ServicePayment[] = [
         paymentFileCode: "K",
         chargeItemType: ["null"]
     },
-
-
 ]
 

@@ -4,9 +4,9 @@
 //#region Import
 import React, { useState, useEffect, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Button, Typography, Table, Form, Space, Popconfirm, Tooltip, Tag, Row, Col, Input, InputNumber, Select, DatePicker, Collapse, } from "antd";
+import { Button, Typography, Table, Form, Space, Popconfirm, Tooltip, Row, Col, Input, InputNumber, Select, DatePicker, Collapse } from "antd";
 import type { TableProps, TableColumnProps } from "antd";
-import { EditTwoTone, CheckOutlined, CloseOutlined, DeleteOutlined, FileAddOutlined, MoreOutlined, } from "@ant-design/icons";
+import { EditTwoTone, CheckOutlined, CloseOutlined, DeleteOutlined, FileAddOutlined, MoreOutlined, WarningTwoTone, } from "@ant-design/icons";
 import { AdditPaymentModelEditorModel } from "@/store/fee-additional/additionalModel";
 import { EditableCell } from "@/client.component/antd.table.editable";
 import { FeeDrugSelector } from "@/app/catalogs/selector.fee.drug";
@@ -18,18 +18,20 @@ import { FeeScheduleSelectorModel } from "@/store/fee-additional/feeScheduleMode
 import { OpdDetailModel } from "@/store/work-opd/opdEditorModel";
 import { adpTypeInstrument, adpTypeFreeSchedule } from "@/client.constant/invoice.additional.constant";
 import { adpOptionalObj, getAdpDisplay } from "@/client.constant/invoice.addit.payment.constant";
-import { dateDisplayFormat, dateInterfaceFormat, } from "@/client.constant/format.constant";
+// import { dateDisplayFormat, dateInterfaceFormat, } from "@/client.constant/format.constant";
 //#endregion
 
 type InvoiceAdditionalProps = {
   opdData?: OpdDetailModel,
   additionalItems?: AdditPaymentModelEditorModel[],
+  adpTypes: string[],
+  showFeeDrug: boolean,
   onChange?: any,
 };
 
 const { Text } = Typography;
 
-const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalItems = [], onChange }: InvoiceAdditionalProps) {
+const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalItems = [], adpTypes, showFeeDrug, onChange }: InvoiceAdditionalProps) {
 
   const [formAdpEditor] = Form.useForm();
   const [formAdpAdding] = Form.useForm();
@@ -43,13 +45,9 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
   const adding = useRef(false);
 
   useEffect(() => {
-    formAdpAdding.setFieldsValue({ ...adpOptionalObj });
-  }, []);
-
-  useEffect(() => {
     // console.log('invoice.additional', additionalItems);
+    clearEditingItem();
     setEditingData(additionalItems);
-    formAdpAdding.setFieldsValue({ ...adpOptionalObj.TypeEditor });
   }, [additionalItems]);
 
   const triggerChange = (additionalData: AdditPaymentModelEditorModel[]) => {
@@ -59,6 +57,14 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
 
   //#region Editor
   const cancel = () => {
+    clearEditingItem();
+  };
+
+  function clearEditingItem(): void {
+    formAdpEditor.resetFields();
+    formAdpAdding.setFieldsValue({ ...adpOptionalObj });
+    setDrugSelected(defaultFeeDrug);
+    setScheduleSelected(defaultFeeSchedule);
     setEditingKey("");
   };
 
@@ -116,7 +122,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
           }
         }
 
-        if (item.type == row.typeEditor.id) {
+        if (item.type != row.typeEditor.id) {
           item.type = row.typeEditor.id;
           item.typeDisplay = row.typeEditor.text;
         }
@@ -124,12 +130,13 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
         newData.splice(index, 1, {
           ...item,
           ...row,
-          hasError: !hasCode
+          hasError: !hasCode,
+          validError: hasCode ? [] : item.validError,
         });
         setEditingData(newData);
         setEditingKey("");
       } else {
-        newData.push({ ...row, hasError: !hasCode });
+        newData.push({ ...row, hasError: !hasCode, validError: hasCode ? [] : getErrorToAdpCharges(key), });
         setEditingData(newData);
         setEditingKey("");
       }
@@ -148,7 +155,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
     let newId = uuidv4();
     if (feeDrugSelected.code != "" && feeDrugSelected.code != undefined) {
       const newData: AdditPaymentModelEditorModel = {
-        dummyKey: (additionalData?.length || 0) + 1,
+        dummyKey: newId.split('-')[0],
         isDurty: true,
         hasError: false,
         id: newId,
@@ -195,7 +202,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
     let newId = uuidv4();
     if (feeScheduleSelected.item_code != "" && feeScheduleSelected.item_code != undefined) {
       const newData: AdditPaymentModelEditorModel = {
-        dummyKey: (additionalData?.length || 0) + 1,
+        dummyKey: newId.split('-')[0],
         isDurty: true,
         hasError: false,
         id: newId,
@@ -286,7 +293,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
   //#region Local Filter Data
   const columns = [
     {
-      title: <p className="Center">ลำดับ</p>,
+      title: <p className="Center">คีย์หลัก</p>,
       dataIndex: "dummyKey",
       key: "dummyKey",
       width: 15,
@@ -297,11 +304,15 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
       title: "ประเภท",
       dataIndex: "typeEditor",
       key: "typeEditor",
-      width: 30,
+      width: 25,
       ellipsis: true,
       editable: true,
       render: (_: any, record: AdditPaymentModelEditorModel) => {
-        return <>{record.typeDisplay}</>
+        return <Tooltip title={record.typeDisplay}>
+          {(record.typeDisplay || []).length > 18
+            ? `${record.typeDisplay?.substring(0, 18)}...`
+            : record.typeDisplay
+          }</Tooltip>
       },
     },
     {
@@ -350,6 +361,23 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
       width: 15,
       ellipsis: true,
       editable: true,
+    },
+    {
+      title: <p className="Center">{"ไม่ผ่าน"}</p>,
+      dataIndex: "validError",
+      key: "validError",
+      className: "Center",
+      width: 10,
+      ellipsis: true,
+      render: (_: any, record: AdditPaymentModelEditorModel) => {
+        return record.validError?.map((i) => {
+          return (
+            <Tooltip title={`${i.code_error}: ${i.code_error_descriptions}`} >
+              <WarningTwoTone twoToneColor="#ffab00" style={{ fontSize: '20px' }} />
+            </Tooltip>
+          );
+        });
+      },
     },
     {
       title: viewMode
@@ -435,7 +463,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
         selectorNode: col.dataIndex == "typeEditor"
           ? <AdditPaymentTypeSelector propKey="inlineTypeEditor" /> : record.isFeeDrug
             ? <FeeDrugSelector propKey="inlineAdd" showPrice />
-            : <FeeScheduleSelector propKey="inlineAdd" showPrice />,
+            : <FeeScheduleSelector propKey="inlineAdd" showPrice types={adpTypes} />,
         styleClass: record.hasError ? 'Col-Table-Row-Error' : '',
       }),
     } as TableColumnProps<AdditPaymentModelEditorModel>;
@@ -446,26 +474,32 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
     <Space direction="vertical" >
       <Form form={formAdpAdding} layout="horizontal">
         <Row gutter={[16, 16]} style={{ width: '100%' }} justify={"space-between"} >
-          <Col span={9}>
-            <FeeDrugSelector propKey="manualDrugAdd" showCode
-              onChange={onManualFreeDrugChange} value={feeDrugSelected}
-            />
-          </Col>
-          <Col span={3}>
-            <Button
-              disabled={feeDrugSelected.code == "" || feeDrugSelected.code == undefined}
-              onClick={addItemFeeDrug}
-              type="primary" ghost
-              icon={<FileAddOutlined />}>
-              เพิ่ม
-            </Button>
-          </Col>
-          <Col span={9}>
-            <FeeScheduleSelector propKey="manualFeeAdd" showCode
+          {
+            showFeeDrug ?
+              <>
+                <Col span={9}>
+                  <FeeDrugSelector propKey="manualDrugAdd" showCode
+                    onChange={onManualFreeDrugChange} value={feeDrugSelected}
+                  />
+                </Col>
+                <Col span={3}>
+                  <Button
+                    disabled={feeDrugSelected.code == "" || feeDrugSelected.code == undefined}
+                    onClick={addItemFeeDrug}
+                    type="primary" ghost
+                    icon={<FileAddOutlined />}>
+                    เพิ่ม
+                  </Button>
+                </Col>
+              </>
+              : <></>
+          }
+          <Col span={showFeeDrug ? 9 : 18}>
+            <FeeScheduleSelector propKey="manualFeeAdd" showCode showPrice={!showFeeDrug} allowNull types={adpTypes}
               onChange={onManualFreeScheduleChange} value={feeScheduleSelected}
             />
           </Col>
-          <Col span={3}>
+          <Col span={showFeeDrug ? 3 : 6}>
             <Button
               disabled={feeScheduleSelected.item_code == "" || feeScheduleSelected.item_code == undefined}
               onClick={addItemFeeSchedule}
@@ -694,3 +728,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
 };
 
 export default InvoiceAdditionalPage;
+function getErrorToAdpCharges(key: React.Key): import("@/store/work-opd/opdEditorModel").OpdValids[] | undefined {
+  throw new Error("Function not implemented.");
+}
+

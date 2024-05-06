@@ -2,20 +2,18 @@ import { v4 as uuidv4 } from "uuid";
 import type { InvoiceDrugModel, InvoiceDrugEditorModel } from "@/store/financial/invoiceDrugModel";
 import { InvoiceItemEditorModel } from "@/store/financial/invoiceItemModel";
 import { OpdValidModel, OpdValids } from "@/store/work-opd/opdEditorModel";
-import { drugExChargePrefix, getChargeDetails } from "./invoice.billing.constant";
+import { drugExChargePrefix, getChargeText } from "./invoice.billing.constant";
 
 export function genarateDrugEditors(
   drugItems: InvoiceDrugModel[],
   validItems: OpdValidModel[] | undefined
 ) {
   let results: InvoiceDrugEditorModel[] = [];
+  const itemDruError = validItems?.filter((i) => i.dru)[0][
+    "dru"
+  ] as unknown as OpdValids[];
   drugItems.forEach((drugItem, i) => {
-    //assing Error
-    const itemDruError = validItems?.filter((i) => i.dru)[0][
-      "dru"
-    ] as unknown as OpdValids[];
     const assignItemError = itemDruError.filter((i) => i.id === drugItem.id);
-
     let dummyKey: number = i + 1;
     let data: InvoiceDrugEditorModel = {
       ...drugItem,
@@ -64,7 +62,7 @@ export async function recalcDrugCharges({
       totalAmount: sumTotal,
       overAmount,
       chrgitem: chrgitem,
-      chargeDetail: getChargeDetails(chrgitem),
+      chargeDetail: getChargeText(chrgitem),
       status: 1,
       valid: [],
     };

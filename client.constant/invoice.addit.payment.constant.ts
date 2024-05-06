@@ -1,4 +1,6 @@
 import type { AdditionalPaymentModel, AdditPaymentModelEditorModel } from "@/store/fee-additional/additionalModel";
+import { FeeScheduleSelectorModel } from "@/store/fee-additional/feeScheduleModel";
+import { OpdValidModel, OpdValids } from "@/store/work-opd/opdEditorModel";
 
 export const allAdditTypes: { id: string, text: string }[] = [
   { id: "1", text: "HC (OPD)" },
@@ -49,25 +51,28 @@ export const adpOptionalObj = {
 };
 
 export async function genarateAdditPaymentEditors(
-  adpItems: AdditionalPaymentModel[]
+  adpItems: AdditionalPaymentModel[],
+  validItems: OpdValidModel[] | undefined
 ) {
   let results: AdditPaymentModelEditorModel[] = [];
+  const itemAdpError = validItems?.filter((i) => i.adp)[0][
+    "adp"
+  ] as unknown as OpdValids[];
   await adpItems.forEach((adpItem, i) => {
-
-    let dummyKey: number = i + 1;
-    let newFeeDrug = { id: adpItem.id, code: adpItem.code, unitPrice: adpItem.rate.toString() };
+    const assignItemError = itemAdpError.filter((i) => i.id === adpItem.id);
+    const newFeeSchedule: FeeScheduleSelectorModel = { item_code: adpItem.code, item_name: "" };
     let typeText = getAdpDisplay(adpItem.type);
     const data: AdditPaymentModelEditorModel = {
       ...adpItem,
-      dummyKey,
+      dummyKey: adpItem.id.split('-')[0],
       isDurty: false,
-      hasError: false,
-      validError: [],
       typeDisplay: typeText,
       typeEditor: { id: adpItem.type, text: typeText },
-      feeDrug: { ...newFeeDrug },
-      feeEditor: { ...newFeeDrug },
-      isFeeDrug: true,
+      feeSchedule: { ...newFeeSchedule },
+      feeEditor: { ...newFeeSchedule },
+      isFeeDrug: false,
+      hasError: (assignItemError.length !== 0),
+      validError: assignItemError,
     };
     results.push(data);
   });

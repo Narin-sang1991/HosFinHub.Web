@@ -23,7 +23,7 @@ const { Text } = Typography;
 const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: InvoiceDrugProps) {
 
   const [formDrugEditor] = Form.useForm();
-  const [editingDrugData, setEditingData] = useState<InvoiceDrugEditorModel[]>([]);
+  const [editingDrugData, setEditingData] = useState<InvoiceDrugEditorModel[]>(drugItems);
   const [editingKey, setEditingKey] = useState("");
   const [moveItems, setMoveItems] = useState<MoveInvoiceItemModel[]>([]);
 
@@ -178,7 +178,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
       editable: true,
     },
     {
-      title: "ไม่ผ่าน",
+      title: <p className="Center">{"ไม่ผ่าน"}</p>,
       dataIndex: "validError",
       key: "validError",
       className: "Center",
@@ -250,7 +250,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
             </Tooltip>
             <Tooltip title="ลบออก">
               <Popconfirm okText="ใช่" cancelText="ไม่"
-              title="แน่ใจการ[ลบ] ?"
+                title="แน่ใจการ[ลบ] ?"
                 placement="bottom"
                 onConfirm={() => moveItemToCharge(record)}
               >
@@ -301,7 +301,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
             },
           }}
           columns={mergedColumns}
-          dataSource={editingDrugData}
+          dataSource={editingDrugData || []}
           size="small"
           className={"MasterBackground"}
           pagination={{ pageSize: 10, simple: true }}
