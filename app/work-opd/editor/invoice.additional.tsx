@@ -16,7 +16,7 @@ import { isNumber } from "@/client.constant/format.constant";
 import { FeeDrugSelectorModel } from "@/store/fee-additional/feeDrugModel";
 import { FeeScheduleSelectorModel } from "@/store/fee-additional/feeScheduleModel";
 import { OpdDetailModel } from "@/store/work-opd/opdEditorModel";
-import { adpTypeInstrument, adpTypeFreeSchedule } from "@/client.constant/invoice.additional.constant";
+import { adpTypeFreeSchedule, adpTypeNonGroup } from "@/client.constant/invoice.additional.constant";
 import { adpOptionalObj, getAdpDisplay } from "@/client.constant/invoice.addit.payment.constant";
 // import { dateDisplayFormat, dateInterfaceFormat, } from "@/client.constant/format.constant";
 //#endregion
@@ -43,6 +43,8 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
   const [feeScheduleSelected, setScheduleSelected] = useState<FeeScheduleSelectorModel>(defaultFeeSchedule);
   const [showDetail, setShowDetail] = useState(false);
   const adding = useRef(false);
+  const [pageIndex, setPageIndex] = useState(1);
+  const defaultPageSize = 5;
 
   useEffect(() => {
     // console.log('invoice.additional', additionalItems);
@@ -53,6 +55,11 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
   const triggerChange = (additionalData: AdditPaymentModelEditorModel[]) => {
     // console.log('additionalData', additionalData)
     onChange?.({ adpItems: additionalData });
+    let moveNext = Number(additionalData.length) > (Number(pageIndex) * Number(defaultPageSize));
+    let newPageIndex = moveNext
+      ? pageIndex + 1
+      : pageIndex;
+    setPageIndex(newPageIndex);
   };
 
   //#region Editor
@@ -66,6 +73,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
     setDrugSelected(defaultFeeDrug);
     setScheduleSelected(defaultFeeSchedule);
     setEditingKey("");
+    setPageIndex(1);
   };
 
   const viewMode = editingKey === "";
@@ -88,9 +96,10 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
   async function saveItem(key: React.Key): Promise<void> {
     try {
       const row = (await formAdpEditor.validateFields()) as AdditPaymentModelEditorModel;
-      // console.log("row=>", row);
+      console.log("row=>", row);
       const newData = [...editingAdditionalData];
-      const index = newData.findIndex((item) => key === item.id);
+      const index = newData.findIndex((item) => key == item.id);
+      console.log("index=>", index);
       let hasCode: boolean = (row.code != '');
       if (index > -1) {
         const item = newData[index];
@@ -248,7 +257,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
     adding.current = selected.code != undefined && selected.code != "";
 
     if (selected.code != undefined && selected.code != "") {
-      let typeSelected = adpTypeInstrument;
+      let typeSelected = adpTypeNonGroup;
       let qty = 1;
       let unitPrice = isNumber(Number(selected.unitPrice)) ? Number(selected.unitPrice) : 0;
       formAdpAdding.setFieldsValue({
@@ -468,6 +477,11 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
       }),
     } as TableColumnProps<AdditPaymentModelEditorModel>;
   });
+
+  const onTableCriteriaChange: TableProps<AdditPaymentModelEditorModel>['onChange'] = (pagination, filters, sorter, extra) => {
+    setPageIndex(pagination.current ?? 1);
+    console.log('pagination.current=>', pagination.current);
+  };
   //#endregion
 
   return (
@@ -717,7 +731,8 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
           dataSource={editingAdditionalData}
           size="small" bordered
           className={"MasterBackground"}
-          pagination={{ pageSize: 5, simple: true }}
+          onChange={onTableCriteriaChange}
+          pagination={{ pageSize: defaultPageSize, current: pageIndex, simple: true }}
           style={{ margin: 0, height: "300px", width: "100%" }}
           sticky
           scroll={{ x: 400 }}

@@ -34,7 +34,7 @@ import {
 } from "@/client.constant/patient.constant";
 import { getColResponsive } from "@/client.component/antd.col.resposive";
 import { dateDisplayFormat } from "@/client.constant/format.constant";
-import { convertEditorToCha, convertEditorToCht, genarateAllCharges } from "@/client.constant/invoice.billing.constant";
+import { additionalPaymentChargePrefix, convertEditorToCha, convertEditorToCht, genarateAllCharges } from "@/client.constant/invoice.billing.constant";
 import { convertEditorToDru, genarateDrugEditors } from "@/client.constant/invoice.drug.constant";
 import { convertEditorToAdp, genarateAdditPaymentEditors } from "@/client.constant/invoice.addit.payment.constant";
 import { recalcAdpCharges } from "@/client.constant/invoice.additional.constant";
@@ -89,7 +89,8 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         patientData: patientDetail,
         invoiceEditors: invoiceItems,
         adtEditors: adtItems,
-        reconcile: false
+        reconcile: false,
+        chargeCalcScope: additionalPaymentChargePrefix
       });
       let transformData: OpdEditorModel = {
         additPayments: adtItems,

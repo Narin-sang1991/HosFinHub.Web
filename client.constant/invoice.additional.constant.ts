@@ -2,7 +2,7 @@
 import { v4 as uuidv4 } from "uuid";
 import type { InvoiceItemEditorModel, } from "@/store/financial/invoiceItemModel";
 import { AdditPaymentModelEditorModel, AdditionalPaymentModel } from "@/store/fee-additional/additionalModel";
-import { additionalPaymentChargePrefix, getChargeText } from "./invoice.billing.constant";
+import { additionalPaymentChargePrefix, allChargeItems, drugExChargePrefix, drugInChargePrefix, getChargeText } from "./invoice.billing.constant";
 import { OpdDetailModel, OpdValids } from "@/store/work-opd/opdEditorModel";
 import { PatientDetailModel } from "@/store/patient/patientModel";
 
@@ -17,25 +17,34 @@ type CalcAdpChargesProps = {
   patientData?: PatientDetailModel,
   invoiceEditors: InvoiceItemEditorModel[],
   adtEditors: AdditPaymentModelEditorModel[],
+  chargeCalcScope: string,
   reconcile?: boolean,
 };
 export async function recalcAdpCharges({
-  opdData, patientData, invoiceEditors, adtEditors, reconcile }: CalcAdpChargesProps
+  opdData, patientData, invoiceEditors, adtEditors, chargeCalcScope, reconcile }: CalcAdpChargesProps
 ): Promise<InvoiceItemEditorModel[]> {
   if (adtEditors.length == 0) return invoiceEditors;
+
+  // await allChargeItems.forEach((chargeItem) => {
+  const chargeItem = allChargeItems.find(t => chargeCalcScope.startsWith(t.prefix));
+  if (chargeItem == undefined) return invoiceEditors;
+  if (chargeItem.prefix == drugInChargePrefix || chargeItem.prefix == drugExChargePrefix) return invoiceEditors;
+  // if (!chargeCalcScope.startsWith(chargeItem.prefix)) return;
+
   let results: InvoiceItemEditorModel[] = [...invoiceEditors];
-  let overAmount: number = adtEditors.length > 0
-    ? adtEditors.map(a => a.totcopay).reduce(function (a, b) { return Number(a.toString()) + Number(b.toString()); })
+  const adpInCharges = [...adtEditors.filter(t => chargeItem.chargeTypes.includes(t.type))];
+  let overAmount: number = adpInCharges.length > 0
+    ? adpInCharges.map(a => a.totcopay).reduce(function (a, b) { return Number(a.toString()) + Number(b.toString()); })
     : 0;
-  let sumTotal: number = adtEditors.length > 0
-    ? adtEditors.map(a => a.total).reduce(function (a, b) { return Number(a.toString()) + Number(b.toString()); })
+  let sumTotal: number = adpInCharges.length > 0
+    ? adpInCharges.map(a => a.total).reduce(function (a, b) { return Number(a.toString()) + Number(b.toString()); })
     : 0;
-  let adtErr: boolean = adtEditors.length > 0
-    ? adtEditors.filter(a => a.hasError == true).length > 0
+  let adtErr: boolean = adpInCharges.length > 0
+    ? adpInCharges.filter(a => a.hasError == true).length > 0
     : false;
 
-  let invoiceAdpIndex = invoiceEditors.findIndex(t => t.chrgitem.startsWith(additionalPaymentChargePrefix));
-  if (invoiceAdpIndex <= -1) {
+  let invoiceItemIndex = invoiceEditors.findIndex(t => t.chrgitem.startsWith(chargeItem.prefix));
+  if (invoiceItemIndex <= -1) {
     let chrgitem = additionalPaymentChargePrefix + '1';
     const newId = uuidv4();
     let newInvoiceItem: InvoiceItemEditorModel = {
@@ -56,25 +65,32 @@ export async function recalcAdpCharges({
     };
     results.push(newInvoiceItem);
   } else {
-    let invoiceAdp = invoiceEditors[invoiceAdpIndex];
+    let invoiceAdp = invoiceEditors[invoiceItemIndex];
+    // console.log("reconcile", reconcile);
+    // console.log("invoiceAdp.totalAmount", invoiceAdp.totalAmount);
     let calcResult: number = (reconcile === true
-      ? Number(sumTotal.toString()) + Number(invoiceAdp.totalAmount.toString())
-      : sumTotal);
+      ? sumTotal
+      : invoiceAdp.totalAmount > 0 ? invoiceAdp.totalAmount : sumTotal);
+    let overResult: number = (reconcile === true
+      ? overAmount
+      : invoiceAdp.overAmount > 0 ? invoiceAdp.overAmount : overAmount);
     let editItem: InvoiceItemEditorModel = {
       ...invoiceAdp,
       seq: opdData?.seq || "",
       totalAmount: calcResult,
-      overAmount: overAmount,
+      overAmount: overResult,
       status: 1,
       isDurty: true,
+      valid: adtErr ? invoiceAdp.valid : [],
     };
-    results.splice(invoiceAdpIndex, 1, editItem);
+    results.splice(invoiceItemIndex, 1, editItem);
   }
+  // })
   return await results;
 }
 
-function getErrorToAdpCharges(itemId :string) :OpdValids[] {
-  let results : OpdValids[] = [{
+function getErrorToAdpCharges(itemId: string): OpdValids[] {
+  let results: OpdValids[] = [{
     id: itemId,
     code_error: "E000",
     code_error_descriptions: "ต้องระบุรหัสรายการ",

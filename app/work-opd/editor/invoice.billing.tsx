@@ -51,9 +51,11 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
       patientData: patientData,
       invoiceEditors: invoiceData,
       adtEditors: additPaymentData,
-      reconcile: false
+      reconcile: true,
+      chargeCalcScope: chargeAdjust.prefix,
     }).then((invoiceUtdAdp) => {
       setInvoiceData(invoiceUtdAdp);
+      setChargeAdjust(defaultCharge);
     });
   }, [additPaymentData]);
 
@@ -65,6 +67,7 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
       drugEditors: drugData,
     }).then((invoiceUtdDrug) => {
       setInvoiceData(invoiceUtdDrug);
+      setChargeAdjust(defaultCharge);
     });
   }, [drugData]);
 
@@ -102,9 +105,6 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
   }
 
   async function saveInvoiceDrug(): Promise<void> {
-    setModalDrugOpen(false);
-    setChargeAdjust(defaultCharge);
-
     const drugEditing = formBillingEditor.getFieldValue("InvoiceDrug");
     // console.log("drugEditing.drugItems=>", drugEditing.drugItems);
     setDruData(drugEditing.drugItems);
@@ -115,6 +115,7 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
     } else {
       setAdditPaymentData(additPaymentItems || []);
     }
+    setModalDrugOpen(false);
   }
   const MoveDrugTo = async (drugMoveItems: MoveInvoiceItemModel[]) => {
     let newPaymentData = [...additPaymentData];
@@ -165,21 +166,48 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
   }
 
   async function saveInvoiceAdditPayment(): Promise<void> {
-    setAdpInCharge([]);
-    setModalAdditPaymentOpen(false);
-    setChargeAdjust(defaultCharge);
-
     const adpEditing = formBillingEditor.getFieldValue("InvoiceAdp");
     // console.log("adpEditing.adpItems=>", adpEditing.adpItems);
-    setChargeAdjust(defaultCharge);
-    if (adpEditing?.adpItems == undefined) return;
+    if (adpEditing?.adpItems != undefined) {
+      let tempAdpData = [...additPaymentData];
+      const orginalAdpInCharges = [...additPaymentData.filter(t => chargeAdjust.chargeTypes.includes(t.type))];
+      const orginalAdpOutCharges = [...additPaymentData.filter(t => !chargeAdjust.chargeTypes.includes(t.type))];
+      if (adpEditing.adpItems.length > 0 || false) {
+        const adpEditingItems = adpEditing.adpItems as AdditPaymentModelEditorModel[];
+        //#region Add or Update to Original Items
+        await adpEditingItems.forEach((adpEditItem) => {
+          const index = orginalAdpInCharges.findIndex((item) => adpEditItem.id == item.id);
+          if (index > -1) {
+            // let orginalAdpInCharge = orginalAdpInCharges[index];
+            const updateIndex = tempAdpData.findIndex((temp) => adpEditItem.id == temp.id);
+            if (updateIndex > -1) {
+              tempAdpData.splice(updateIndex, 1, {
+                ...adpEditItem
+              });
+              return;
+            }
+          }
 
-    if (adpEditing?.adpItems.length > 0 || false) {
-      let editingAdpItems = adpEditing.adpItems as AdditPaymentModelEditorModel[];
-      setAdditPaymentData(editingAdpItems);
-    } else {
-      setAdditPaymentData([]);
+          tempAdpData.push(adpEditItem);
+        });
+        //#endregion
+        //#region Delete From Original Items
+        await orginalAdpInCharges.forEach((orginalAdp) => {
+          const findIndex = adpEditingItems.findIndex((item) => orginalAdp.id == item.id);
+          if (findIndex > -1) return;
+
+          const delIndex = tempAdpData.findIndex((temp) => orginalAdp.id == temp.id);
+          if (delIndex <= -1) return;
+          tempAdpData.splice(delIndex, 1);
+        });
+        //#endregion
+        setAdditPaymentData(tempAdpData);
+      } else {
+        setAdditPaymentData([...orginalAdpOutCharges]);
+      }
     }
+    setAdpInCharge([]);
+    setModalAdditPaymentOpen(false);
   }
   //#endregion
 
