@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import moment from "moment";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { Card, Form, Row, Col, Tabs, Space, Avatar, Typography, Collapse, Skeleton, Affix, Button, Divider, message } from "antd";
+import { Card, Form, Row, Col, Tabs, Space, Avatar, Typography, Collapse, Skeleton, Affix, Button, Divider, message, Input } from "antd";
 import {
   ManOutlined, WomanOutlined, MehOutlined,
   IdcardOutlined, TruckOutlined, ExperimentOutlined,
@@ -67,7 +67,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
   useEffect(() => {
     const id = searchParams.get("id");
     if (id !== undefined) setEditKey(id);
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     if (editKey !== undefined) {
@@ -258,34 +258,34 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
   ];
   //#endregion
 
-  const onClickClaim = async () => {
+  // const onClickClaim = async () => {
+  //   const seq = editKey
+  //   console.log(seq);
 
-    const seq = editKey
-    console.log(seq);
+  //   if (seq !== undefined) {
+  //     const resultClaim = await claimOpd([seq]) as unknown as any
+  //     if (resultClaim.status === 200) {
+  //       message.success(resultClaim.message_th)
+  //     } else {
+  //       message.error(resultClaim.message_th)
+  //     }
+  //   } else {
+  //     message.error('seq undefined.')
+  //   }
+  // }
 
-    if (seq !== undefined) {
-      const resultClaim = await claimOpd([seq]) as unknown as any
-      if (resultClaim.status === 200) {
-        message.success(resultClaim.message_th)
-      } else {
-        message.error(resultClaim.message_th)
-      }
-    } else {
-      message.error('seq undefined.')
-    }
-
+  const onSearchSeq = (seq: string) => {
+    router.push(`/work-opd/editor?id=${seq}`)
   }
 
   return (
     <Skeleton active loading={status === "loading"} >
+      <Space size={"small"} direction="vertical" align="start">
+        <Input.Search onSearch={onSearchSeq} placeholder="ค้นหาด้วยVN" />
+      </Space>
+
       <Space size={"small"} direction="vertical" align="end">
         <Affix offsetTop={50}  ><Row style={{ margin: -10, marginBottom: 10 }} justify="end" align="middle" gutter={[4, 4]}>
-          {/* <Col>
-            <Button type="text" onClick={onClickClaim}
-              icon={<SendOutlined style={{ fontSize: '30px' }} color="blue" />}
-            />
-          </Col> 
-          <Col> <Divider type="vertical" style={{ height: 20 }} /> </Col>*/}
           <Col>
             <Button type="text" onClick={onSave} loading={saveState === "loading"}
               icon={<SaveTwoTone twoToneColor={'#52c41a'} style={{ fontSize: '30px' }} />}
