@@ -10,7 +10,7 @@ export interface FeeScheduleModel {
 
 
 export interface FeeScheduleSelectorModel {
-    item_code: string,
+    item_code?: string,
     item_name: string,
     unit?: string,
     type?: string,
