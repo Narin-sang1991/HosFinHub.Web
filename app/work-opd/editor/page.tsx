@@ -178,7 +178,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       orf: editingData?.opdReferItems || [],
       pat: patData,
     };
-    console.log("savedata=>", savedata);
+    // console.log("savedata=>", savedata);
     (async () => {
       await dispatch(saveAsync({ ...savedata }));
     })();
@@ -275,16 +275,8 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
   //   }
   // }
 
-  const onSearchSeq = (seq: string) => {
-    router.push(`/work-opd/editor?id=${seq}`)
-  }
-
   return (
     <Skeleton active loading={status === "loading"} >
-      <Space size={"small"} direction="vertical" align="start">
-        <Input.Search onSearch={onSearchSeq} placeholder="ค้นหาด้วยVN" />
-      </Space>
-
       <Space size={"small"} direction="vertical" align="end">
         <Affix offsetTop={50}  ><Row style={{ margin: -10, marginBottom: 10 }} justify="end" align="middle" gutter={[4, 4]}>
           <Col>

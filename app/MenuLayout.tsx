@@ -9,7 +9,7 @@ import {
   BookOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-import { Breadcrumb, Layout, Menu, theme } from "antd";
+import { Breadcrumb, Col, Input, Layout, Menu, Row, theme } from "antd";
 import type { MenuProps } from "antd";
 import "@/app/globals.css";
 const { Header, Content, Sider } = Layout;
@@ -79,6 +79,12 @@ const MenuLayout = function MenuLayout({
     // ]),
   ];
 
+  const onSearchSeq = (seq: string) => {
+    if(seq == undefined || seq == "") return;
+    
+    router.push(`/work-opd/editor?id=${seq}`)
+  }
+
   return (
     <Layout>
       <Sider
@@ -103,7 +109,7 @@ const MenuLayout = function MenuLayout({
             borderRadius: borderRadiusLG,
             background: "green",
             fontWeight: "bold",
-            fontSize:"18px"
+            fontSize: "18px"
           }}
         >
           {"Financial Data \n HospitalOS"}
@@ -117,7 +123,11 @@ const MenuLayout = function MenuLayout({
         />
       </Sider>
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }}></Header>
+        <Header style={{ padding: 15, background: colorBgContainer }}>
+          <Row justify="end">
+            <Col span={8}> <Input.Search onSearch={onSearchSeq} allowClear placeholder="ค้นหาด้วยVN" /></Col>
+          </Row>
+        </Header>
         <Breadcrumb style={{ margin: "0 0 5px 10px" }} separator=">">
           <Breadcrumb.Item>OPD</Breadcrumb.Item>
           <Breadcrumb.Item>Search</Breadcrumb.Item>
