@@ -732,10 +732,9 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
           size="small" bordered
           className={"MasterBackground"}
           onChange={onTableCriteriaChange}
-          pagination={{ pageSize: defaultPageSize, current: pageIndex, simple: true }}
+          pagination={{ pageSize: defaultPageSize, current: pageIndex, showSizeChanger : true, position: ["bottomLeft"] }}
           style={{ margin: 0, height: "300px", width: "100%" }}
-          sticky
-          scroll={{ x: 400 }}
+          sticky scroll={{ x: 400, y: 300 }}
         />
       </Form>
     </Space>
