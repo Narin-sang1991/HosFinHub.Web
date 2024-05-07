@@ -286,18 +286,18 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
       ellipsis: true,
       className: "Center",
       render: (_: any, record: InvoiceItemEditorModel) =>
-        record.status == 0 ? (
-          <></>
-        ) : (
-          <Button
-            type="primary"
-            ghost
-            block
-            style={{ border: 0 }}
-            icon={<FileDoneOutlined />}
-            onClick={() => takeAction(record)}
-          />
-        ),
+        // record.status == 0 ? (
+        //   <></>
+        // ) : (
+        <Button
+          type="primary"
+          ghost
+          block
+          style={{ border: 0 }}
+          icon={<FileDoneOutlined />}
+          onClick={() => takeAction(record)}
+        />,
+      // ),
     },
     {
       title: <p className="Center">ตรวจสอบ</p>,
