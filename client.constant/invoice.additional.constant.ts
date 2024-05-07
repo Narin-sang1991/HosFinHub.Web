@@ -77,6 +77,9 @@ export async function recalcAdpCharges({
     let editItem: InvoiceItemEditorModel = {
       ...invoiceAdp,
       seq: opdData?.seq || "",
+      hn: opdData?.hn || "",
+      person_id: patientData?.person_id || "",
+      date: opdData?.dateopd || new Date,
       totalAmount: calcResult,
       overAmount: overResult,
       status: 1,
