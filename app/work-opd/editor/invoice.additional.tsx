@@ -734,7 +734,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
           onChange={onTableCriteriaChange}
           pagination={{ pageSize: defaultPageSize, current: pageIndex, showSizeChanger : true, position: ["bottomLeft"] }}
           style={{ margin: 0, height: "300px", width: "100%" }}
-          sticky scroll={{ x: 400, y: 300 }}
+          sticky scroll={{ x: 400, y: 270 }}
         />
       </Form>
     </Space>
