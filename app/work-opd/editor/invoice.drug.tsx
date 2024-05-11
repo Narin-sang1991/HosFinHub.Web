@@ -130,7 +130,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
       dataIndex: "dummyKey",
       key: "dummyKey",
       width: 15,
-      ellipsis: true,
+    
       className: "Center",
     },
     {
@@ -138,7 +138,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
       dataIndex: "did",
       key: "did",
       width: 20,
-      ellipsis: true,
+
     },
     {
       title: "ชื่อยา",
@@ -160,7 +160,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
       dataIndex: "drugprice",
       key: "drugprice",
       width: 20,
-      ellipsis: true,
+
     },
     {
       title: "พึ่งเบิกได้",
@@ -213,8 +213,8 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
         </p>
       ),
       dataIndex: "operation",
-      className: "Center",
-      fixed: "right",
+     // className: "Center",
+      fixed: 'right',
       width: 30,
       render: (_: any, record: InvoiceDrugEditorModel) => {
         const editing = isEditing(record);
@@ -305,9 +305,8 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
           size="small"
           className={"MasterBackground"}
           pagination={{ pageSize: 10, simple: true }}
-          style={{ margin: "10px 0", height: "500px", width: "100%" }}
-          sticky
-          scroll={{ x: 400 }}
+          style={{ margin: "10px 0", height: "500px", width: "99%" }}
+        
         />
       </Form>
       <Space size={"small"}>

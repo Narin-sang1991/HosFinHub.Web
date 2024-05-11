@@ -571,7 +571,6 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
           {/*#End#--------------------------*/}
         </Row>
 
-
         <Collapse
           size="small" bordered={false} style={{ margin: 0, marginLeft: -15, marginTop: -10, marginBottom: 5 }}
           collapsible="icon" activeKey={showDetail ? '1' : '0'}
@@ -732,8 +731,8 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
           size="small" bordered
           className={"MasterBackground"}
           onChange={onTableCriteriaChange}
-          pagination={{ pageSize: defaultPageSize, current: pageIndex, showSizeChanger : true, position: ["bottomLeft"] }}
-          style={{ margin: 0, height: "300px", width: "100%" }}
+          pagination={{ pageSize: defaultPageSize, current: pageIndex, showSizeChanger: true, position: ["bottomLeft"] }}
+          style={{ margin: 0, height: "300px", width: "99%" }}
           sticky scroll={{ x: 400, y: 270 }}
         />
       </Form>

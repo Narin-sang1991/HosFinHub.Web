@@ -336,9 +336,9 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
         size="small"
         className={"MasterBackground"}
         pagination={{ pageSize: 10 }}
-        style={{ margin: -10, height: "400px", width: "100%" }}
+        style={{ margin: -10, height: "400px", width: "99%" }}
         sticky
-        scroll={{ x: 400 }}
+        scroll={{ x: 500 }}
       />
       <Form form={formBillingEditor} layout="inline"
         initialValues={{
@@ -352,6 +352,7 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
             {`${chargeAdjust.name} (จำนวน ${drugItems.length || 0} รายการ)`}
           </Space>}
           open={isModalDrugOpen} centered width={"90%"}
+       
           onCancel={() => setModalDrugOpen(false)} cancelText={"ปิด"}
           onOk={saveInvoiceDrug} okText="นำไปใช้"
         >

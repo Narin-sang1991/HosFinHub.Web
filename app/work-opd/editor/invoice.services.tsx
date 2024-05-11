@@ -165,7 +165,7 @@ const InvoiceServices: React.FC<InvoiceServicesProps> = ({ modelServiceOpen, mod
     <React.Fragment>
       <Modal open={modelOpen}
         title={modelServoceDisplay}
-        width={'100%'}
+        width={'99%'}
         onCancel={onCloseModelSertvice}>
         <Table columns={columns} dataSource={adpList} />
       </Modal>

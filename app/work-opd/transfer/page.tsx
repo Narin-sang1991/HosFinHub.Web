@@ -15,7 +15,7 @@ import { claimOpd } from '@/services/send.fhd.prioviver';
 
 const OpdTransfer = () => {
   const dispatch = useAppDispatch();
-  const [formDateFind] = Form.useForm(); 
+  const [formDateFind] = Form.useForm();
   const searchTabletResult = useAppSelector(selectTabletResult);
   const [readyTable, setReadyTable] = useState<any[]>()
   const [selectionType, setSelectionType] = useState<'checkbox' | 'radio'>('checkbox');
@@ -142,13 +142,10 @@ const OpdTransfer = () => {
 
   const rowSelection = {
     onChange: (selectedRowKeys: React.Key[], selectedRows: OpdSearchModel[]) => {
-      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+    //  console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
       setSelectData(selectedRows)
-
     },
-    getCheckboxProps: (record: OpdSearchModel) => ({
-
-    }),
+    getCheckboxProps: (record: OpdSearchModel) => ({}),
   };
 
   const sentDataToFinance = async () => {
