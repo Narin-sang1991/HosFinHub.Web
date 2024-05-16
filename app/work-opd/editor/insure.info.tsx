@@ -7,10 +7,7 @@ import React from "react";
 
 const InsureInfo = () => {
   const dispatch = useAppDispatch();
-
   const selectUccOptions = useAppSelector(selectUccOption);
-
-
   return (
     <React.Fragment>
       <Divider orientation="left" plain><h3>ข้อมูลสิทธิ</h3></Divider>

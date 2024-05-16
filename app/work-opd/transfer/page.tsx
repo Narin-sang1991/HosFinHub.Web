@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { OpdSearchModel } from '@/store/work-opd/opdSearchModel'
 import { searchAsync, selectStatus, selectTabletResult } from '@/store/work-opd/workOpdSlice'
 import { EditOutlined, SearchOutlined, SendOutlined } from '@ant-design/icons'
-import { Affix, Button, DatePicker, Form, FormProps, message, Table, TableColumnsType } from 'antd'
+import { Space, Button, DatePicker, Form, FormProps, message, Table, TableColumnsType } from 'antd'
 import moment from 'moment'
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from 'react'
@@ -142,7 +142,7 @@ const OpdTransfer = () => {
 
   const rowSelection = {
     onChange: (selectedRowKeys: React.Key[], selectedRows: OpdSearchModel[]) => {
-    //  console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+      //  console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
       setSelectData(selectedRows)
     },
     getCheckboxProps: (record: OpdSearchModel) => ({}),
@@ -164,40 +164,41 @@ const OpdTransfer = () => {
   }
   return (
     <React.Fragment>
-      <Form
-        layout="inline"
-        form={formDateFind}
-        onFinish={onSearchOpd}
-      >
-        <Form.Item label='ระบุวันที่รับบริการ' name="dateVisit">
-          <DatePicker.RangePicker />
-        </Form.Item>
+      <Space direction='vertical'>
+        <Form
+          layout="inline"
+          form={formDateFind}
+          onFinish={onSearchOpd}
+        >
+          <Form.Item label='ระบุวันที่รับบริการ' name="dateVisit">
+            <DatePicker.RangePicker />
+          </Form.Item>
 
-        <Form.Item name="load_data">
-          <Button
-            htmlType="submit"
-            icon={<SearchOutlined />}
-            loading={status === "loading"}
-            disabled={status === "loading"}
-          >ค้นหา</Button>
-        </Form.Item>
+          <Form.Item name="load_data">
+            <Button
+              htmlType="submit"
+              icon={<SearchOutlined />}
+              loading={status === "loading"}
+              disabled={status === "loading"}
+            >ค้นหา</Button>
+          </Form.Item>
 
-        <Form.Item style={{ left: '5%' }}>
-          <Button type="primary" onClick={sentDataToFinance} icon={<SendOutlined />}>
-            FDH
-          </Button>
-        </Form.Item>
-      </Form>
+          <Form.Item style={{ left: '5%' }}>
+            <Button type="primary" onClick={sentDataToFinance} icon={<SendOutlined />}>
+              FDH
+            </Button>
+          </Form.Item>
+        </Form>
 
-      <Fillter />
+        <Fillter />
 
-      <Table
-        rowSelection={{ type: selectionType, ...rowSelection }}
-        columns={columns}
-        dataSource={readyTable}
-        rowKey={"seq"}
-      />
-
+        <Table
+          rowSelection={{ type: selectionType, ...rowSelection }}
+          columns={columns}
+          dataSource={readyTable}
+          rowKey={"seq"}
+        />
+      </Space>
     </React.Fragment>
   )
 }

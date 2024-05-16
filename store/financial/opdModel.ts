@@ -155,17 +155,17 @@ export interface InsModel {
 
 // }
 
-// export interface OdxModel {
-//     id: string
-//     hn: string
-//     datedx: string
-//     clinic: string
-//     diag: string
-//     dxtype: string
-//     drdx: string
-//     person_id: string
-//     seq: string
-// }
+export interface OdxModel {
+    id: string
+    hn: string
+    datedx: string
+    clinic: string
+    diag: string
+    dxtype: string
+    drdx: string
+    person_id: string
+    seq: string
+}
 
 export interface OopModel {
     id: string

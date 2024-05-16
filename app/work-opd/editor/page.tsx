@@ -44,6 +44,8 @@ import InsureInfo from "./insure.info";
 import withTheme from "../../../theme";
 import "@/app/globals.css";
 import { claimOpd } from "@/services/send.fhd.prioviver";
+import ProcedureInfo from "./procedure.info";
+import DiagenosisInfo from "./diagenosis.info";
 //#endregion
 
 interface OpdEditorProps { }
@@ -82,8 +84,10 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       let opdDetail = { ...originData.opd[0] };
       let patientDetail = { ...originData.pat[0] };
       let insureDetail = { ...originData.ins[0] }
+
       let adtItems = await genarateAdditPaymentEditors(originData.adp, valid);
       let invoiceItems = await genarateAllCharges(originData.cha, valid);
+
       invoiceItems = await recalcAdpCharges({
         opdData: opdDetail,
         patientData: patientDetail,
@@ -92,6 +96,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         reconcile: false,
         chargeCalcScope: additionalPaymentChargePrefix
       });
+
       let transformData: OpdEditorModel = {
         additPayments: adtItems,
         additionEmergencies: originData.aer,
@@ -104,6 +109,8 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         opdDetail: opdDetail,
         opdReferItems: originData.orf,
         patient: patientDetail,
+        procedureItems: originData.oop
+
       };
       setEditData(transformData);
 
@@ -177,6 +184,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       opd: opdData,
       orf: editingData?.opdReferItems || [],
       pat: patData,
+      oop: editingData?.procedureItems || []
     };
     // console.log("savedata=>", savedata);
     (async () => {
@@ -230,13 +238,27 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       key: "diagnosis",
       label: "การวินิจฉัยโรค",
       icon: <ExperimentOutlined />,
-      children: "Content of Tab Pane 3",
+      children: getCardInTab({
+        title: "ข้อมูลการวินิจฉัยโรค",
+        children: (
+          <Form.Item name={"procedureInfo"}>
+            <DiagenosisInfo diagenosisInfo={editingData?.diagnosisItems || []} />
+          </Form.Item>
+        )
+      }),
     },
     {
       key: "operate",
       label: "การผ่าตัดหัตถการ",
       icon: <MedicineBoxOutlined />,
-      children: "Content of Tab Pane 4",
+      children: getCardInTab({
+        title: "ข้อมูลการผ่าตัดหัตถการ",
+        children: (
+          <Form.Item name={"procedureInfo"}>
+            <ProcedureInfo procedureInfo={editingData?.procedureItems || []} />
+          </Form.Item>
+        )
+      })
     },
     {
       key: "billing",

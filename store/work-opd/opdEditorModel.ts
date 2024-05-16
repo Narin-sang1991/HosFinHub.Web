@@ -8,6 +8,7 @@ import { LabfuModel } from "../medical-tech/labfuModel";
 import { AdditionEmergencyModel } from "../refer/referEmergencyModel";
 import { OpdReferModel } from "../refer/referModel";
 import { AdditionalPaymentModel, AdditPaymentModelEditorModel } from "../fee-additional/additionalModel";
+import { OopModel } from "../financial/opdModel";
 
 export interface OpdEditorModel {
 
@@ -65,6 +66,11 @@ export interface OpdEditorModel {
   * #origin => PAT
   **/
   patient: PatientDetailModel;
+
+  /**
+ * #origin => OOP
+ **/
+  procedureItems: OopModel[];
 }
 
 export interface OpdValids {
@@ -102,6 +108,7 @@ export interface OpdDataModel {
   ins: InsureDetailModel[];
   labfu: LabfuModel[];
   odx: DianosisModel[],
+  oop: OopModel[],
   opd: OpdDetailModel[];
   orf: OpdReferModel[];
   pat: PatientDetailModel[];
