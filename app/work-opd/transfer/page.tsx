@@ -196,6 +196,7 @@ const OpdTransfer = () => {
           rowSelection={{ type: selectionType, ...rowSelection }}
           columns={columns}
           dataSource={readyTable}
+          pagination={false}
           rowKey={"seq"}
         />
       </Space>

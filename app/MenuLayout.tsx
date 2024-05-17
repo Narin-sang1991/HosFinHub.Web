@@ -56,6 +56,10 @@ const MenuLayout = function MenuLayout({
         <p onClick={() => router.push("/work-opd/transfer")}>ส่งข้อมูล OPD</p>,
         "3"
       ),
+      getItem(
+        <p onClick={() => router.push("/work-opd/history")}>ประวัติการส่ง OPD</p>,
+        "03"
+      ),
     ]),
     getItem("งานผู้ป่วยใน", "sub2", <BookOutlined />, [
       getItem(
@@ -65,6 +69,10 @@ const MenuLayout = function MenuLayout({
       getItem(
         <p onClick={() => router.push("/work-ipd/transfer")}>ส่งข้อมูล IPD</p>,
         "5"
+      ),
+      getItem(
+        <p onClick={() => router.push("/work-ipd/history")}>ประวัติการส่ง ณPD</p>,
+        "05"
       ),
     ]),
     getItem("ประมวลผลข้อมูล", "sub3", <SettingOutlined />, [
