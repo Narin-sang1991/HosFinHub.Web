@@ -96,7 +96,8 @@ export const workOpdSlice = createAppSlice({
         },
         fulfilled: (state, action) => {
           state.tableResult = action.payload;
-        }, rejected: (state) => {
+        },
+        rejected: (state) => {
           state.getStatus = "failed";
         },
       }

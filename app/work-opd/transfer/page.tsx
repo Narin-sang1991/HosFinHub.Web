@@ -2,15 +2,13 @@
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { OpdSearchModel } from '@/store/work-opd/opdSearchModel'
 import { searchAsync, selectStatus, selectTabletResult } from '@/store/work-opd/workOpdSlice'
-import { EditOutlined, SearchOutlined, SendOutlined } from '@ant-design/icons'
+import { SearchOutlined, SendOutlined } from '@ant-design/icons'
 import { Space, Button, DatePicker, Form, FormProps, message, Table, TableColumnsType } from 'antd'
 import moment from 'moment'
-import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from 'react'
-import { dateDisplayFormat, dateInterfaceFormat, } from "@/client.constant/format.constant";
+import { dateDisplayFormat, } from "@/client.constant/format.constant";
 import { getPatientID } from "@/client.constant/patient.constant";
 import Fillter from '../search/filler';
-import { TableRowSelection } from 'antd/es/table/interface';
 import { claimOpd } from '@/services/send.fhd.prioviver';
 
 const OpdTransfer = () => {
