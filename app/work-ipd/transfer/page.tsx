@@ -1,7 +1,6 @@
 "use client";
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { OpdSearchModel } from '@/store/work-opd/opdSearchModel'
-import { selectResult, searchAsync, selectStatus } from '@/store/work-ipd/transferIpdSlice'
+import { selectIpdTransferReady, searchAsync, selectStatus } from '@/store/work-ipd/transferIpdSlice'
 import { SearchOutlined, SendOutlined } from '@ant-design/icons'
 import { Space, Button, DatePicker, Form, FormProps, message, Table, TableColumnsType } from 'antd'
 import moment from 'moment'
@@ -19,28 +18,16 @@ const IpdTransfer = () => {
   const [selectionType, setSelectionType] = useState<'checkbox' | 'radio'>('checkbox');
   const [selectData, setSelectData] = useState<any[]>([])
   const status = useAppSelector(selectStatus);
-  const selectResults = useAppSelector(selectResult)
+  const ipdTransferReady = useAppSelector(selectIpdTransferReady)
 
-
-  useEffect(() => { getReadyData() }, [selectResults])
+  useEffect(() => {
+    getReadyData()
+  }, [ipdTransferReady])
 
   const getReadyData = () => {
-    let valueReady: any[] = []
-    
-    selectResults.forEach(item => {
-      if (item.ipd_claim_log.length > 0) {
-      //  valueReady.push(item)
-        const filterItem = item.ipd_claim_log.filter(i => i.status_code === "2")
-        if (filterItem.length > 0) {
-          valueReady.push(item)
-          console.log(item);
-        }
-      }
-    })
+    console.log(ipdTransferReady);
 
-    console.log(valueReady);
-    
-    setReadyTable(valueReady)
+    setReadyTable(ipdTransferReady)
   }
 
   function getPatientName(record: IpdTransferMode) {
@@ -86,8 +73,8 @@ const IpdTransfer = () => {
     },
     {
       title: "IPD ADMID",
-      dataIndex: "dateopd",
-      key: "dateopd",
+      dataIndex: "dateadm",
+      key: "dateadm",
       width: 60,
       ellipsis: true,
       render: (date) => {
@@ -126,12 +113,11 @@ const IpdTransfer = () => {
       key: "an",
       width: 40,
       ellipsis: true,
-      onFilter: (value, record) => record.error.map((item: any) => item.code_error).indexOf(value as string) === 0,
     },
     {
       title: "Status",
       dataIndex: "ipd_claim_log",
-      key: 'seq',
+      key: 'ipd_claim_log',
       width: 40,
       ellipsis: true,
       render: (_: any, record: IpdTransferMode) => <div>{record.ipd_claim_log.map(i => i.status.description)[0]}</div>
@@ -146,11 +132,11 @@ const IpdTransfer = () => {
   }
 
   const rowSelection = {
-    onChange: (selectedRowKeys: React.Key[], selectedRows: OpdSearchModel[]) => {
+    onChange: (selectedRowKeys: React.Key[], selectedRows: IpdTransferMode[]) => {
       //  console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
       setSelectData(selectedRows)
     },
-    getCheckboxProps: (record: OpdSearchModel) => ({}),
+    getCheckboxProps: (record: IpdTransferMode) => ({}),
   };
 
   const sentDataToFinance = async () => {
@@ -202,7 +188,9 @@ const IpdTransfer = () => {
           columns={columns}
           dataSource={readyTable}
           pagination={false}
-          rowKey={"seq"}
+          size='small'
+          rowKey={"an"}
+          loading={status === "loading"}
         />
       </Space>
     </React.Fragment>

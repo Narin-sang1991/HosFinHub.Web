@@ -1,7 +1,7 @@
 "use client";
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { OpdSearchModel } from '@/store/work-opd/opdSearchModel'
-import { searchAsync, selectStatus, selectTabletResult } from '@/store/work-opd/workOpdSlice'
+import { searchTransferOpd, selectStatus, selectResultTransferOpd } from '@/store/work-opd/transferOpdSlice'
 import { SearchOutlined, SendOutlined } from '@ant-design/icons'
 import { Space, Button, DatePicker, Form, FormProps, message, Table, TableColumnsType } from 'antd'
 import moment from 'moment'
@@ -14,7 +14,7 @@ import { claimOpd } from '@/services/send.fhd.prioviver';
 const OpdTransfer = () => {
   const dispatch = useAppDispatch();
   const [formDateFind] = Form.useForm();
-  const searchTabletResult = useAppSelector(selectTabletResult);
+  const searchTabletResult = useAppSelector(selectResultTransferOpd);
   const [readyTable, setReadyTable] = useState<any[]>()
   const [selectionType, setSelectionType] = useState<'checkbox' | 'radio'>('checkbox');
   const [selectData, setSelectData] = useState<any[]>([])
@@ -23,17 +23,8 @@ const OpdTransfer = () => {
   useEffect(() => { getReadyData() }, [searchTabletResult])
 
   const getReadyData = () => {
-    let valueReady: any[] = []
-    searchTabletResult.forEach(item => {
-      if (item.opd_claim_log.length > 0) {
-        const filterItem = item.opd_claim_log.filter(i => i.status_code === "2")
-        if (filterItem.length > 0) {
-          valueReady.push(item)
-          console.log(item);
-        }
-      }
-    })
-    setReadyTable(valueReady)
+    console.log(searchTabletResult);
+    setReadyTable(searchTabletResult)
   }
 
   function getPatientName(record: OpdSearchModel) {
@@ -135,7 +126,7 @@ const OpdTransfer = () => {
     if (value.dateVisit === undefined) return
     const startDate = new Date(value.dateVisit[0].$d).toLocaleDateString('fr-CA', { year: 'numeric', month: '2-digit', day: "2-digit" }).replaceAll('-', '')
     const endDate = new Date(value.dateVisit[1].$d).toLocaleDateString('fr-CA', { year: 'numeric', month: '2-digit', day: "2-digit" }).replaceAll('-', '')
-    await dispatch(searchAsync({ startDate, endDate }));
+    await dispatch(searchTransferOpd({ startDate, endDate }));
   }
 
   const rowSelection = {
@@ -188,7 +179,7 @@ const OpdTransfer = () => {
           </Form.Item>
         </Form>
 
-        <Fillter />
+        {/* <Fillter /> */}
 
         <Table
           rowSelection={{ type: selectionType, ...rowSelection }}
@@ -196,6 +187,9 @@ const OpdTransfer = () => {
           dataSource={readyTable}
           pagination={false}
           rowKey={"seq"}
+          size='small'
+          loading={status === "loading"}
+
         />
       </Space>
     </React.Fragment>

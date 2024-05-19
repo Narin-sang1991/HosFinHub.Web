@@ -1,15 +1,13 @@
 import { fetchIpdTransfer } from "@/services/transfer.ipd.provicer";
 import { createAppSlice } from "../createAppSlice";
 import { IpdTransferMode } from "./ipdTransderModel";
-
-
 export interface transferIpdSliceIpdSliceState {
-    searchResult: IpdTransferMode[]
+    searchResultTransferIpd: IpdTransferMode[]
     searchStatus: "idle" | "loading" | "failed";
 }
 
 const initialState: transferIpdSliceIpdSliceState = {
-    searchResult: [],
+    searchResultTransferIpd: [],
     searchStatus: 'idle'
 }
 
@@ -25,8 +23,11 @@ export const transferIpdSlice = createAppSlice({
                 state.searchStatus = 'loading'
             },
             fulfilled: (state, action) => {
+                const paload = action.payload as unknown as IpdTransferMode[]
+                console.log(paload);
+
                 state.searchStatus = 'idle'
-                state.searchResult = action.payload as unknown as IpdTransferMode[]
+                state.searchResultTransferIpd = paload
             },
             rejected: (state) => {
                 state.searchStatus = 'failed'
@@ -34,11 +35,11 @@ export const transferIpdSlice = createAppSlice({
         })
     }),
     selectors: {
-        selectResult: (transferIpd) => transferIpd.searchResult,
+        selectIpdTransferReady: (transferIpd) => transferIpd.searchResultTransferIpd,
         selectStatus: (transferIpd) => transferIpd.searchStatus
     }
 })
 
 export const { searchAsync } = transferIpdSlice.actions
 
-export const { selectResult, selectStatus } = transferIpdSlice.selectors
+export const { selectIpdTransferReady, selectStatus } = transferIpdSlice.selectors
