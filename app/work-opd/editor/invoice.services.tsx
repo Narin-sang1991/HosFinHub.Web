@@ -2,7 +2,7 @@
 import { allServicePayment } from "@/client.constant/invoice.map.service";
 import { AdditPaymentModelEditorModel } from "@/store/fee-additional/additionalModel";
 import { useAppSelector } from "@/store/hooks";
-import { OpdValidModel, OpdValids } from "@/store/work-opd/opdEditorModel";
+import { OpdValidModel, WorkValidModel } from "@/store/work-opd/opdEditorModel";
 import { getValid } from "@/store/work-opd/workOpdSlice";
 import { WarningTwoTone } from "@ant-design/icons";
 import { Modal, Table, Tooltip } from "antd";
@@ -56,7 +56,7 @@ const InvoiceServices: React.FC<InvoiceServicesProps> = ({ modelServiceOpen, mod
   }
 
   const mappingAdpError = (itemAdp: any[]) => {
-    const itemAdpError = valid?.filter((i) => i.adp)[0]["adp"] as unknown as OpdValids[];
+    const itemAdpError = valid?.filter((i) => i.adp)[0]["adp"] as unknown as WorkValidModel[];
 
     console.log(itemAdpError);
 

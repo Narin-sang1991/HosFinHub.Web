@@ -88,8 +88,8 @@ const MenuLayout = function MenuLayout({
   ];
 
   const onSearchSeq = (seq: string) => {
-    if(seq == undefined || seq == "") return;
-    
+    if (seq == undefined || seq == "") return;
+
     router.push(`/work-opd/editor?id=${seq}`)
   }
 
@@ -131,7 +131,7 @@ const MenuLayout = function MenuLayout({
         />
       </Sider>
       <Layout>
-        <Header style={{ padding: 15, background: colorBgContainer }}>
+        <Header style={{ padding: 15, background: colorBgContainer, height: '8vh', }}>
           <Row justify="end">
             <Col span={8}> <Input.Search onSearch={onSearchSeq} allowClear placeholder="ค้นหาด้วยVN" /></Col>
           </Row>
@@ -143,9 +143,9 @@ const MenuLayout = function MenuLayout({
         </Breadcrumb>
         <Content
           style={{
-            margin: "0px 16px 16px 16px",
-            padding: 24,
-            minHeight: 850,
+            margin: "0px 10px 10px 10px",
+            padding: "10px",
+            height: '88vh',
             background: colorBgContainer,
             borderRadius: borderRadiusLG,
           }}

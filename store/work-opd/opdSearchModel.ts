@@ -1,20 +1,11 @@
-import type { PatientModel } from "@/store/patient/patientModel";
-import type { InsureModel } from "@/store/financial/insureModel";
-import { OpdValids } from "./opdEditorModel";
+import { SearchPatientModel, WorkSearchModel } from "../work/workSearchModel";
 
-export interface OpdSearchModel {
-  id: string;
-  hn: string;
+
+export interface OpdSearchModel extends WorkSearchModel{
   seq: string;
   dateopd: Date;
-  opd_pat: OpdPatientModel;
-  uuc: string,
-  error: OpdValids[]
-  opd_claim_log: any[]
-}
-
-export interface OpdPatientModel extends PatientModel {
-  pat_ins: InsureModel[];
+  opd_pat: SearchPatientModel;  // todo : narin.sa => move to using in WorkSearchModel
+  opd_claim_log: any[];         // todo : narin.sa => move to using in WorkSearchModel
 }
 
 export interface OpdSearchReponse {

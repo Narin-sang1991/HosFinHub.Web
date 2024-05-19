@@ -1,6 +1,6 @@
 import type { AdditionalPaymentModel, AdditPaymentModelEditorModel } from "@/store/fee-additional/additionalModel";
 import { FeeScheduleSelectorModel } from "@/store/fee-additional/feeScheduleModel";
-import { OpdValidModel, OpdValids } from "@/store/work-opd/opdEditorModel";
+import { OpdValidModel, WorkValidModel } from "@/store/work-opd/opdEditorModel";
 
 export const allAdditTypes: { id: string, text: string }[] = [
   { id: "1", text: "HC (OPD)" },
@@ -57,7 +57,7 @@ export async function genarateAdditPaymentEditors(
   let results: AdditPaymentModelEditorModel[] = [];
   const itemAdpError = validItems?.filter((i) => i.adp)[0][
     "adp"
-  ] as unknown as OpdValids[];
+  ] as unknown as WorkValidModel[];
   await adpItems.forEach((adpItem, i) => {
     const assignItemError = itemAdpError.filter((i) => i.id === adpItem.id);
     const newFeeSchedule: FeeScheduleSelectorModel = { item_code: adpItem.code, item_name: "" };

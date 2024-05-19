@@ -1,59 +1,30 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Card, Form, Table, DatePicker, Space, } from "antd";
+import { Button, Card, Form, Table, DatePicker,  Space,  } from "antd";
 import type { TableProps, TableColumnsType, } from "antd";
-import { SearchOutlined, EditOutlined, } from "@ant-design/icons";
+import { SearchOutlined, EditOutlined,  } from "@ant-design/icons";
 import moment from "moment";
 import withTheme from "../../../theme";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { getResult, searchAsync, selectStatus, selectTabletResult } from "@/store/work-opd/workOpdSlice";
-import type { OpdSearchModel } from "@/store/work-opd/opdSearchModel";
-import { dateDisplayFormat, dateInterfaceFormat, defaultPageSize, } from "@/client.constant/format.constant";
-import { prefixColumns, suffixColumns, uniqueFilter } from "@/client.constant/work.search.constant";
-import Fillter from "./filler";
+import { searchAsync, selectResult, selectStatus } from "@/store/work-ipd/workIpdSlice";
+import type { IpdSearchModel } from "@/store/work-ipd/ipdSearchModel";
+import { dateDisplayFormat, dateInterfaceFormat, defaultPageSize } from "@/client.constant/format.constant";
+import { prefixColumns, suffixColumns } from "@/client.constant/work.search.constant";
 import "@/app/globals.css";
 
 // moment.locale('th');
-type OpdSearchProps = {};
-type FilterType = { text: string; value: string };
+type IpdSearchProps = {};
 
-const OpdSearch = function OpdSearch(props: OpdSearchProps) {
+const IpdSearch = function IpdSearch(props: IpdSearchProps) {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [formCriteria] = Form.useForm();
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(defaultPageSize);
-  const [filterValue, setFilterValue] = useState<FilterType[]>([]);
   const status = useAppSelector(selectStatus);
-  const searchTabletResult = useAppSelector(selectTabletResult);
-  const originData = useAppSelector(getResult);
-
-  // set errorfilter
-  const setFilterError = (searchTabletResult: OpdSearchModel[]) => {
-    const fillter: FilterType[] = [];
-    searchTabletResult.forEach((pat) => {
-      if (pat.error.length > 0) {
-        pat.error.map((e) => {
-          const index = fillter.findIndex((f) => f.text === e.code_error);
-          if (index === -1) {
-            const filler: FilterType = {
-              text: e.code_error,
-              value: e.code_error,
-            };
-            fillter.push(filler);
-          }
-        });
-      }
-    });
-    setFilterValue(fillter);
-  };
-
-  useEffect(() => {
-    setFilterError(searchTabletResult);
-  }, [searchTabletResult]);
-
+  const searchResult = useAppSelector(selectResult);
 
   //#region Search
   async function onSearch(index?: number, sorter?: any) {
@@ -78,26 +49,25 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
   //#endregion
 
   //#region Local Filter Data
-  const onTableCriteriaChange: TableProps<OpdSearchModel>["onChange"] = (pagination, filters, sorter, extra) => {
+  const onTableCriteriaChange: TableProps<IpdSearchModel>["onChange"] = (pagination, filters, sorter, extra) => {
     setPageIndex(pagination.current || 1);
     setPageSize(pagination.pageSize || defaultPageSize);
   };
 
-  const columns: TableColumnsType<OpdSearchModel> = [
+  const columns: TableColumnsType<IpdSearchModel> = [
     {
-      title: <p className="Center">เลขที่ seq.</p>,
-      dataIndex: "seq",
-      key: "seq",
-      width: 50,
+      title: <p className="Center">เลขที่ Admit</p>,
+      dataIndex: "an",
+      key: "an",
+      width: 80,
       className: "Center",
       fixed: "left",
-      onFilter: (value, record) => record.error.map((item) => item.code_error).indexOf(value as string) === 0,
     },
     {
-      title: <p className="Center">วันที่รับบริการ</p>,
-      dataIndex: "dateopd",
-      key: "dateopd",
-      width: 50,
+      title: <p className="Center">วันที่เข้า Admit</p>,
+      dataIndex: "dateipd",
+      key: "dateipd",
+      width: 80,
       className: "Center",
       fixed: "left",
       render: (date) => {
@@ -111,22 +81,21 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
     ...prefixColumns,
     ...suffixColumns,
     // {
-    //   title: <p className="Center">Error</p>,
+    //   title: "Error",
     //   dataIndex: "error",
     //   key: "error",
     //   width: 40,
-    //   className: "Center",
+        // className: "Center",
+    //   ellipsis: true,
     //   filterSearch: true,
-    //   filters: filterValue,
+    //   // filters: filterValue,
     //   onFilter: (value, record) =>
     //     record.error.map((item) => item.code_error).indexOf(value as string) ===
     //     0,
-    //   render: (value: any[], _: OpdSearchModel) => {
+    //   render: (value: any[], _: IpdSearchModel) => {
     //     if (value.length > 0) {
-    //       return value.map(t =>{return t.code_error} )
-    //       .filter(uniqueFilter)
-    //       .map((item) => {
-    //         return <Tag color="volcano">{item}</Tag>;
+    //       return value.map((item) => {
+    //         return <Tag color="volcano">{item.code_error}</Tag>;
     //       });
     //     } else {
     //       return "";
@@ -136,16 +105,16 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
     {
       title: null,
       key: "action",
-      width: 20,
+      width: 50,
       fixed: "right",
-      render: (_: any, record: OpdSearchModel) => (
+      render: (_: any, record: IpdSearchModel) => (
         <Button
           type="primary"
           ghost
           block
           style={{ border: 0 }}
           icon={<EditOutlined />}
-          onClick={() => router.push(`/work-opd/editor?id=${record.seq}`)}
+          onClick={() => router.push(`/work-ipd/editor?id=${record.an}`)}
         />
       ),
     },
@@ -153,7 +122,7 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
   //#endregion
 
   return (
-    <Space direction="vertical">
+    <Space direction="vertical" size={"small"} >
       <Card
         bordered={true}
         style={{ borderBottomColor: "LightGray" }}
@@ -166,7 +135,7 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
           onFinish={() => onSearch(1)}
         >
           <Form.Item
-            label="OPD Date From: "
+            label="IPD Date From: "
             name="DateFrom"
             rules={[{ required: true }]}
           >
@@ -190,30 +159,29 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
           </Form.Item>
         </Form>
       </Card>
-      <Fillter />
       <Table
         rowKey={'seq'}
         loading={status === "loading"}
         columns={columns}
-        dataSource={searchTabletResult || []}
+        dataSource={searchResult || []}
         pagination={{
           current: pageIndex,
           pageSize: pageSize,
-          total: searchTabletResult?.length || 10,
+          total: searchResult?.length || 10,
           showSizeChanger: true,
         }}
         onChange={onTableCriteriaChange}
         size="small"
         className={"MasterBackground"}
         style={{ margin: 0, width: "100%" }}
-        scroll={{ x: 650, y: 485 }}
+        scroll={{ x: 300, y: 485 }}
       />
     </Space>
   );
 };
 
-const OpdSearchPage = () => {
-  return withTheme(<OpdSearch />);
+const IpdSearchPage = () => {
+  return withTheme(<IpdSearch />);
 };
 
-export default OpdSearchPage;
+export default IpdSearchPage;

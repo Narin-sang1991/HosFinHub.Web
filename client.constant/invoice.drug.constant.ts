@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import type { InvoiceDrugModel, InvoiceDrugEditorModel } from "@/store/financial/invoiceDrugModel";
 import { InvoiceItemEditorModel } from "@/store/financial/invoiceItemModel";
-import { OpdValidModel, OpdValids } from "@/store/work-opd/opdEditorModel";
+import { OpdValidModel, WorkValidModel } from "@/store/work-opd/opdEditorModel";
 import { drugExChargePrefix, getChargeText } from "./invoice.billing.constant";
 
 export function genarateDrugEditors(
@@ -11,7 +11,7 @@ export function genarateDrugEditors(
   let results: InvoiceDrugEditorModel[] = [];
   const itemDruError = validItems?.filter((i) => i.dru)[0][
     "dru"
-  ] as unknown as OpdValids[];
+  ] as unknown as WorkValidModel[];
   drugItems.forEach((drugItem, i) => {
     const assignItemError = itemDruError.filter((i) => i.id === drugItem.id);
     let dummyKey: number = i + 1;

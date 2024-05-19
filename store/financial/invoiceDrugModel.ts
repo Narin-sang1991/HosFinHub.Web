@@ -1,4 +1,4 @@
-import { OpdValids } from "../work-opd/opdEditorModel";
+import { WorkValidModel } from "../work-opd/opdEditorModel";
 
 export interface InvoiceDrugModel {
   id: string; // unique key of data
@@ -31,5 +31,5 @@ export interface InvoiceDrugEditorModel extends InvoiceDrugModel {
   dummyKey: number; // dummy key for UI component
   isDurty: boolean;
   hasError: boolean;
-  validError?: OpdValids[];
+  validError?: WorkValidModel[];
 }

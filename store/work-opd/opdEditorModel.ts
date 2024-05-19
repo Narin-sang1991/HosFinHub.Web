@@ -9,6 +9,7 @@ import { AccidentEmergencyModel } from "../refer/accidentEmergencyModel";
 import { OpdReferModel } from "../refer/referModel";
 import { AdditionalPaymentModel, AdditPaymentModelEditorModel } from "../fee-additional/additionalModel";
 import { OpdOperationModel } from '@/store/operation/operationModel'
+import { WorkValidModel } from "../work/workValidModel";
 
 export interface OpdEditorModel {
 
@@ -73,30 +74,19 @@ export interface OpdEditorModel {
   procedureItems: OpdOperationModel[];
 }
 
-export interface OpdValids {
-  an: string;
-  code_error: string;
-  code_error_descriptions: string;
-  did: string;
-  didname: string;
-  file: string;
-  hn: string;
-  id: string;
-  seq: string;
-}
 export interface OpdValidModel {
-  opd: OpdValids[];
-  pat: OpdValids[];
-  ins: OpdValids[];
-  adp: OpdValids[];
-  aer: OpdValids[];
-  cht: OpdValids[];
-  cha: OpdValids[];
-  dru: OpdValids[];
-  labfu: OpdValids[];
-  odx: OpdValids[];
-  oop: OpdValids[];
-  orf: OpdValids[];
+  opd: WorkValidModel[];
+  pat: WorkValidModel[];
+  ins: WorkValidModel[];
+  adp: WorkValidModel[];
+  aer: WorkValidModel[];
+  cht: WorkValidModel[];
+  cha: WorkValidModel[];
+  dru: WorkValidModel[];
+  labfu: WorkValidModel[];
+  odx: WorkValidModel[];
+  oop: WorkValidModel[];
+  orf: WorkValidModel[];
 }
 
 export interface OpdDataModel {

@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import type { InvoiceItemEditorModel, } from "@/store/financial/invoiceItemModel";
 import { AdditPaymentModelEditorModel, AdditionalPaymentModel } from "@/store/fee-additional/additionalModel";
 import { additionalPaymentChargePrefix, allChargeItems, drugExChargePrefix, drugInChargePrefix, getChargeText } from "./invoice.billing.constant";
-import { OpdDetailModel, OpdValids } from "@/store/work-opd/opdEditorModel";
+import { OpdDetailModel, WorkValidModel } from "@/store/work-opd/opdEditorModel";
 import { PatientDetailModel } from "@/store/patient/patientModel";
 
 //#region Additional Payment Type
@@ -92,8 +92,8 @@ export async function recalcAdpCharges({
   return await results;
 }
 
-function getErrorToAdpCharges(itemId: string): OpdValids[] {
-  let results: OpdValids[] = [{
+function getErrorToAdpCharges(itemId: string): WorkValidModel[] {
+  let results: WorkValidModel[] = [{
     id: itemId,
     code_error: "E000",
     code_error_descriptions: "ต้องระบุรหัสรายการ",

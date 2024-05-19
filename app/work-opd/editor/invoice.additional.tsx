@@ -119,7 +119,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
         } else {
           let rowFeeSchedule = row.feeEditor as FeeScheduleSelectorModel;
           row.feeSchedule = { ...rowFeeSchedule };
-          if ((rowFeeSchedule.item_code).length > 0) row.code = rowFeeSchedule.item_code || row.code;
+          if ((rowFeeSchedule.item_code || '').length > 0) row.code = rowFeeSchedule.item_code || row.code;
           if (isNumber(Number(rowFeeSchedule.price))) {
             let rowFeeSchedulePrice = Number(rowFeeSchedule.price);
             let unitPrice = (rowFeeSchedulePrice == 0 || rowFeeSchedulePrice < Number(row.rate)) ? Number(row.rate) : rowFeeSchedulePrice;
@@ -741,7 +741,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
 };
 
 export default InvoiceAdditionalPage;
-function getErrorToAdpCharges(key: React.Key): import("@/store/work-opd/opdEditorModel").OpdValids[] | undefined {
+function getErrorToAdpCharges(key: React.Key): import("@/store/work-opd/opdEditorModel").WorkValidModel[] | undefined {
   throw new Error("Function not implemented.");
 }
 
