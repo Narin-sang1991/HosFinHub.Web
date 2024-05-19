@@ -6,6 +6,8 @@ import { workOpdSlice } from "./work-opd/workOpdSlice";
 import { feeAdditionalSlice } from "./fee-additional/feeAdditionalSlice";
 import { insureSelectOptionSlice } from './insure/insureOpdSlice'
 import { historyOpdSlice } from "./history/historyOpdSlice";
+import { transferIpdSlice } from "./work-ipd/transferIpdSlice";
+import { historyIpdSlice } from "./history/historyIpdSlice";
 // `combineSlices` automatically combines the reducers using
 // their `reducerPath`s, therefore we no longer need to call `combineReducers`.
 const rootReducer = combineSlices(
@@ -14,7 +16,9 @@ const rootReducer = combineSlices(
   workOpdSlice,
   feeAdditionalSlice,
   insureSelectOptionSlice,
-  historyOpdSlice
+  historyOpdSlice,
+  transferIpdSlice,
+  historyIpdSlice
 );
 // Infer the `RootState` type from the root reducer
 export type RootState = ReturnType<typeof rootReducer>;

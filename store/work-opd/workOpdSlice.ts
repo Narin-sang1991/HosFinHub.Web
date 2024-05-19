@@ -39,10 +39,11 @@ export const workOpdSlice = createAppSlice({
         pending: (state) => {
           state.searchStatus = "loading";
         },
-        fulfilled: (state, action: PayloadAction<OpdSearchModel[]>) => {
+        fulfilled: (state, action) => {
+          const payloadData = action.payload as unknown as OpdSearchModel[];
           state.searchStatus = "idle";
-          state.searchResult = action.payload;
-          state.tableResult = action.payload
+          state.searchResult = payloadData
+          state.tableResult = payloadData
         },
         rejected: (state) => {
           state.searchStatus = "failed";
@@ -59,10 +60,11 @@ export const workOpdSlice = createAppSlice({
         pending: (state) => {
           state.getStatus = "loading";
         },
-        fulfilled: (state, action: PayloadAction<OpdResponse>) => {
+        fulfilled: (state, action) => {
+          const payloadData = action.payload as unknown as OpdResponse
           state.getStatus = "idle";
-          state.getResult = action.payload.data;
-          state.getValid = action.payload.error;
+          state.getResult = payloadData.data
+          state.getValid = payloadData.error
         },
         rejected: (state) => {
           state.getStatus = "failed";
