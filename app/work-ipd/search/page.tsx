@@ -59,7 +59,7 @@ const IpdSearch = function IpdSearch(props: IpdSearchProps) {
       title: <p className="Center">เลขที่ Admit</p>,
       dataIndex: "an",
       key: "an",
-      width: 80,
+      width: 50,
       className: "Center",
       fixed: "left",
     },
@@ -67,7 +67,7 @@ const IpdSearch = function IpdSearch(props: IpdSearchProps) {
       title: <p className="Center">วันที่เข้า Admit</p>,
       dataIndex: "dateipd",
       key: "dateipd",
-      width: 80,
+      width: 50,
       className: "Center",
       fixed: "left",
       render: (date) => {
@@ -80,28 +80,6 @@ const IpdSearch = function IpdSearch(props: IpdSearchProps) {
     },
     ...prefixColumns,
     ...suffixColumns,
-    // {
-    //   title: "Error",
-    //   dataIndex: "error",
-    //   key: "error",
-    //   width: 40,
-        // className: "Center",
-    //   ellipsis: true,
-    //   filterSearch: true,
-    //   // filters: filterValue,
-    //   onFilter: (value, record) =>
-    //     record.error.map((item) => item.code_error).indexOf(value as string) ===
-    //     0,
-    //   render: (value: any[], _: IpdSearchModel) => {
-    //     if (value.length > 0) {
-    //       return value.map((item) => {
-    //         return <Tag color="volcano">{item.code_error}</Tag>;
-    //       });
-    //     } else {
-    //       return "";
-    //     }
-    //   },
-    // },
     {
       title: null,
       key: "action",
@@ -160,7 +138,7 @@ const IpdSearch = function IpdSearch(props: IpdSearchProps) {
         </Form>
       </Card>
       <Table
-        rowKey={'seq'}
+        rowKey={(record) => record.an}
         loading={status === "loading"}
         columns={columns}
         dataSource={searchResult || []}
@@ -174,7 +152,7 @@ const IpdSearch = function IpdSearch(props: IpdSearchProps) {
         size="small"
         className={"MasterBackground"}
         style={{ margin: 0, width: "100%" }}
-        scroll={{ x: 300, y: 485 }}
+        scroll={{ x: 650, y: 485 }}
       />
     </Space>
   );

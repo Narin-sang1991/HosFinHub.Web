@@ -30,3 +30,13 @@ export const fetchHistoryNumberIpd = async (criteria: { startDate: string, endDa
         .catch((e) => console.log("API-Error: ", e))
     return apiResult;
 };
+
+export const fetchHistoryServiceIpd = async (criteria: { an: string[] }) => {
+    const apiResult = await axiosHosProvider.post('/history-list/ipd-claim-service', criteria)
+        .then((response) => {
+            const result: { data: IpdClamHistory[] } = response;
+            return result;
+        })
+        .catch((e) => console.log("API-Error: ", e))
+    return apiResult;
+};

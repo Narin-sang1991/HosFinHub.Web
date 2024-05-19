@@ -13,7 +13,7 @@ export const claimOpd = async (value: string[]) => {
 };
 
 export const claimIpd = async (value: string[]) => {
-    const apiResult = await axiosHosProvider.post('/claim-fdh/opd', { an: value })
+    const apiResult = await axiosHosProvider.post('/claim-fdh/ipd', { an: value })
         .then((response) => {
             const result = response;
             return result;

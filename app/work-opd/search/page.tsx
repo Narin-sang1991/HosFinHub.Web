@@ -192,7 +192,7 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
       </Card>
       <Fillter />
       <Table
-        rowKey={'seq'}
+        rowKey={(record) => record.seq}
         loading={status === "loading"}
         columns={columns}
         dataSource={searchTabletResult || []}
