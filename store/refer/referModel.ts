@@ -1,13 +1,11 @@
 
 export interface OpdReferModel extends ReferModel {
-    id: string
     hn: string
     dateopd: string
     clinic: string
     seq: string
     referdate: string
 }
-
 
 export interface IpdReferModel extends ReferModel {
     an: string;

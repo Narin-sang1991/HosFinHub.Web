@@ -5,10 +5,10 @@ import type { InvoiceModel, } from "@/store/financial/invoiceModel";
 import type { InvoiceItemModel, InvoiceItemEditorModel } from "@/store/financial/invoiceItemModel";
 import { DianosisModel } from "../dianosis/dianosisModel";
 import { LabfuModel } from "../medical-tech/labfuModel";
-import { AdditionEmergencyModel } from "../refer/referEmergencyModel";
+import { AccidentEmergencyModel } from "../refer/accidentEmergencyModel";
 import { OpdReferModel } from "../refer/referModel";
 import { AdditionalPaymentModel, AdditPaymentModelEditorModel } from "../fee-additional/additionalModel";
-import { OopModel } from "../financial/opdModel";
+import { OpdOperationModel } from '@/store/operation/operationModel'
 
 export interface OpdEditorModel {
 
@@ -20,7 +20,7 @@ export interface OpdEditorModel {
   /**
    * #origin => AER
    **/
-  additionEmergencies: AdditionEmergencyModel[];
+  accidenEmergencies: AccidentEmergencyModel[];
 
   /**
   * #origin => CHT
@@ -60,7 +60,7 @@ export interface OpdEditorModel {
   /**
   * #origin => ORF
   **/
-  opdReferItems: OpdReferModel[];
+  opdRefer: OpdReferModel;
 
   /**
   * #origin => PAT
@@ -70,7 +70,7 @@ export interface OpdEditorModel {
   /**
  * #origin => OOP
  **/
-  procedureItems: OopModel[];
+  procedureItems: OpdOperationModel[];
 }
 
 export interface OpdValids {
@@ -101,14 +101,14 @@ export interface OpdValidModel {
 
 export interface OpdDataModel {
   adp: AdditionalPaymentModel[];
-  aer: AdditionEmergencyModel[];
+  aer: AccidentEmergencyModel[];
   cha: InvoiceItemModel[];
   cht: InvoiceModel[];
   dru: InvoiceDrugModel[];
   ins: InsureDetailModel[];
   labfu: LabfuModel[];
   odx: DianosisModel[],
-  oop: OopModel[],
+  oop: OpdOperationModel[],
   opd: OpdDetailModel[];
   orf: OpdReferModel[];
   pat: PatientDetailModel[];

@@ -1,12 +1,10 @@
 import { getColResponsive } from "@/client.component/antd.col.resposive";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-// import { getResult, saveAsync } from "@/store/work-opd/workOpdSlice";
+import { useAppSelector } from "@/store/hooks";
 import { selectUccOption } from "@/store/insure/insureOpdSlice";
 import { Divider, Form, Input, Row, Select } from "antd";
 import React from "react";
 
 const InsureInfo = () => {
-  const dispatch = useAppDispatch();
   const selectUccOptions = useAppSelector(selectUccOption);
   return (
     <React.Fragment>

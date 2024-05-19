@@ -45,7 +45,13 @@ const DiagenosisInfo = (props: DiagenosisInfoProps) => {
     ]
     return (
         <React.Fragment>
-            <Table columns={column} dataSource={diage} pagination={false} />
+            <Table columns={column}
+                dataSource={diage}
+                pagination={false}
+                style={{ margin: -10, width: "99%" }}
+                sticky
+                scroll={{ x: 500 }}
+            />
         </React.Fragment>
     )
 }

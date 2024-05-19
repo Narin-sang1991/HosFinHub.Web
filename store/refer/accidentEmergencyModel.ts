@@ -1,5 +1,5 @@
 
-export interface AdditionEmergencyModel {
+export interface AccidentEmergencyModel {
     id: string
     hn: string
     an: string

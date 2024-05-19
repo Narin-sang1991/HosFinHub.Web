@@ -46,6 +46,9 @@ import "@/app/globals.css";
 import { claimOpd } from "@/services/send.fhd.prioviver";
 import ProcedureInfo from "./procedure.info";
 import DiagenosisInfo from "./diagenosis.info";
+import AccidentEmergencyTab from "./accident.emergency";
+import { OpdReferModel } from "@/store/refer/referModel";
+import ReferInfo from "./refer.info";
 //#endregion
 
 interface OpdEditorProps { }
@@ -83,7 +86,8 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
     (async () => {
       let opdDetail = { ...originData.opd[0] };
       let patientDetail = { ...originData.pat[0] };
-      let insureDetail = { ...originData.ins[0] }
+      let insureDetail = { ...originData.ins[0] };
+      let opdRefer = { ...originData.orf[0] };
 
       let adtItems = await genarateAdditPaymentEditors(originData.adp, valid);
       let invoiceItems = await genarateAllCharges(originData.cha, valid);
@@ -99,7 +103,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
 
       let transformData: OpdEditorModel = {
         additPayments: adtItems,
-        additionEmergencies: originData.aer,
+        accidenEmergencies: originData.aer,
         invoiceItems: invoiceItems,
         invoices: originData.cht,
         drugItems: genarateDrugEditors(originData.dru, valid),
@@ -107,7 +111,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         labfuItems: originData.labfu,
         diagnosisItems: originData.odx,
         opdDetail: opdDetail,
-        opdReferItems: originData.orf,
+        opdRefer: opdRefer,
         patient: patientDetail,
         procedureItems: originData.oop
 
@@ -172,9 +176,10 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
 
     const opdData: OpdDetailModel[] = editingData != undefined ? [{ ...editingData.opdDetail, uuc: uucEditing }] : [];
     const patData: PatientDetailModel[] = editingData != undefined ? [{ ...editingData.patient }] : [];
+    const opdReferData: OpdReferModel[] = editingData != undefined ? [{ ...editingData.opdRefer }] : [];
     const savedata: OpdDataModel = {
       adp: convertEditorToAdp(invoicedata.adpItems || invoicedata.additPaymentItems),
-      aer: editingData?.additionEmergencies || [],
+      aer: editingData?.accidenEmergencies || [],
       cht: convertEditorToCht(editingData?.invoices || [], invoicedata.invoiceItems),
       cha: convertEditorToCha(invoicedata.invoiceItems, opdData[0], patData[0]),
       dru: convertEditorToDru(invoicedata.drugItems),
@@ -182,7 +187,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       labfu: editingData?.labfuItems || [],
       odx: editingData?.diagnosisItems || [],
       opd: opdData,
-      orf: editingData?.opdReferItems || [],
+      orf: opdReferData,
       pat: patData,
       oop: editingData?.procedureItems || []
     };
@@ -225,14 +230,22 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       icon: <IdcardOutlined />,
       children: getCardInTab({
         title: "ข้อมูลผู้ป่วย",
-        children: <div><PatientInfoTab /> <InsureInfo /></div>,
+        children: <><PatientInfoTab /> <InsureInfo /></>,
       }),
     },
     {
       key: "refer",
       label: "อุบัติเหตุ/ส่งต่อ",
       icon: <TruckOutlined />,
-      children: "Content of Tab Pane 2",
+      children: getCardInTab({
+        title: "ข้อมูลอุบัติเหตุ ฉุกเฉิน และรับส่ง เพื่อรักษา",
+        children: (
+          <>
+            <AccidentEmergencyTab accidentEmergencies={editingData?.accidenEmergencies || []} />
+            <ReferInfo />
+          </>
+        )
+      }),
     },
     {
       key: "diagnosis",

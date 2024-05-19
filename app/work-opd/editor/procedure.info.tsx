@@ -1,19 +1,19 @@
-import { OopModel } from '@/store/financial/opdModel'
+import { OpdOperationModel } from '@/store/operation/operationModel'
 import { Table } from 'antd'
 import React, { useEffect, useState } from 'react'
 
 interface ProcedureInfoProps {
-    procedureInfo: OopModel[]
+    procedureInfo: OpdOperationModel[]
 }
 
 const ProcedureInfo = (props: ProcedureInfoProps) => {
-    const [procedure, setProcedure] = useState<OopModel[]>([])
+    const [procedure, setProcedure] = useState<OpdOperationModel[]>([])
 
     useEffect(() => {
         getProcedure(props.procedureInfo)
     }, [props])
 
-    const getProcedure = (value: OopModel[]) => {
+    const getProcedure = (value: OpdOperationModel[]) => {
         setProcedure(value)
     }
 
@@ -47,7 +47,13 @@ const ProcedureInfo = (props: ProcedureInfoProps) => {
 
     return (
         <React.Fragment>
-            <Table columns={column} dataSource={procedure} pagination={false} />
+            <Table
+                columns={column} dataSource={procedure}
+                pagination={false}
+                style={{ margin: -10, width: "99%" }}
+                sticky
+                scroll={{ x: 500 }}
+            />
         </React.Fragment>
     )
 }
