@@ -1,16 +1,17 @@
 import { createAppSlice } from "@/store/createAppSlice";
-import { OpdClamHistory } from "./claimModel";
-import { fetchHistoryNumberOpd } from "@/services/history.privider";
-import { PayloadAction } from "@reduxjs/toolkit";
+import { OpdClamHistory, OpdClamService } from "./claimModel";
+import { fetchHistoryNumberOpd, fetchHistoryServiceOpd } from "@/services/history.privider";
 
 export interface ClamHistoryOpdSliceState {
     searchResult: OpdClamHistory[];
     searchStatus: "idle" | "loading" | "failed";
+    opdClamService: OpdClamService[] 
 }
 
 const initialState: ClamHistoryOpdSliceState = {
     searchResult: [],
-    searchStatus: "idle"
+    searchStatus: "idle",
+    opdClamService: []
 }
 
 export const historyOpdSlice = createAppSlice({
@@ -24,21 +25,30 @@ export const historyOpdSlice = createAppSlice({
             pending: (state) => {
                 state.searchStatus = 'loading'
             },
-            fulfilled: (state, action: PayloadAction<OpdClamHistory[]>) => {
+            fulfilled: (state, action) => {
                 state.searchStatus = 'idle'
-                state.searchResult = action.payload
+                state.searchResult = action.payload as unknown as OpdClamHistory[]
             },
             rejected: (state) => {
                 state.searchStatus = 'failed'
             }
-        }
-        )
+        }),
+
+        getOpdClaim: create.asyncThunk(async (body: { seq: string[] }) => {
+            const response = await fetchHistoryServiceOpd(body);
+            return response;
+        }, {
+            fulfilled: (state, action) => {
+                state.opdClamService = action.payload as unknown as OpdClamService[]
+            }
+        })
     }),
     selectors: {
         selectResult: (historyOpd) => historyOpd.searchResult,
         selectStatus: (historyOpd) => historyOpd.searchStatus,
+        selectClaimService: (historyOpd) => historyOpd.opdClamService
     }
 })
 
-export const { searchAsync } = historyOpdSlice.actions;
-export const { selectResult, selectStatus } = historyOpdSlice.selectors
+export const { searchAsync, getOpdClaim } = historyOpdSlice.actions;
+export const { selectResult, selectStatus, selectClaimService } = historyOpdSlice.selectors

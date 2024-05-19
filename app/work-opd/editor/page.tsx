@@ -281,22 +281,6 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
   ];
   //#endregion
 
-  // const onClickClaim = async () => {
-  //   const seq = editKey
-  //   console.log(seq);
-
-  //   if (seq !== undefined) {
-  //     const resultClaim = await claimOpd([seq]) as unknown as any
-  //     if (resultClaim.status === 200) {
-  //       message.success(resultClaim.message_th)
-  //     } else {
-  //       message.error(resultClaim.message_th)
-  //     }
-  //   } else {
-  //     message.error('seq undefined.')
-  //   }
-  // }
-
   return (
     <Skeleton active loading={status === "loading"} >
       <Space size={"small"} direction="vertical" align="end">
@@ -319,7 +303,6 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
           name="workOpdEditor"
           layout="vertical"
           form={formEditor}
-        // onFinish={onSave}
         >
           <Collapse
             size="small"

@@ -143,17 +143,17 @@ export interface InsModel {
     htype: string
 }
 
-// export interface LabfuModel {
-//     id: string
-//     hcode: string
-//     hn: string
-//     person_id: string
-//     dateserv: string
-//     seq: string
-//     labtest: string
-//     labresult: string
+export interface LabfuModel {
+    id: string
+    hcode: string
+    hn: string
+    person_id: string
+    dateserv: string
+    seq: string
+    labtest: string
+    labresult: string
 
-// }
+}
 
 export interface OdxModel {
     id: string
@@ -179,16 +179,16 @@ export interface OopModel {
     servprice: string
 }
 
-// export interface OrfModel {
-//     id: string
-//     hn: string
-//     dateopd: string
-//     clinic: string
-//     refer: string
-//     refertype: string
-//     seq: string
-//     referdate: string
-// }
+export interface OrfModel {
+    id: string
+    hn: string
+    dateopd: string
+    clinic: string
+    refer: string
+    refertype: string
+    seq: string
+    referdate: string
+}
 
 export interface PatModel {
     id: string

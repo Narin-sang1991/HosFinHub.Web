@@ -11,6 +11,16 @@ export const fetchHistoryNumberOpd = async (criteria: { startDate: string, endDa
     return apiResult;
 };
 
+export const fetchHistoryServiceOpd = async (criteria: { seq: string[] }) => {
+    const apiResult = await axiosHosProvider.post('/history-list/opd-claim-service', criteria)
+        .then((response) => {
+            const result: { data: OpdClamHistory[] } = response;
+            return result;
+        })
+        .catch((e) => console.log("API-Error: ", e))
+    return apiResult;
+};
+
 export const fetchHistoryNumberIpd = async (criteria: { startDate: string, endDate: string }) => {
     const apiResult = await axiosHosProvider.post('/history-list/ipd-claim-numbers', criteria)
         .then((response) => {
