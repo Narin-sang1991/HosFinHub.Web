@@ -5,6 +5,7 @@ import { OpdDetailModel, OpdValidModel } from "@/store/work-opd/opdEditorModel";
 import { InvoiceModel } from "@/store/financial/invoiceModel";
 import { PatientDetailModel } from "@/store/patient/patientModel";
 import { ChargeModel } from "@/store/financial/chargeModel";
+import { IpdDetailModel } from "@/store/work-ipd/ipdEditorModel";
 const defaultStrEmpty: string = "-";
 
 //#region File and Code
@@ -275,7 +276,7 @@ export function getStatusDisplayType(status: number) {
   return result;
 }
 
-export function convertEditorToCha(chaEditors: InvoiceItemEditorModel[], opdData: OpdDetailModel, patData: PatientDetailModel): InvoiceItemModel[] {
+export function convertEditorToCha(chaEditors: InvoiceItemEditorModel[], visitDetail: OpdDetailModel | IpdDetailModel, patData: PatientDetailModel): InvoiceItemModel[] {
   let results: InvoiceItemModel[] = [];
   let chaItems: InvoiceItemEditorModel[] = [...chaEditors].filter(t => t.seq != '0');
   let excludeProps = ['dummyKey', 'isDurty', 'totalAmount', 'overAmount', 'chargeDetail', 'status', 'valid'];
@@ -284,7 +285,7 @@ export function convertEditorToCha(chaEditors: InvoiceItemEditorModel[], opdData
     // let totalAmount: number = overAmount > 0 ? Number(item.totalAmount.toString()) - overAmount : Number(item.totalAmount.toString());
     let totalAmount: number = Number(item.totalAmount.toString());
 
-    let dataSuffix1: InvoiceItemModel = getNewInvoiceItemData(opdData, patData);
+    let dataSuffix1: InvoiceItemModel = getNewInvoiceItemData(visitDetail, patData);
     Object.keys(item).forEach((prop1) => {
       if (!excludeProps.includes(prop1)) dataSuffix1 = { ...dataSuffix1, [prop1]: item[prop1] };
     });
@@ -296,7 +297,7 @@ export function convertEditorToCha(chaEditors: InvoiceItemEditorModel[], opdData
     });
 
     if (overAmount > 0) {
-      let dataSuffix2: InvoiceItemModel = getNewInvoiceItemData(opdData, patData);
+      let dataSuffix2: InvoiceItemModel = getNewInvoiceItemData(visitDetail, patData);
       Object.keys(item).forEach((prop2) => {
         if (!excludeProps.includes(prop2)) dataSuffix2 = { ...dataSuffix2, [prop2]: item[prop2] };
       });
@@ -312,16 +313,16 @@ export function convertEditorToCha(chaEditors: InvoiceItemEditorModel[], opdData
   return results.filter(t => t.amount != 0);
 }
 
-function getNewInvoiceItemData(opdData: OpdDetailModel, patData: PatientDetailModel): InvoiceItemModel {
+function getNewInvoiceItemData( visitDetail: OpdDetailModel | IpdDetailModel, patData: PatientDetailModel): InvoiceItemModel {
   let result: InvoiceItemModel = {
     id: "",
     hn: patData.hn,
     an: "",
-    date: opdData.dateopd,
+    date: visitDetail.dateopd,
     chrgitem: "",
     amount: 0,
     person_id: patData.person_id,
-    seq: opdData.seq,
+    seq: visitDetail.seq,
   };
   return result;
 }

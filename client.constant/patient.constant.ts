@@ -47,7 +47,7 @@ export function getProviderType(opType?: number) {
     return defaultStrEmpty;
 }
 
-export function getDischargeType(typeOut?: number) {
+export function getDischargeOPD(typeOut?: number) {
     if (typeOut == 1) return "Discharge";
     if (typeOut == 2) return "Admit";
     if (typeOut == 3) return "Refer-out";
@@ -64,6 +64,36 @@ export function getVisitType(typeIn?: number) {
     if (typeIn == 2) return "Appointment";
     if (typeIn == 3) return "Refer-in";
     if (typeIn == 4) return "EMS-in";
+    return defaultStrEmpty;
+}
+
+export function getAdmitType(svctype?: string) {
+    if (svctype == 'I') return "IPD";
+    if (svctype == 'A') return "Ambulatory Care";
+    return defaultStrEmpty;
+}
+
+export function getDischargeStatus(status?: string) {
+    if (status == '1') return "Complete Recovery";
+    if (status == '2') return "Improved";
+    if (status == '3') return "Not Improved";
+    if (status == '4') return "Normal Delivery";
+    if (status == '5') return "Un-Delivery";
+    if (status == '6') return "Normal child discharged with mother";
+    if (status == '7') return "Normal child discharged separately";
+    if (status == '8') return "Stillbirth";
+    if (status == '9') return "Dead";
+    return defaultStrEmpty;
+}
+
+export function getDischargeIPD(typeOut?: string) {
+    if (typeOut == '1') return "With Approval";
+    if (typeOut == '2') return "Against Advice";
+    if (typeOut == '3') return "By Escape";
+    if (typeOut == '4') return "By Transfer";
+    if (typeOut == '5') return "Other (specify)";
+    if (typeOut == '8') return "Dead Autopsy";
+    if (typeOut == '9') return "Dead Non autopsy";
     return defaultStrEmpty;
 }
 

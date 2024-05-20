@@ -14,57 +14,57 @@ import {
 } from "@ant-design/icons";
 import {
   getAsync, getResult, getStatus, getValid,
-  saveAsync, saveStatus,
-} from "@/store/work-opd/workOpdSlice";
+  // saveAsync, saveStatus,
+} from "@/store/work-ipd/workIpdSlice";
 import type {
-  OpdDataModel,
-  OpdDetailModel,
-  OpdEditorModel,
-  OpdValidModel,
-} from "@/store/work-opd/opdEditorModel";
+  IpdDataModel,
+  IpdDetailModel,
+  IpdEditorModel,
+  IpdValidModel,
+} from "@/store/work-ipd/ipdEditorModel";
 import type { PatientDetailModel } from "@/store/patient/patientModel";
 import {
   getPatientID,
-  getProviderType,
-  getDischargeOPD,
-  getVisitType,
+  getDischargeIPD,
   getAgeYear,
   getMarriage,
   getPatientSex,
+  getAdmitType,
+  getDischargeStatus,
 } from "@/client.constant/patient.constant";
 import { getColResponsive } from "@/client.component/antd.col.resposive";
-import { dateDisplayFormat } from "@/client.constant/format.constant";
+import { dateDisplayFormat, timeDisplayFormat } from "@/client.constant/format.constant";
 import { additionalPaymentChargePrefix, convertEditorToCha, convertEditorToCht, genarateAllCharges } from "@/client.constant/invoice.billing.constant";
 import { convertEditorToDru, genarateDrugEditors } from "@/client.constant/invoice.drug.constant";
 import { convertEditorToAdp, genarateAdditPaymentEditors } from "@/client.constant/invoice.addit.payment.constant";
 import { recalcAdpCharges } from "@/client.constant/invoice.additional.constant";
-import PatientInfoTab from "./patient.info";
-import InvoiceBillingTab from "./invoice.billing";
-import InsureInfo from "./insure.info";
+
+// import InvoiceBillingTab from "./invoice.billing";
+import PatientInfoTab from "@/app/work-sub-component/patient.info";
+import InsureInfo from "@/app/work-sub-component/insure.info";
+import ProcedureInfo from "@/app/work-sub-component/procedure.info";
+import DiagenosisInfo from "@/app/work-sub-component/diagenosis.info";
+import AccidentEmergencyTab from "@/app/work-sub-component/accident.emergency";
+import ReferInfo from "@/app/work-sub-component/refer.info";
+import { IpdReferModel } from "@/store/refer/referModel";
 import withTheme from "../../../theme";
 import "@/app/globals.css";
-import { claimOpd } from "@/services/send.fhd.prioviver";
-import ProcedureInfo from "./procedure.info";
-import DiagenosisInfo from "./diagenosis.info";
-import AccidentEmergencyTab from "./accident.emergency";
-import { OpdReferModel } from "@/store/refer/referModel";
-import ReferInfo from "./refer.info";
 //#endregion
 
-interface OpdEditorProps { }
+interface IpdEditorProps { }
 const defaultStrEmpty: string = "-";
 const { Text } = Typography;
 
-const OpdEditor = function OpdEditor(props: OpdEditorProps) {
+const IpdEditor = function IpdEditor(props: IpdEditorProps) {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [formEditor] = Form.useForm();
   const status = useAppSelector(getStatus);
-  const saveState = useAppSelector(saveStatus);
+  // const saveState = useAppSelector(saveStatus);
   const originData = useAppSelector(getResult);
-  const valid: OpdValidModel[] | undefined = useAppSelector(getValid);
-  const [editingData, setEditData] = useState<OpdEditorModel>();
+  const valid: IpdValidModel[] | undefined = useAppSelector(getValid);
+  const [editingData, setEditData] = useState<IpdEditorModel>();
   const [editKey, setEditKey] = useState<any>(undefined);
 
 
@@ -84,44 +84,45 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
   useEffect(() => {
     if (originData === undefined) return;
     (async () => {
-      let opdDetail = { ...originData.opd[0] };
+      let ipdDetail = { ...originData.ipd[0] };
       let patientDetail = { ...originData.pat[0] };
       let insureDetail = { ...originData.ins[0] };
-      let opdRefer = { ...originData.orf[0] };
+      let ipdRefer = { ...originData.irf[0] };
 
-      let adtItems = await genarateAdditPaymentEditors(originData.adp, valid);
+      // let adtItems = await genarateAdditPaymentEditors(originData.adp, valid);
       let invoiceItems = await genarateAllCharges(originData.cha, valid);
 
-      invoiceItems = await recalcAdpCharges({
-        visitDetail: opdDetail,
-        patientData: patientDetail,
-        invoiceEditors: invoiceItems,
-        adtEditors: adtItems,
-        reconcile: false,
-        chargeCalcScope: additionalPaymentChargePrefix
-      });
+      // invoiceItems = await recalcAdpCharges({
+      //   visitDetail: ipdDetail,
+      //   patientData: patientDetail,
+      //   invoiceEditors: invoiceItems,
+      //   adtEditors: adtItems,
+      //   reconcile: false,
+      //   chargeCalcScope: additionalPaymentChargePrefix
+      // });
 
-      let transformData: OpdEditorModel = {
-        additPayments: adtItems,
+      let transformData: IpdEditorModel = {
+        // additPayments: adtItems,
         accidenEmergencies: originData.aer,
         invoiceItems: invoiceItems,
         invoices: originData.cht,
-        drugItems: genarateDrugEditors(originData.dru, valid),
+        // drugItems: genarateDrugEditors(originData.dru, valid),
         insureItems: originData.ins,
         labfuItems: originData.labfu,
-        diagnosisItems: originData.odx,
-        opdDetail: opdDetail,
-        opdRefer: opdRefer,
+        diagnosisItems: originData.idx,
+        ipdDetail: ipdDetail,
+        ipdRefer: ipdRefer,
         patient: patientDetail,
-        procedureItems: originData.oop
+        procedureItems: originData.iop
 
       };
+      console.log("transformData=>", transformData);
       setEditData(transformData);
 
       formEditor.setFieldsValue({
         CardType: patientDetail.idtype,
         PersonID: getPatientID(patientDetail.person_id),
-        AgeAtVisitDate: getAgeYear(patientDetail.dob, opdDetail.dateopd),
+        AgeAtVisitDate: getAgeYear(patientDetail.dob, ipdDetail.dateadm),
         PrefixName: patientDetail.title,
         FirstName: patientDetail.fname,
         LastName: patientDetail.lname,
@@ -132,10 +133,10 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         Occupation: patientDetail.occupa,
         Inscl: insureDetail.inscl,
         Premitno: insureDetail.permitno,
-        UUC: opdDetail.uuc,
+        UUC: ipdDetail.uuc,
         SubType: insureDetail.subinscl,
         InvoiceBilling: {
-          opdData: editingData?.opdDetail || undefined,
+          opdData: editingData?.ipdDetail || undefined,
           patientData: editingData?.patient || undefined,
           invoiceItems: editingData?.invoiceItems || [],
           drugItems: editingData?.drugItems || [],
@@ -149,7 +150,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
   //#region Async
   async function onGet(id: any) {
     (async () => {
-      await dispatch(getAsync({ seq: id }));
+      await dispatch(getAsync({ an: id }));
     })();
   }
 
@@ -163,7 +164,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         && invoicedata.opdData == undefined
       )) {
       invoicedata = {
-        opdData: editingData?.opdDetail || undefined,
+        visitDetail: editingData?.ipdDetail || undefined,
         patientData: editingData?.patient || undefined,
         invoiceItems: editingData?.invoiceItems || [],
         drugItems: editingData?.drugItems || [],
@@ -174,10 +175,10 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
     // console.log("invoicedata=>", invoicedata);
     // console.log("uuc=>", uucEuucEditingditind);
 
-    const visitDetail: OpdDetailModel[] = editingData != undefined ? [{ ...editingData.opdDetail, uuc: uucEditing }] : [];
+    const visitDetail: IpdDetailModel[] = editingData != undefined ? [{ ...editingData.ipdDetail, uuc: uucEditing }] : [];
     const patData: PatientDetailModel[] = editingData != undefined ? [{ ...editingData.patient }] : [];
-    const referData: OpdReferModel[] = editingData != undefined ? [{ ...editingData.opdRefer }] : [];
-    const savedata: OpdDataModel = {
+    const referData: IpdReferModel[] = editingData != undefined ? [{ ...editingData.ipdRefer }] : [];
+    const savedata: IpdDataModel = {
       adp: convertEditorToAdp(invoicedata.adpItems || invoicedata.additPaymentItems),
       aer: editingData?.accidenEmergencies || [],
       cht: convertEditorToCht(editingData?.invoices || [], invoicedata.invoiceItems),
@@ -185,16 +186,16 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       dru: convertEditorToDru(invoicedata.drugItems),
       ins: editingData?.insureItems || [],
       labfu: editingData?.labfuItems || [],
-      odx: editingData?.diagnosisItems || [],
-      opd: visitDetail,
-      orf: referData,
+      idx: editingData?.diagnosisItems || [],
+      ipd: visitDetail,
+      irf: referData,
       pat: patData,
-      oop: editingData?.procedureItems || []
+      iop: editingData?.procedureItems || []
     };
     // console.log("savedata=>", savedata);
-    (async () => {
-      await dispatch(saveAsync({ ...savedata }));
-    })();
+    // (async () => {
+    //   await dispatch(saveAsync({ ...savedata }));
+    // })();
   }
 
   function onClose() {
@@ -266,10 +267,10 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       icon: <MedicineBoxOutlined />,
       children: getCardInTab({
         title: "ข้อมูลการผ่าตัดหัตถการ",
-        children: (
-          <Form.Item name={"procedureInfo"}>
-            <ProcedureInfo procedureInfo={editingData?.procedureItems || []} />
-          </Form.Item>
+        children: (<></>
+          // <Form.Item name={"procedureInfo"}>
+          //   <ProcedureInfo procedureInfo={editingData?.procedureItems || []} />
+          // </Form.Item>
         )
       })
     },
@@ -279,15 +280,15 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       icon: <DollarOutlined />,
       children: getCardInTab({
         title: "ข้อมูลค่ารักษาพยาบาล",
-        children: (
-          <Form.Item name={"InvoiceBilling"}>
-            <InvoiceBillingTab opdData={editingData?.opdDetail || undefined}
-              patientData={editingData?.patient || undefined}
-              invoiceItems={editingData?.invoiceItems || []}
-              drugItems={editingData?.drugItems || []}
-              additPaymentItems={editingData?.additPayments || []}
-            />
-          </Form.Item>
+        children: (<></>
+          // <Form.Item name={"InvoiceBilling"}>
+          //   <InvoiceBillingTab opdData={editingData?.ipdDetail || undefined}
+          //     patientData={editingData?.patient || undefined}
+          //     invoiceItems={editingData?.invoiceItems || []}
+          //     drugItems={editingData?.drugItems || []}
+          //     additPaymentItems={editingData?.additPayments || []}
+          //   />
+          // </Form.Item>
         ),
       }),
     },
@@ -299,11 +300,11 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       <Space size={"small"} direction="vertical" align="end">
         <Affix offsetTop={50}  >
           <Row style={{ margin: -10, marginBottom: 10 }} justify="end" align="middle" gutter={[4, 4]}>
-            <Col>
+            {/* <Col>
               <Button type="text" onClick={onSave} loading={saveState === "loading"}
                 icon={<SaveTwoTone twoToneColor={'#52c41a'} style={{ fontSize: '30px' }} />}
               />
-            </Col>
+            </Col> */}
             <Col> <Divider type="vertical" style={{ height: 20 }} /> </Col>
             <Col>
               <Button type="text" onClick={onClose}
@@ -313,7 +314,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
           </Row>
         </Affix>
         <Form
-          name="workOpdEditor"
+          name="workIpdEditor"
           layout="vertical"
           form={formEditor}
         >
@@ -337,23 +338,23 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                       ),
                     })}
                     {getColResponsive({
-                      key: "typein",
+                      key: "svctype",
                       children: (
                         <Space align="start" size="small">
-                          <Text type="secondary">รูปแบบ :</Text>
+                          <Text type="secondary">ประเภทการ admit :</Text>
                           <Text strong>
-                            {getVisitType(editingData?.opdDetail.typein)}
+                            {getAdmitType(editingData?.ipdDetail.svctype)}
                           </Text>
                         </Space>
                       ),
                     })}
                     {getColResponsive({
-                      key: "typeout",
+                      key: "dischs",
                       children: (
                         <Space align="start" size="small">
-                          <Text type="secondary">สถานะบริการ :</Text>
+                          <Text type="secondary">สถานภาพการจำหน่าย :</Text>
                           <Text strong>
-                            {getDischargeOPD(editingData?.opdDetail.typeout)}
+                            {getDischargeStatus(editingData?.ipdDetail.dischs)}
                           </Text>
                         </Space>
                       ),
@@ -383,7 +384,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                             )
                           }
                         />
-                        <Text strong keyboard>{`HN:${editingData?.opdDetail.hn || "N/A"
+                        <Text strong keyboard>{`HN:${editingData?.ipdDetail.hn || "N/A"
                           }`}</Text>
                       </Space>
                     </Col>
@@ -396,74 +397,94 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                     >
                       <Row justify="start" align="middle" gutter={[4, 8]}>
                         {getColResponsive({
-                          key: "btemp",
+                          key: "adm_w",
                           children: (
                             <Space align="start" size="small">
-                              <Text type="secondary">อุณหภูมิร่างกาย :</Text>
+                              <Text type="secondary">น้ำหนัก admit :</Text>
                               <Text strong>
-                                {editingData?.opdDetail.btemp || defaultStrEmpty}
+                                {editingData?.ipdDetail?.adm_w ?? defaultStrEmpty}
                               </Text>
-                              <Text type="secondary">°C</Text>
+                              <Text type="secondary">กิโลกรัม</Text>
                             </Space>
                           ),
                         })}
                         {getColResponsive({
-                          key: "sbp-dbp",
+                          key: "dateadm",
                           children: (
                             <Space align="start" size="small">
-                              <Text type="secondary">ความดันโลหิต :</Text>
-                              <Text strong>{`${editingData?.opdDetail.sbp || defaultStrEmpty
-                                }/${editingData?.opdDetail.dbp || defaultStrEmpty
-                                }`}</Text>
-                              <Text type="secondary">mmHg</Text>
-                            </Space>
-                          ),
-                        })}
-                        {getColResponsive({
-                          key: "pr",
-                          children: (
-                            <Space align="start" size="small">
-                              <Text type="secondary">อัตราของหัวใจ :</Text>
-                              <Text strong>
-                                {editingData?.opdDetail.pr || defaultStrEmpty}
-                              </Text>
-                              <Text type="secondary">/ min.</Text>
-                            </Space>
-                          ),
-                        })}
-                        {getColResponsive({
-                          key: "rr",
-                          children: (
-                            <Space align="start" size="small">
-                              <Text type="secondary">อัตราการหายใจ :</Text>
-                              <Text strong>
-                                {editingData?.opdDetail.rr || defaultStrEmpty}
-                              </Text>
-                              <Text type="secondary">/ min.</Text>
-                            </Space>
-                          ),
-                        })}
-                        {getColResponsive({
-                          key: "optype",
-                          span: 2,
-                          children: (
-                            <Space align="start" size="small">
-                              <Text type="secondary">ประเภทการให้บริการ :</Text>
-                              <Text strong>
-                                {getProviderType(editingData?.opdDetail.optype)}
-                              </Text>
-                            </Space>
-                          ),
-                        })}
-                        {getColResponsive({
-                          key: "rr",
-                          children: (
-                            <Space align="start" size="small">
-                              <Text type="secondary">วันที่รับบริการ :</Text>
+                              <Text type="secondary">วันที่ admit :</Text>
                               <Text type="warning">
-                                {moment(editingData?.opdDetail.dateopd).format(
+                                {moment(editingData?.ipdDetail.dateadm).format(
                                   dateDisplayFormat
                                 )}
+                              </Text>
+                            </Space>
+                          ),
+                        })}
+                        {getColResponsive({
+                          key: "timeadm",
+                          children: (
+                            <Space align="start" size="small">
+                              <Text type="secondary">เวลา admit :</Text>
+                              <Text type="warning">
+                                {`${editingData?.ipdDetail.timeadm.substring(0, 2)}:${editingData?.ipdDetail.timeadm.substring(2, 4)}`}
+                              </Text>
+                            </Space>
+                          ),
+                        })}
+                        {getColResponsive({
+                          key: "discht",
+                          children: (
+                            <Space align="start" size="small">
+                              <Text type="secondary">วิธีการจำหน่าย :</Text>
+                              <Text strong>
+                                {getDischargeIPD(editingData?.ipdDetail.discht)}
+                              </Text>
+                            </Space>
+                          ),
+                        })}
+                        {getColResponsive({
+                          key: "datedsc",
+                          children: (
+                            <Space align="start" size="small">
+                              <Text type="secondary">วันที่จำหน่าย :</Text>
+                              <Text type="warning">
+                                {moment(editingData?.ipdDetail.datedsc).format(
+                                  dateDisplayFormat
+                                )}
+                              </Text>
+                            </Space>
+                          ),
+                        })}
+                        {getColResponsive({
+                          key: "timedsc",
+                          children: (
+                            <Space align="start" size="small">
+                              <Text type="secondary">เวลาจำหน่าย :</Text>
+                              <Text type="warning">
+                                {`${editingData?.ipdDetail.timedsc.substring(0, 2)}:${editingData?.ipdDetail.timedsc.substring(2, 4)}`}
+                              </Text>
+                            </Space>
+                          ),
+                        })}
+                        {getColResponsive({
+                          key: "dept",
+                          children: (
+                            <Space align="start" size="small">
+                              <Text type="secondary">แผนก :</Text>
+                              <Text strong>
+                                {`Ward ${editingData?.ipdDetail.dept}`}
+                              </Text>
+                            </Space>
+                          ),
+                        })}
+                        {getColResponsive({
+                          key: "warddsc",
+                          children: (
+                            <Space align="start" size="small">
+                              <Text type="secondary">รหัสตึก :</Text>
+                              <Text strong>
+                                {editingData?.ipdDetail.warddsc}
                               </Text>
                             </Space>
                           ),
@@ -482,7 +503,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
   );
 };
 
-const OpdEditorPage = () => {
-  return withTheme(<OpdEditor />);
+const IpdEditorPage = () => {
+  return withTheme(<IpdEditor />);
 };
-export default OpdEditorPage;
+export default IpdEditorPage;

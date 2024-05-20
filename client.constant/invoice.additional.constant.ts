@@ -5,6 +5,7 @@ import { AdditPaymentModelEditorModel, AdditionalPaymentModel } from "@/store/fe
 import { additionalPaymentChargePrefix, allChargeItems, drugExChargePrefix, drugInChargePrefix, getChargeText } from "./invoice.billing.constant";
 import { OpdDetailModel, WorkValidModel } from "@/store/work-opd/opdEditorModel";
 import { PatientDetailModel } from "@/store/patient/patientModel";
+import { IpdDetailModel } from "@/store/work-ipd/ipdEditorModel";
 
 //#region Additional Payment Type
 export const adpTypeInstrument = "2";
@@ -13,7 +14,7 @@ export const adpTypeFreeSchedule = "8";
 //#endregion
 
 type CalcAdpChargesProps = {
-  opdData?: OpdDetailModel,
+  visitDetail?: OpdDetailModel | IpdDetailModel,
   patientData?: PatientDetailModel,
   invoiceEditors: InvoiceItemEditorModel[],
   adtEditors: AdditPaymentModelEditorModel[],
@@ -21,7 +22,7 @@ type CalcAdpChargesProps = {
   reconcile?: boolean,
 };
 export async function recalcAdpCharges({
-  opdData, patientData, invoiceEditors, adtEditors, chargeCalcScope, reconcile }: CalcAdpChargesProps
+  visitDetail, patientData, invoiceEditors, adtEditors, chargeCalcScope, reconcile }: CalcAdpChargesProps
 ): Promise<InvoiceItemEditorModel[]> {
   if (adtEditors.length == 0) return invoiceEditors;
 
@@ -49,10 +50,10 @@ export async function recalcAdpCharges({
     const newId = uuidv4();
     let newInvoiceItem: InvoiceItemEditorModel = {
       id: newId,
-      seq: opdData?.seq || "",
-      hn: opdData?.hn || "",
+      seq: visitDetail?.seq || "",
+      hn: visitDetail?.hn || "",
       person_id: patientData?.person_id || "",
-      date: opdData?.dateopd || new Date,
+      date: visitDetail?.dateopd || new Date,
       dummyKey: (invoiceEditors.length || 0) + 1,
       isDurty: true,
       amount: sumTotal,
@@ -76,10 +77,10 @@ export async function recalcAdpCharges({
       : invoiceAdp.overAmount > 0 ? invoiceAdp.overAmount : overAmount);
     let editItem: InvoiceItemEditorModel = {
       ...invoiceAdp,
-      seq: opdData?.seq || "",
-      hn: opdData?.hn || "",
+      seq: visitDetail?.seq || "",
+      hn: visitDetail?.hn || "",
       person_id: patientData?.person_id || "",
-      date: opdData?.dateopd || new Date,
+      date: visitDetail?.dateopd || new Date,
       totalAmount: calcResult,
       overAmount: overResult,
       status: 1,
