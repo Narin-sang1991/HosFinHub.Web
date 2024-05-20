@@ -168,19 +168,19 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         && invoicedata.opdData == undefined
       )) {
       invoicedata = {
-        opdData: editingData.opdDetail ,
-        patientData: editingData.patient ,
+        opdData: editingData.opdDetail,
+        patientData: editingData.patient,
         invoiceItems: editingData.invoiceItems,
-        drugItems: editingData.drugItems ,
-        additPaymentItems: editingData.additPayments ,
+        drugItems: editingData.drugItems,
+        additPaymentItems: editingData.additPayments,
       }
     }
 
     const uucEditing = formEditor.getFieldValue("UUC");
     let tmpVisitDetail = getVisitDetail(editingData.opdDetail);
-    const opdDetail: OpdDetailModel[] =  [{ ...editingData.opdDetail, uuc: uucEditing }] ;
-    const patData: PatientDetailModel[] =  [{ ...editingData.patient }] ;
-    const referData: OpdReferModel[] =  [{ ...editingData.opdRefer }] ;
+    const opdDetail: OpdDetailModel[] = [{ ...editingData.opdDetail, uuc: uucEditing }];
+    const patData: PatientDetailModel[] = [{ ...editingData.patient }];
+    const referData: OpdReferModel[] = [{ ...editingData.opdRefer }];
     const savedata: OpdDataModel = {
       adp: convertEditorToAdp(invoicedata.adpItems || invoicedata.additPaymentItems),
       aer: editingData?.accidenEmergencies || [],
@@ -265,7 +265,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         title: "ข้อมูลการผ่าตัดหัตถการ",
         children: (
           <Form.Item name={"procedureInfo"}>
-            <ProcedureInfo procedureItems={editingData?.procedureItems || []} />
+            <ProcedureInfo isIPD={false} procedureItems={editingData?.procedureItems || []} />
           </Form.Item>
         )
       })

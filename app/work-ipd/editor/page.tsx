@@ -265,7 +265,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
         title: "ข้อมูลการผ่าตัดหัตถการ",
         children: (
           <Form.Item name={"procedureInfo"}>
-            <ProcedureInfo procedureItems={editingData?.procedureItems || []} />
+            <ProcedureInfo isIPD={true} procedureItems={editingData?.procedureItems || []} />
           </Form.Item>
         )
       })

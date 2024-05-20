@@ -3,30 +3,34 @@
 import React, { useState, useEffect } from 'react';
 import { Table } from 'antd';
 import { type TableColumnsType } from "antd";
-import { OpdOperationModel, IpdOperationModel, instanceOfIpdOperations } from '@/store/operation/operationModel'
+import moment from "moment";
+import { OpdOperationModel, IpdOperationModel, } from '@/store/operation/operationModel'
 import { getOperType } from '@/client.constant/operation.constant';
+import { dateDisplayFormat } from "@/client.constant/format.constant";
 
 interface ProcedureInfoProps {
+    isIPD: boolean
     procedureItems: OpdOperationModel[] | IpdOperationModel[]
 }
 
-const ProcedureInfo = ({ procedureItems }: ProcedureInfoProps) => {
+const ProcedureInfo = ({ procedureItems, isIPD }: ProcedureInfoProps) => {
 
-    const [isIPD, setIsIPD] = useState<boolean>(false);
+    const [procedureData, setData] = useState<any[]>();
 
     useEffect(() => {
-        setIsIPD(instanceOfIpdOperations(procedureItems));
+        setData(procedureItems);
     }, [procedureItems]);
 
-    const columnOpers: TableColumnsType<OpdOperationModel | IpdOperationModel> = [
+
+    const columnOpers = [
         {
             key: 'oper',
-            title: 'ICD9',
+            title: 'รหัสโรค ICD9',
             dataIndex: 'oper'
         },
         {
             key: 'dropid',
-            title: 'Doctor Code',
+            title: 'รหัสแพทย์ที่ทำหัตถการ',
             dataIndex: 'dropid'
         },
     ]
@@ -35,12 +39,19 @@ const ProcedureInfo = ({ procedureItems }: ProcedureInfoProps) => {
         {
             key: 'dateopd',
             title: 'วันที่บันทึก',
-            dataIndex: 'dateopd'
+            dataIndex: 'dateopd',
+            render: (date) => {
+                return moment(new Date(date)).format("YYYY") === "1970" ? (
+                    <></>
+                ) : (
+                    moment(date).format(dateDisplayFormat)
+                );
+            },
         },
         ...columnOpers,
         {
             key: 'clinic',
-            title: 'Clinic Code',
+            title: 'รหัสคลีนิก',
             dataIndex: 'clinic'
         },
         {
@@ -54,7 +65,14 @@ const ProcedureInfo = ({ procedureItems }: ProcedureInfoProps) => {
         {
             key: 'datein',
             title: 'วันที่เริ่ม',
-            dataIndex: 'datein'
+            dataIndex: 'datein',
+            render: (date) => {
+                return moment(new Date(date)).format("YYYY") === "1970" ? (
+                    <></>
+                ) : (
+                    moment(date).format(dateDisplayFormat)
+                );
+            },
         },
         {
             key: 'timein',
@@ -72,7 +90,14 @@ const ProcedureInfo = ({ procedureItems }: ProcedureInfoProps) => {
         {
             key: 'dateout',
             title: 'วันที่เสร็จสิ้น',
-            dataIndex: 'dateout'
+            dataIndex: 'dateout',
+            render: (date) => {
+                return moment(new Date(date)).format("YYYY") === "1970" ? (
+                    <></>
+                ) : (
+                    moment(date).format(dateDisplayFormat)
+                );
+            },
         },
         {
             key: 'timeout',
@@ -84,15 +109,26 @@ const ProcedureInfo = ({ procedureItems }: ProcedureInfoProps) => {
 
     return (
         <React.Fragment>
-            <Table
-                rowKey={(record) => record.seq}
-                columns={isIPD ? columnIpdOpers : columnOpdOpers}
-                dataSource={procedureItems || []}
-                pagination={false}
-                style={{ margin: -10, width: "99%" }}
-                sticky
-                scroll={{ x: 500 }}
-            />
+            {
+                isIPD ? <Table
+                    rowKey={(record) => record.seq}
+                    columns={columnIpdOpers}
+                    dataSource={procedureData || []}
+                    pagination={false}
+                    style={{ margin: -10, width: "99%" }}
+                    sticky
+                    scroll={{ x: 500 }}
+                />
+                    : <Table
+                        rowKey={(record) => record.seq}
+                        columns={columnOpdOpers}
+                        dataSource={procedureData || []}
+                        pagination={false}
+                        style={{ margin: -10, width: "99%" }}
+                        sticky
+                        scroll={{ x: 500 }}
+                    />
+            }
         </React.Fragment>
     )
 }

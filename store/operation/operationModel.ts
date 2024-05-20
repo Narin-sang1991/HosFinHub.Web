@@ -28,12 +28,12 @@ export interface OperationModel {
 export function instanceOfOpdOperation(object: any): object is OpdOperationModel {
     return true;
 }
-export function instanceOfOpdOperations(object: any): object is OpdOperationModel[] {
+export function instanceOfOpdOperations(object: any[]): object is OpdOperationModel[] {
     return true;
 }
 export function instanceOfIpdOperation(object: any): object is IpdOperationModel {
     return true;
 }
-export function instanceOfIpdOperations(object: any): object is IpdOperationModel[] {
+export function instanceOfIpdOperations(object: any[]): object is IpdOperationModel[] {
     return true;
 }
