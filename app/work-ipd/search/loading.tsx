@@ -5,9 +5,9 @@ import LoadingMain from '@/client.component/loading.main';
 
 type Props = {}
 
-const LoadingOpdSearch = function LoadingOpdSearch(props: Props) {
+const LoadingIpdSearch = function LoadingIpdSearch(props: Props) {
 
     return (<LoadingMain />);
 }
 
-export default LoadingOpdSearch;
+export default LoadingIpdSearch;

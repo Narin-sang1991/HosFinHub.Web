@@ -9,7 +9,7 @@ export interface IpdSearchModel  extends WorkSearchModel{
 }
 
 export interface IpdSearchReponse {
-  TotalItem: number;
-  TotalPage: number;
-  Items?: IpdSearchModel[];
+  rowCount: number;
+  pageIndex: number;
+  data?: IpdSearchModel[];
 }

@@ -1,10 +1,10 @@
 "use client";
 
-import React, {  useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Card, Form, Table, DatePicker,  Space,  } from "antd";
+import { Button, Card, Form, Table, DatePicker, Space, } from "antd";
 import type { TableProps, TableColumnsType, } from "antd";
-import { SearchOutlined, EditOutlined,  } from "@ant-design/icons";
+import { SearchOutlined, EditOutlined, } from "@ant-design/icons";
 import moment from "moment";
 import withTheme from "../../../theme";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -21,37 +21,49 @@ const IpdSearch = function IpdSearch(props: IpdSearchProps) {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [formCriteria] = Form.useForm();
-  const [pageIndex, setPageIndex] = useState(1);
-  const [pageSize, setPageSize] = useState(defaultPageSize);
+  const [pageCriteria, setPageCriteria] = useState({ pageIndex: 1, pageSize: defaultPageSize });
   const status = useAppSelector(selectStatus);
   const searchResult = useAppSelector(selectResult);
+  const firstLoad = useRef(true)
+
+  useEffect(() => {
+    if (firstLoad.current === true) {
+      firstLoad.current = false;
+      return;
+    }
+    onSearch();
+  }, [pageCriteria]);
 
   //#region Search
-  async function onSearch(index?: number, sorter?: any) {
-    // console.log("page-searchAsync-->");
+  async function onSearch() {
     formCriteria.validateFields().then((values: any) => {
-      setPageIndex(index ?? 1);
       (async () => {
-        let criteria = packCriteria(index ?? 1, sorter, values);
+        let criteria = packCriteria(values);
         await dispatch(searchAsync(criteria));
       })();
     });
   }
 
-  function packCriteria(index: number, sorter?: any, values: any) {
+  function packCriteria(values: any) {
     return {
       startDate: moment(new Date(values.DateFrom)).format(dateInterfaceFormat),
       endDate: moment(new Date(values.DateTo)).format(dateInterfaceFormat),
-      // pageIndex: index,
-      // pageSize: pageSize,
+      pageIndex: pageCriteria.pageIndex - 1,
+      pageSize: pageCriteria.pageSize,
     };
   }
   //#endregion
 
   //#region Local Filter Data
   const onTableCriteriaChange: TableProps<IpdSearchModel>["onChange"] = (pagination, filters, sorter, extra) => {
-    setPageIndex(pagination.current || 1);
-    setPageSize(pagination.pageSize || defaultPageSize);
+    if (firstLoad.current === true) {
+      firstLoad.current = false;
+      return;
+    }
+    setPageCriteria({
+      pageIndex: pagination.current || 1,
+      pageSize: pagination.pageSize || defaultPageSize,
+    });
   };
 
   const columns: TableColumnsType<IpdSearchModel> = [
@@ -110,7 +122,7 @@ const IpdSearch = function IpdSearch(props: IpdSearchProps) {
           layout="inline"
           name="criteriaFormSearch"
           form={formCriteria}
-          onFinish={() => onSearch(1)}
+          onFinish={() => setPageCriteria({ pageIndex: 1, pageSize: pageCriteria.pageSize })}
         >
           <Form.Item
             label="IPD Date From: "
@@ -130,7 +142,7 @@ const IpdSearch = function IpdSearch(props: IpdSearchProps) {
               icon={<SearchOutlined />}
               loading={status === "loading"}
               disabled={status === "loading"}
-              onClick={() => onSearch(1)}
+              onClick={() => setPageCriteria({ pageIndex: 1, pageSize: pageCriteria.pageSize })}
             >
               {"ค้นหา"}
             </Button>
@@ -141,11 +153,11 @@ const IpdSearch = function IpdSearch(props: IpdSearchProps) {
         rowKey={(record) => record.an}
         loading={status === "loading"}
         columns={columns}
-        dataSource={searchResult || []}
+        dataSource={searchResult?.data || []}
         pagination={{
-          current: pageIndex,
-          pageSize: pageSize,
-          total: searchResult?.length || 10,
+          current: pageCriteria.pageIndex,
+          pageSize: pageCriteria.pageSize,
+          total: searchResult?.rowCount || defaultPageSize,
           showSizeChanger: true,
         }}
         onChange={onTableCriteriaChange}
