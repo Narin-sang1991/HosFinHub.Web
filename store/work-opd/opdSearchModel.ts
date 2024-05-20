@@ -9,7 +9,7 @@ export interface OpdSearchModel extends WorkSearchModel{
 }
 
 export interface OpdSearchReponse {
-  TotalItem: number;
-  TotalPage: number;
-  Items?: OpdSearchModel[];
+  rowCount: number;
+  pageIndex: number;
+  data: OpdSearchModel[];
 }

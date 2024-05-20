@@ -1,11 +1,11 @@
 import { createAppSlice } from "@/store/createAppSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { fetchSearch, fetchGet, fetchSave } from "@/services/work.opd.provider";
-import type { OpdSearchModel } from "@/store/work-opd/opdSearchModel";
+import type { OpdSearchModel, OpdSearchReponse } from "@/store/work-opd/opdSearchModel";
 import type { OpdDataModel, OpdResponse, OpdValidModel, } from "@/store/work-opd/opdEditorModel";
 
 export interface WorkOpdSliceState {
-  searchResult: OpdSearchModel[];
+  searchResult: OpdSearchReponse | undefined;
   tableResult: OpdSearchModel[];
   searchStatus: "idle" | "loading" | "failed";
   getResult?: OpdDataModel;
@@ -16,7 +16,7 @@ export interface WorkOpdSliceState {
 }
 
 const initialState: WorkOpdSliceState = {
-  searchResult: [],
+  searchResult: undefined,
   tableResult: [],
   searchStatus: "idle",
   getResult: undefined,
@@ -40,11 +40,10 @@ export const workOpdSlice = createAppSlice({
         pending: (state) => {
           state.searchStatus = "loading";
         },
-        fulfilled: (state, action) => {
-          const payloadData = action.payload as unknown as OpdSearchModel[];
+        fulfilled: (state, action: PayloadAction<OpdSearchReponse>) => {
           state.searchStatus = "idle";
-          state.searchResult = payloadData
-          state.tableResult = payloadData
+          state.searchResult = action.payload
+          state.tableResult = action.payload.data
         },
         rejected: (state) => {
           state.searchStatus = "failed";

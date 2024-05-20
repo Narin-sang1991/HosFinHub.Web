@@ -1,12 +1,12 @@
 
 import { axiosHosProvider } from "./axios.interceptor";
-import type { OpdSearchModel } from "@/store/work-opd/opdSearchModel";
+import type { OpdSearchReponse } from "@/store/work-opd/opdSearchModel";
 import type { OpdResponse } from "@/store/work-opd/opdEditorModel";
 
 export const fetchSearch = async (criteria: any) => {
     const apiResult = await axiosHosProvider.post('/work/opd-list', criteria)
         .then((response) => {
-            const result: { data: OpdSearchModel[] } = response;
+            const result: { data: OpdSearchReponse } = response;
             return result;
         })
         .catch((e) => console.log("API-Error: ", e))
