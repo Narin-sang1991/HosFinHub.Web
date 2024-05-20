@@ -18,7 +18,7 @@ export const prefixColumns: TableColumnsType<any> = [
     },
     {
         title: "ชื่อ-สกุล ผู้เข้ารับการรักษา",
-        key: "opd_pat",
+        key: "work_pat",
         width: 80,
         render: (record) => <>{getPatientName(record)}</>,
     },
@@ -64,82 +64,70 @@ function getError(errorItems: any[]) {
     return distinctValues.map((item) => { return <Tag color="volcano">{item}</Tag> });
 }
 
-function getPatientName(searchPatient: WorkSearchModel | OpdSearchModel | IpdSearchModel) {
-    let patient: PatientModel | undefined = undefined;
+function getPatientName(searchPatient: WorkSearchModel) {
+    let patient: PatientModel = searchPatient.work_pat;
 
-    if (instanceOfWorkSearch(searchPatient)) {
-        let workSearch = searchPatient as WorkSearchModel;
-        if (workSearch.work_pat != undefined) patient = workSearch.work_pat;
-    }
-    if (instanceOfOpdWorkSearch(searchPatient)) {
-        let workSearch = searchPatient as OpdSearchModel;
-        if (workSearch.opd_pat != undefined) patient = workSearch.opd_pat;
-    }
-    if (instanceOfIpdWorkSearch(searchPatient)) {
-        let workSearch = searchPatient as IpdSearchModel;
-        if (workSearch.ipd_pat != undefined) patient = workSearch.ipd_pat;
-    }
+    // if (instanceOfWorkSearch(searchPatient)) {
+    //     let workSearch = searchPatient as WorkSearchModel;
+    //     if (workSearch.work_pat != undefined) patient = workSearch.work_pat;
+    // }
+    // if (instanceOfOpdWorkSearch(searchPatient)) {
+    //     let workSearch = searchPatient as OpdSearchModel;
+    //     if (workSearch.opd_pat != undefined) patient = workSearch.opd_pat;
+    // }
+    // if (instanceOfIpdWorkSearch(searchPatient)) {
+    //     let workSearch = searchPatient as IpdSearchModel;
+    //     if (workSearch.ipd_pat != undefined) patient = workSearch.ipd_pat;
+    // }
     if (patient == undefined) return "";
 
     return `${patient.title}${patient.fname}  ${patient.lname}`;
 }
 
-function getRecordPatientID(searchPatient: WorkSearchModel | OpdSearchModel | IpdSearchModel) {
-    let patient: PatientModel | undefined = undefined;
+function getRecordPatientID(searchPatient: WorkSearchModel) {
+    let patient: PatientModel = searchPatient.work_pat;
 
-    if (instanceOfWorkSearch(searchPatient)) {
-        let workSearch = searchPatient as WorkSearchModel;
-        if (workSearch.work_pat != undefined) patient = workSearch.work_pat;
-    }
-    if (instanceOfOpdWorkSearch(searchPatient)) {
-        let workSearch = searchPatient as OpdSearchModel;
-        if (workSearch.opd_pat != undefined) patient = workSearch.opd_pat;
-    }
-    if (instanceOfIpdWorkSearch(searchPatient)) {
-        let workSearch = searchPatient as IpdSearchModel;
-        if (workSearch.ipd_pat != undefined) patient = workSearch.ipd_pat;
-    }
+    // if (instanceOfWorkSearch(searchPatient)) {
+    //     let workSearch = searchPatient as WorkSearchModel;
+    //     if (workSearch.work_pat != undefined) patient = workSearch.work_pat;
+    // }
+    // if (instanceOfOpdWorkSearch(searchPatient)) {
+    //     let workSearch = searchPatient as OpdSearchModel;
+    //     if (workSearch.opd_pat != undefined) patient = workSearch.opd_pat;
+    // }
+    // if (instanceOfIpdWorkSearch(searchPatient)) {
+    //     let workSearch = searchPatient as IpdSearchModel;
+    //     if (workSearch.ipd_pat != undefined) patient = workSearch.ipd_pat;
+    // }
     if (patient == undefined) return "";
 
     return getPatientID(patient.person_id);
 }
 
-function getClaimStatus(searchPatient: WorkSearchModel | OpdSearchModel | IpdSearchModel) {
-    let claimLog = [];
-
-    if (instanceOfWorkSearch(searchPatient)) {
-        let workSearch = searchPatient as WorkSearchModel;
-        if (workSearch.work_pat != undefined) claimLog = workSearch.claim_log;
-    }
-    if (instanceOfOpdWorkSearch(searchPatient)) {
-        let workSearch = searchPatient as OpdSearchModel;
-        if (workSearch.opd_pat != undefined) claimLog = workSearch.opd_claim_log;
-    }
-    if (instanceOfIpdWorkSearch(searchPatient)) {
-        let workSearch = searchPatient as IpdSearchModel;
-        if (workSearch.ipd_pat != undefined) claimLog = workSearch.ipd_claim_log;
-    }
+function getClaimStatus(searchPatient: WorkSearchModel) {
+    let claimLog = searchPatient.claim_log;
+    if (claimLog == undefined) return "";
     if (claimLog.length == 0) return "รอตรวจสอบ";
 
     return claimLog[0].status?.description;
 }
 
-function getRecordPatientInscl(searchPatient: WorkSearchModel | OpdSearchModel | IpdSearchModel, key: string) {
-    let patIns: InsureModel[] = []
-
-    if (instanceOfWorkSearch(searchPatient)) {
-        let workSearch = searchPatient as WorkSearchModel;
-        if (workSearch.work_pat != undefined) patIns = workSearch.work_pat?.pat_ins;
-    }
-    if (instanceOfOpdWorkSearch(searchPatient)) {
-        let workSearch = searchPatient as OpdSearchModel;
-        if (workSearch.opd_pat != undefined) patIns = workSearch.opd_pat?.pat_ins;
-    }
-    if (instanceOfIpdWorkSearch(searchPatient)) {
-        let workSearch = searchPatient as IpdSearchModel;
-        if (workSearch.ipd_pat != undefined) patIns = workSearch.ipd_pat?.pat_ins;
-    }
+function getRecordPatientInscl(searchPatient: WorkSearchModel, key: string) {
+    let patIns: InsureModel[] = searchPatient.work_pat?.pat_ins || [];
+    // if (instanceOfWorkSearch(searchPatient)) {
+    //     let workSearch = searchPatient as WorkSearchModel;
+    //     if (workSearch.work_pat != undefined) patIns = workSearch.work_pat?.pat_ins;
+    // }
+    // if (instanceOfOpdWorkSearch(searchPatient)) {
+    //     let workSearch = searchPatient as OpdSearchModel;
+    //     if (workSearch.opd_pat != undefined) patIns = workSearch.opd_pat?.pat_ins;
+    // }
+    // if (instanceOfIpdWorkSearch(searchPatient)) {
+    //     let workSearch = searchPatient as IpdSearchModel;
+    //     if (workSearch.ipd_pat != undefined) patIns = workSearch.ipd_pat?.pat_ins;
+    // }
     if (patIns == undefined) return "";
+    if (patIns.length == 0) return "";
 
     const patientInscl = patIns.find((i) => i.seq === key)
     return patientInscl?.inscl || patIns[0].inscl;

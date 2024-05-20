@@ -24,8 +24,6 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
   const router = useRouter();
   const [formCriteria] = Form.useForm();
   const [pageCriteria, setPageCriteria] = useState({ pageIndex: 1, pageSize: defaultPageSize });
-  // const [pageIndex, setPageIndex] = useState(1);
-  // const [pageSize, setPageSize] = useState(defaultPageSize);
   const [filterValue, setFilterValue] = useState<FilterType[]>([]);
   const status = useAppSelector(selectStatus);
   const searchTabletResult = useAppSelector(selectTabletResult);
@@ -64,7 +62,6 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
     }
     onSearch();
   }, [pageCriteria]);
-
 
   //#region Search
   async function onSearch() {

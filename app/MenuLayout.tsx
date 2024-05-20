@@ -49,29 +49,29 @@ const MenuLayout = function MenuLayout({
 
     getItem("งานผู้ป่วยนอก", "sub1", <ReconciliationOutlined />, [
       getItem(
-        <p onClick={() => router.push("/work-opd/search")}>[OPD]ค้นหารายการ</p>,
+        <p onClick={() => router.push("/work-opd/search")}>OPD ค้นหารายการ</p>,
         "2"
       ),
       getItem(
-        <p onClick={() => router.push("/work-opd/transfer")}>[OPD]ส่งข้อมูล</p>,
+        <p onClick={() => router.push("/work-opd/transfer")}>OPD ส่งข้อมูล</p>,
         "3"
       ),
       getItem(
-        <p onClick={() => router.push("/work-opd/history")}>[OPD]ประวัติการส่ง</p>,
+        <p onClick={() => router.push("/work-opd/history")}>OPD ประวัติการส่ง</p>,
         "03"
       ),
     ]),
     getItem("งานผู้ป่วยใน", "sub2", <BookOutlined />, [
       getItem(
-        <p onClick={() => router.push("/work-ipd/search")}>[IPD]ค้นหารายการ</p>,
+        <p onClick={() => router.push("/work-ipd/search")}>IPD ค้นหารายการ</p>,
         "4"
       ),
       getItem(
-        <p onClick={() => router.push("/work-ipd/transfer")}>[IPD]ส่งข้อมูล</p>,
+        <p onClick={() => router.push("/work-ipd/transfer")}>IPD ส่งข้อมูล</p>,
         "5"
       ),
       getItem(
-        <p onClick={() => router.push("/work-ipd/history")}>[IPD]ประวัติการส่ง</p>,
+        <p onClick={() => router.push("/work-ipd/history")}>IPD ประวัติการส่ง</p>,
         "05"
       ),
     ]),
