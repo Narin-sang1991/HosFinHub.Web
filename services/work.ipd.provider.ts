@@ -23,11 +23,11 @@ export const fetchGet = async (criteria: any) => {
     return apiResult;
 };
 
-// export const fetchSave = async (data: any) => {
-//     const apiResult = await axiosHosProvider.post('edit-16f/update-pat-ipd', data)
-//         .then((response) => {
-//             console.log("API-Response: ", response);
-//         })
-//         .catch((e) => console.log("API-Error: ", e))
-//     return apiResult;
-// };
+export const fetchSave = async (data: any) => {
+    const apiResult = await axiosHosProvider.post('edit-16f/update-pat-ipd', data)
+        .then((response) => {
+            console.log("API-Response: ", response);
+        })
+        .catch((e) => console.log("API-Error: ", e))
+    return apiResult;
+};

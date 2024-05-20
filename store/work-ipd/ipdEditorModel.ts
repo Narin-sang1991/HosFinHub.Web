@@ -3,7 +3,7 @@ import type { InvoiceDrugModel, InvoiceDrugEditorModel } from "@/store/financial
 import type { InsureDetailModel } from "@/store/financial/insureModel";
 import type { InvoiceModel, } from "@/store/financial/invoiceModel";
 import type { InvoiceItemModel, InvoiceItemEditorModel } from "@/store/financial/invoiceItemModel";
-import { DianosisModel } from "../dianosis/dianosisModel";
+import { IpdDianosisModel } from "../dianosis/dianosisModel";
 import { LabfuModel } from "../medical-tech/labfuModel";
 import { AccidentEmergencyModel } from "../refer/accidentEmergencyModel";
 import { IpdReferModel } from "../refer/referModel";
@@ -51,7 +51,7 @@ export interface IpdEditorModel {
   /**
   * #origin => IDX
   **/
-  diagnosisItems: DianosisModel[],
+  diagnosisItems: IpdDianosisModel[],
 
   /**
   * #origin => IPD
@@ -97,7 +97,7 @@ export interface IpdDataModel {
   dru: InvoiceDrugModel[];
   ins: InsureDetailModel[];
   labfu: LabfuModel[];
-  idx: DianosisModel[],
+  idx: IpdDianosisModel[],
   iop: IpdOperationModel[],
   ipd: IpdDetailModel[];
   irf: IpdReferModel[];

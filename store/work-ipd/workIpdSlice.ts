@@ -1,32 +1,27 @@
 import { createAppSlice } from "@/store/createAppSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
-import {
-  fetchSearch, fetchGet
-  // , fetchSave
-} from "@/services/work.ipd.provider";
+import { fetchSearch, fetchGet, fetchSave } from "@/services/work.ipd.provider";
 import type { IpdSearchReponse } from "@/store/work-ipd/ipdSearchModel";
 import type { IpdDataModel, IpdResponse, IpdValidModel, } from "@/store/work-ipd/ipdEditorModel";
 
 export interface WorkIpdSliceState {
   searchResult: IpdSearchReponse | undefined;
-  // tableResult: IpdSearchModel[];
   searchStatus: "idle" | "loading" | "failed";
   getResult?: IpdDataModel;
   getStatus: "idle" | "loading" | "failed";
   getValid?: Array<IpdValidModel>;
   getValidStatus: "idle" | "loading" | "failed";
-  // saveStatus: "idle" | "loading" | "failed";
+  saveStatus: "idle" | "loading" | "failed";
 }
 
 const initialState: WorkIpdSliceState = {
   searchResult: undefined,
-  // tableResult: [],
   searchStatus: "idle",
   getResult: undefined,
   getStatus: "idle",
   getValid: undefined,
   getValidStatus: "idle",
-  // saveStatus: "idle",
+  saveStatus: "idle",
 };
 
 export const workIpdSlice = createAppSlice({
@@ -74,55 +69,38 @@ export const workIpdSlice = createAppSlice({
       }
     ),
 
-    // saveAsync: create.asyncThunk(
-    //   async (body: any) => {
-    //     const response = await fetchSave(body);
-    //     return response;
-    //   },
-    //   {
-    //     pending: (state) => {
-    //       state.saveStatus = "loading";
-    //     },
-    //     fulfilled: (state, action) => {
-    //       state.saveStatus = "idle";
-    //     },
-    //     rejected: (state) => {
-    //       state.saveStatus = "failed";
-    //     },
-    //   }
-    // ),
+    saveAsync: create.asyncThunk(
+      async (body: any) => {
+        const response = await fetchSave(body);
+        return response;
+      },
+      {
+        pending: (state) => {
+          state.saveStatus = "loading";
+        },
+        fulfilled: (state, action) => {
+          state.saveStatus = "idle";
+        },
+        rejected: (state) => {
+          state.saveStatus = "failed";
+        },
+      }
+    ),
 
-    // fillterAsync: create.asyncThunk(async (body: any) => { return body },
-
-    //   {
-    //     pending: (state) => {
-    //       state.getStatus = "loading";
-    //     },
-    //     fulfilled: (state, action) => {
-    //       state.tableResult = action.payload;
-    //     },
-    //     rejected: (state) => {
-    //       state.getStatus = "failed";
-    //     },
-    //   }
-    // )
   }),
 
   selectors: {
     selectResult: (workIpd) => workIpd.searchResult,
-    // selectTabletResult: (workIpd) => workIpd.tableResult,
     selectStatus: (workIpd) => workIpd.searchStatus,
     getResult: (workIpd) => workIpd.getResult,
     getStatus: (workIpd) => workIpd.getStatus,
     getValid: (workIpd) => workIpd.getValid,
-    // saveStatus: (workIpd) => workIpd.saveStatus,
+    saveStatus: (workIpd) => workIpd.saveStatus,
   },
 });
 
-export const { searchAsync, getAsync,
-  //   saveAsync, fillterAsync
+export const { searchAsync, getAsync, saveAsync
 } = workIpdSlice.actions;
 
-export const { selectResult, selectStatus, getResult, getStatus, getValid,
-  //  saveStatus, selectTabletResult
+export const { selectResult, selectStatus, getResult, getStatus, getValid, saveStatus
 } = workIpdSlice.selectors;

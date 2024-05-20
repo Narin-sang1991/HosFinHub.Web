@@ -1,26 +1,29 @@
-import { Table } from "antd"
-import React, { useEffect, useState } from "react"
-import { OdxModel } from '@/store/financial/opdModel'
+
+import React, { useEffect, useState } from "react";
+import { Table } from "antd";
+import { type TableColumnsType } from "antd";
+import moment from "moment";
+import { IpdDianosisModel, OpdDianosisModel } from "@/store/dianosis/dianosisModel";
+import { dateDisplayFormat } from "@/client.constant/format.constant";
+
 interface DiagenosisInfoProps {
-    diagenosisInfo: OdxModel[]
+    isIPD: boolean
+    diagenosisItems: OpdDianosisModel[] | IpdDianosisModel[]
 }
 
-const DiagenosisInfo = (props: DiagenosisInfoProps) => {
-    const [diage, setDiages] = useState<OdxModel[]>([])
+const DiagenosisInfo = ({ diagenosisItems, isIPD }: DiagenosisInfoProps) => {
 
-    const getDiage = (value: OdxModel[]) => {
-        setDiages(value)
-    }
+    const [diagenosisData, setData] = useState<any[]>();
 
     useEffect(() => {
-        getDiage(props.diagenosisInfo)
-    }, [props])
+        setData(diagenosisItems);
+    }, [diagenosisItems]);
 
-    const column = [
+    const diagColumns = [
         {
-            key: 'datedx',
-            title: 'วันที่บันทึก',
-            dataIndex: 'datedx'
+            key: 'diag',
+            title: 'รหัสโรค ICD10',
+            dataIndex: 'diag'
         },
         {
             key: 'dxtype',
@@ -28,30 +31,64 @@ const DiagenosisInfo = (props: DiagenosisInfoProps) => {
             dataIndex: 'dxtype'
         },
         {
-            key: 'diag',
-            title: 'ICD10',
-            dataIndex: 'diag'
-        },
-        {
             key: 'drdx',
-            title: 'Doctor Code',
+            title: 'รหัสแพทย์ผู้วินิจฉัย',
             dataIndex: 'drdx'
         },
+    ]
+
+    const opdDiagColumns: TableColumnsType<OpdDianosisModel> = [
+        {
+            key: 'datedx',
+            title: 'วันที่บันทึก',
+            dataIndex: 'datedx',
+            render: (date) => {
+                return moment(new Date(date)).format("YYYY") === "1970" ? (
+                    <></>
+                ) : (
+                    moment(date).format(dateDisplayFormat)
+                );
+            },
+        },
+        ...diagColumns,
         {
             key: 'clinic',
-            title: 'Clinic Code',
+            title: 'รหัสคลีนิก',
             dataIndex: 'clinic'
         },
     ]
+
+    const ipdDiagColumns: TableColumnsType<IpdDianosisModel> = [
+        {
+            key: 'an',
+            title: 'เลขที่ admit',
+            dataIndex: 'an',
+        },
+        ...diagColumns,
+    ]
+
     return (
-        <React.Fragment>
-            <Table columns={column}
-                dataSource={diage}
-                pagination={false}
-                style={{ margin: -10, width: "99%" }}
-                sticky
-                scroll={{ x: 500 }}
-            />
+        <React.Fragment> 
+             {
+                isIPD ? <Table
+                    rowKey={(record) => record.id}
+                    columns={ipdDiagColumns}
+                    dataSource={diagenosisData || []}
+                    pagination={false}
+                    style={{ margin: -10, width: "99%" }}
+                    sticky
+                    scroll={{ x: 500 }}
+                />
+                    : <Table
+                        rowKey={(record) => record.id}
+                        columns={opdDiagColumns}
+                        dataSource={diagenosisData || []}
+                        pagination={false}
+                        style={{ margin: -10, width: "99%" }}
+                        sticky
+                        scroll={{ x: 500 }}
+                    />
+            }
         </React.Fragment>
     )
 }

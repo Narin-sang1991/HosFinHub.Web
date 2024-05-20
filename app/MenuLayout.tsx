@@ -145,7 +145,7 @@ const MenuLayout = function MenuLayout({
           style={{
             margin: "0px 10px 10px 10px",
             padding: "10px",
-            height: '88vh',
+            minHeight: '88vh',
             background: colorBgContainer,
             borderRadius: borderRadiusLG,
           }}

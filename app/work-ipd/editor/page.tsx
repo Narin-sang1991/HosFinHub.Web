@@ -14,7 +14,7 @@ import {
 } from "@ant-design/icons";
 import {
   getAsync, getResult, getStatus, getValid,
-  // saveAsync, saveStatus,
+  saveAsync, saveStatus,
 } from "@/store/work-ipd/workIpdSlice";
 import type {
   IpdDataModel,
@@ -64,7 +64,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
   const searchParams = useSearchParams();
   const [formEditor] = Form.useForm();
   const status = useAppSelector(getStatus);
-  // const saveState = useAppSelector(saveStatus);
+  const saveState = useAppSelector(saveStatus);
   const originData = useAppSelector(getResult);
   const valid: IpdValidModel[] | undefined = useAppSelector(getValid);
   const [editingData, setEditData] = useState<IpdEditorModel>();
@@ -196,9 +196,9 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
       iop: editingData?.procedureItems || []
     };
     console.log("savedata=>", savedata);
-    // (async () => {
-    //   await dispatch(saveAsync({ ...savedata }));
-    // })();
+    (async () => {
+      await dispatch(saveAsync({ ...savedata }));
+    })();
   }
 
   function onClose() {
@@ -252,7 +252,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
         title: "ข้อมูลการวินิจฉัยโรค",
         children: (
           <Form.Item name={"procedureInfo"}>
-            <DiagenosisInfo diagenosisInfo={editingData?.diagnosisItems || []} />
+            <DiagenosisInfo isIPD={true} diagenosisItems={editingData?.diagnosisItems || []} />
           </Form.Item>
         )
       }),
@@ -297,7 +297,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
         <Affix offsetTop={50}  >
           <Row style={{ margin: -10, marginBottom: 10 }} justify="end" align="middle" gutter={[4, 4]}>
             <Col>
-              <Button type="text" onClick={onSave} /*loading={saveState === "loading"}*/
+              <Button type="text" onClick={onSave} loading={saveState === "loading"}
                 icon={<SaveTwoTone twoToneColor={'#52c41a'} style={{ fontSize: '30px' }} />}
               />
             </Col>

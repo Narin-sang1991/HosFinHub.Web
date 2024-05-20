@@ -252,7 +252,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         title: "ข้อมูลการวินิจฉัยโรค",
         children: (
           <Form.Item name={"procedureInfo"}>
-            <DiagenosisInfo diagenosisInfo={editingData?.diagnosisItems || []} />
+            <DiagenosisInfo isIPD={false} diagenosisItems={editingData?.diagnosisItems || []} />
           </Form.Item>
         )
       }),

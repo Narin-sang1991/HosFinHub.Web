@@ -1,5 +1,4 @@
 
-
 import React, { useState, useEffect } from 'react';
 import { Table } from 'antd';
 import { type TableColumnsType } from "antd";
@@ -22,7 +21,7 @@ const ProcedureInfo = ({ procedureItems, isIPD }: ProcedureInfoProps) => {
     }, [procedureItems]);
 
 
-    const columnOpers = [
+    const operColumns = [
         {
             key: 'oper',
             title: 'รหัสโรค ICD9',
@@ -35,7 +34,7 @@ const ProcedureInfo = ({ procedureItems, isIPD }: ProcedureInfoProps) => {
         },
     ]
 
-    const columnOpdOpers: TableColumnsType<OpdOperationModel> = [
+    const opdOperColumns: TableColumnsType<OpdOperationModel> = [
         {
             key: 'dateopd',
             title: 'วันที่บันทึก',
@@ -48,7 +47,7 @@ const ProcedureInfo = ({ procedureItems, isIPD }: ProcedureInfoProps) => {
                 );
             },
         },
-        ...columnOpers,
+        ...operColumns,
         {
             key: 'clinic',
             title: 'รหัสคลีนิก',
@@ -61,7 +60,7 @@ const ProcedureInfo = ({ procedureItems, isIPD }: ProcedureInfoProps) => {
         }
     ]
 
-    const columnIpdOpers: TableColumnsType<IpdOperationModel> = [
+    const ipdOperColumns: TableColumnsType<IpdOperationModel> = [
         {
             key: 'datein',
             title: 'วันที่เริ่ม',
@@ -80,7 +79,7 @@ const ProcedureInfo = ({ procedureItems, isIPD }: ProcedureInfoProps) => {
             dataIndex: 'timein',
             render: (value) => <>{`${value.substring(0, 2)}:${value.substring(2, 4)}`}</>,
         },
-        ...columnOpers,
+        ...operColumns,
         {
             key: 'optype',
             title: 'ชนิดของหัตถการ',
@@ -111,8 +110,8 @@ const ProcedureInfo = ({ procedureItems, isIPD }: ProcedureInfoProps) => {
         <React.Fragment>
             {
                 isIPD ? <Table
-                    rowKey={(record) => record.seq}
-                    columns={columnIpdOpers}
+                    rowKey={(record) => record.id}
+                    columns={ipdOperColumns}
                     dataSource={procedureData || []}
                     pagination={false}
                     style={{ margin: -10, width: "99%" }}
@@ -120,8 +119,8 @@ const ProcedureInfo = ({ procedureItems, isIPD }: ProcedureInfoProps) => {
                     scroll={{ x: 500 }}
                 />
                     : <Table
-                        rowKey={(record) => record.seq}
-                        columns={columnOpdOpers}
+                        rowKey={(record) => record.id}
+                        columns={opdOperColumns}
                         dataSource={procedureData || []}
                         pagination={false}
                         style={{ margin: -10, width: "99%" }}
