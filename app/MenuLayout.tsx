@@ -9,13 +9,14 @@ import {
   BookOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-import { Breadcrumb, Col, Input, Layout, Menu, Row, theme } from "antd";
+import { Breadcrumb, Col, Input, Layout, Menu, Row, Select, theme } from "antd";
 import type { MenuProps } from "antd";
 import "@/app/globals.css";
 const { Header, Content, Sider } = Layout;
 
 type MenuItem = Required<MenuProps>["items"][number];
-// type MenuNav = { id: number, icon: string, label: string, path: string };
+const { Option } = Select;
+
 function getItem(
   label: React.ReactNode,
   key: React.Key,
@@ -40,6 +41,7 @@ const MenuLayout = function MenuLayout({
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
   const [collapsed, setCollapsed] = useState(false);
+  const [visitType, setVisitType] = useState('opd');
   const router = useRouter();
 
   const menuItems: MenuProps["items"] = [
@@ -90,8 +92,23 @@ const MenuLayout = function MenuLayout({
   const onSearchSeq = (seq: string) => {
     if (seq == undefined || seq == "") return;
 
-    router.push(`/work-opd/editor?id=${seq}`)
+    if (visitType == 'opd') {
+      router.push(`/work-opd/editor?id=${seq}`);
+      return;
+    }
+    
+    if (visitType == 'ipd') {
+      router.push(`/work-ipd/editor?id=${seq}`);
+      return;
+    }
   }
+
+  const selectVisitType = (
+    <Select onChange={setVisitType} defaultValue={visitType}>
+      <Option value="opd">OPD</Option>
+      <Option value="ipd">IPD</Option>
+    </Select>
+  );
 
   return (
     <Layout>
@@ -133,7 +150,11 @@ const MenuLayout = function MenuLayout({
       <Layout>
         <Header style={{ padding: 15, background: colorBgContainer, height: '8vh', }}>
           <Row justify="end">
-            <Col span={8}> <Input.Search onSearch={onSearchSeq} allowClear placeholder="ค้นหาด้วยVN" /></Col>
+            <Col span={8}>
+              <Input.Search addonBefore={selectVisitType}
+                onSearch={onSearchSeq}
+                allowClear placeholder="ค้นหาด้วยVN" />
+            </Col>
           </Row>
         </Header>
         <Breadcrumb style={{ margin: "0 0 5px 10px" }} separator=">">
