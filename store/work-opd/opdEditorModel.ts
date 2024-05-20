@@ -186,3 +186,14 @@ export interface OpdDetailModel {
    **/
   typeout: number;
 }
+
+
+export function instanceOfOpdDetail(object: any): object is OpdDetailModel {
+  return true;
+}
+export function instanceOfOpdValid(object: any): object is OpdValidModel {
+  return true;
+}
+export function instanceOfOpdValids(object: any): object is OpdValidModel[] {
+  return true;
+}

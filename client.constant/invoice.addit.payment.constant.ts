@@ -1,6 +1,8 @@
 import type { AdditionalPaymentModel, AdditPaymentModelEditorModel } from "@/store/fee-additional/additionalModel";
 import { FeeScheduleSelectorModel } from "@/store/fee-additional/feeScheduleModel";
-import { OpdValidModel, WorkValidModel } from "@/store/work-opd/opdEditorModel";
+import { instanceOfIpdValids, IpdValidModel } from "@/store/work-ipd/ipdEditorModel";
+import { instanceOfOpdValids, OpdValidModel } from "@/store/work-opd/opdEditorModel";
+import { WorkValidModel } from "@/store/work/workValidModel";
 
 export const allAdditTypes: { id: string, text: string }[] = [
   { id: "1", text: "HC (OPD)" },
@@ -52,14 +54,16 @@ export const adpOptionalObj = {
 
 export async function genarateAdditPaymentEditors(
   adpItems: AdditionalPaymentModel[],
-  validItems: OpdValidModel[] | undefined
+  validItems: OpdValidModel[] | IpdValidModel[] | undefined
 ) {
   let results: AdditPaymentModelEditorModel[] = [];
-  const itemAdpError = validItems?.filter((i) => i.adp)[0][
-    "adp"
-  ] as unknown as WorkValidModel[];
+
+  let itemAdpError: WorkValidModel[] = [];
+  if (instanceOfOpdValids(validItems) && validItems.length > 0) itemAdpError = validItems[0].adp;
+  if (instanceOfIpdValids(validItems) && validItems.length > 0) itemAdpError = validItems[0].adp;
+
   await adpItems.forEach((adpItem, i) => {
-    const assignItemError = itemAdpError.filter((i) => i.id === adpItem.id);
+    const assignItemError = (itemAdpError || []).filter((i) => i.id === adpItem.id);
     const newFeeSchedule: FeeScheduleSelectorModel = { item_code: adpItem.code, item_name: "" };
     let typeText = getAdpDisplay(adpItem.type);
     const data: AdditPaymentModelEditorModel = {
@@ -90,7 +94,8 @@ export function getAdpDisplay(type: string) {
 
 export function convertEditorToAdp(adtEditors: AdditPaymentModelEditorModel[]): AdditionalPaymentModel[] {
   let results: AdditionalPaymentModel[] = [];
-  let excludeProps = ['dummyKey', 'isDurty', 'freeDrug', 'feeSchedule', 'feeEditor', 'isFeeDrug', 'typeDisplay', 'hasError'];
+  let excludeProps = ['dummyKey', 'isDurty', 'freeDrug', 'feeSchedule', 'feeEditor', 'isFeeDrug',
+    'typeDisplay', 'typeEditor', 'validError', 'hasError'];
   adtEditors.forEach(item => {
     let data: AdditionalPaymentModel = {
       id: "",
@@ -127,3 +132,4 @@ export function convertEditorToAdp(adtEditors: AdditPaymentModelEditorModel[]): 
   });
   return results;
 }
+

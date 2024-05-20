@@ -3,9 +3,9 @@ import { v4 as uuidv4 } from "uuid";
 import type { InvoiceItemEditorModel, } from "@/store/financial/invoiceItemModel";
 import { AdditPaymentModelEditorModel, AdditionalPaymentModel } from "@/store/fee-additional/additionalModel";
 import { additionalPaymentChargePrefix, allChargeItems, drugExChargePrefix, drugInChargePrefix, getChargeText } from "./invoice.billing.constant";
-import { OpdDetailModel, WorkValidModel } from "@/store/work-opd/opdEditorModel";
 import { PatientDetailModel } from "@/store/patient/patientModel";
-import { IpdDetailModel } from "@/store/work-ipd/ipdEditorModel";
+import { WorkValidModel } from "@/store/work/workValidModel";
+import { VisitDetailModel } from "@/store/work/workEditorModel";
 
 //#region Additional Payment Type
 export const adpTypeInstrument = "2";
@@ -14,7 +14,7 @@ export const adpTypeFreeSchedule = "8";
 //#endregion
 
 type CalcAdpChargesProps = {
-  visitDetail?: OpdDetailModel | IpdDetailModel,
+  visitDetail?: VisitDetailModel,
   patientData?: PatientDetailModel,
   invoiceEditors: InvoiceItemEditorModel[],
   adtEditors: AdditPaymentModelEditorModel[],
@@ -26,11 +26,9 @@ export async function recalcAdpCharges({
 ): Promise<InvoiceItemEditorModel[]> {
   if (adtEditors.length == 0) return invoiceEditors;
 
-  // await allChargeItems.forEach((chargeItem) => {
   const chargeItem = allChargeItems.find(t => chargeCalcScope.startsWith(t.prefix));
   if (chargeItem == undefined) return invoiceEditors;
   if (chargeItem.prefix == drugInChargePrefix || chargeItem.prefix == drugExChargePrefix) return invoiceEditors;
-  // if (!chargeCalcScope.startsWith(chargeItem.prefix)) return;
 
   let results: InvoiceItemEditorModel[] = [...invoiceEditors];
   const adpInCharges = [...adtEditors.filter(t => chargeItem.chargeTypes.includes(t.type))];
@@ -50,10 +48,11 @@ export async function recalcAdpCharges({
     const newId = uuidv4();
     let newInvoiceItem: InvoiceItemEditorModel = {
       id: newId,
-      seq: visitDetail?.seq || "",
       hn: visitDetail?.hn || "",
+      seq: visitDetail?.seq || "",
+      an: visitDetail?.an || "",
       person_id: patientData?.person_id || "",
-      date: visitDetail?.dateopd || new Date,
+      date: visitDetail?.visitDate || new Date,
       dummyKey: (invoiceEditors.length || 0) + 1,
       isDurty: true,
       amount: sumTotal,
@@ -78,9 +77,10 @@ export async function recalcAdpCharges({
     let editItem: InvoiceItemEditorModel = {
       ...invoiceAdp,
       seq: visitDetail?.seq || "",
+      an: visitDetail?.an || "",
       hn: visitDetail?.hn || "",
       person_id: patientData?.person_id || "",
-      date: visitDetail?.dateopd || new Date,
+      date: visitDetail?.visitDate || new Date,
       totalAmount: calcResult,
       overAmount: overResult,
       status: 1,
@@ -89,11 +89,11 @@ export async function recalcAdpCharges({
     };
     results.splice(invoiceItemIndex, 1, editItem);
   }
-  // })
+
   return await results;
 }
 
-function getErrorToAdpCharges(itemId: string): WorkValidModel[] {
+export function getErrorToAdpCharges(itemId: string): WorkValidModel[] {
   let results: WorkValidModel[] = [{
     id: itemId,
     code_error: "E000",

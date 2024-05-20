@@ -1,5 +1,5 @@
 
-import { WorkValidModel } from "../work-opd/opdEditorModel";
+import { WorkValidModel } from "../work/workValidModel";
 import { FeeDrugSelectorModel } from "./feeDrugModel";
 import { FeeScheduleSelectorModel } from "./feeScheduleModel";
 

@@ -1,28 +1,24 @@
-import { OpdOperationModel,IpdOperationModel } from '@/store/operation/operationModel'
-import { Table } from 'antd'
-import React, { useEffect, useState } from 'react'
+
+
+import React, { useState, useEffect } from 'react';
+import { Table } from 'antd';
+import { type TableColumnsType } from "antd";
+import { OpdOperationModel, IpdOperationModel, instanceOfIpdOperations } from '@/store/operation/operationModel'
+import { getOperType } from '@/client.constant/operation.constant';
 
 interface ProcedureInfoProps {
-    procedureInfo: OpdOperationModel[] | IpdOperationModel[]
+    procedureItems: OpdOperationModel[] | IpdOperationModel[]
 }
 
-const ProcedureInfo = (props: ProcedureInfoProps) => {
-    // const [procedure, setProcedure] = useState<OpdOperationModel[]>([])
+const ProcedureInfo = ({ procedureItems }: ProcedureInfoProps) => {
 
-    // useEffect(() => {
-    //     getProcedure(props.procedureInfo)
-    // }, [props])
+    const [isIPD, setIsIPD] = useState<boolean>(false);
 
-    // const getProcedure = (value: OpdOperationModel[]) => {
-    //     setProcedure(value)
-    // }
+    useEffect(() => {
+        setIsIPD(instanceOfIpdOperations(procedureItems));
+    }, [procedureItems]);
 
-    const column = [
-        {
-            key: 'dateopd',
-            title: 'วันที่บันทึก',
-            dataIndex: 'dateopd'
-        },
+    const columnOpers: TableColumnsType<OpdOperationModel | IpdOperationModel> = [
         {
             key: 'oper',
             title: 'ICD9',
@@ -33,6 +29,15 @@ const ProcedureInfo = (props: ProcedureInfoProps) => {
             title: 'Doctor Code',
             dataIndex: 'dropid'
         },
+    ]
+
+    const columnOpdOpers: TableColumnsType<OpdOperationModel> = [
+        {
+            key: 'dateopd',
+            title: 'วันที่บันทึก',
+            dataIndex: 'dateopd'
+        },
+        ...columnOpers,
         {
             key: 'clinic',
             title: 'Clinic Code',
@@ -45,10 +50,44 @@ const ProcedureInfo = (props: ProcedureInfoProps) => {
         }
     ]
 
+    const columnIpdOpers: TableColumnsType<IpdOperationModel> = [
+        {
+            key: 'datein',
+            title: 'วันที่เริ่ม',
+            dataIndex: 'datein'
+        },
+        {
+            key: 'timein',
+            title: 'เวลาที่เริ่ม',
+            dataIndex: 'timein',
+            render: (value) => <>{`${value.substring(0, 2)}:${value.substring(2, 4)}`}</>,
+        },
+        ...columnOpers,
+        {
+            key: 'optype',
+            title: 'ชนิดของหัตถการ',
+            dataIndex: 'optype',
+            render: (value) => <>{getOperType(value)}</>,
+        },
+        {
+            key: 'dateout',
+            title: 'วันที่เสร็จสิ้น',
+            dataIndex: 'dateout'
+        },
+        {
+            key: 'timeout',
+            title: 'เวลาที่เสร็จสิ้น',
+            dataIndex: 'timeout',
+            render: (value) => <>{`${value.substring(0, 2)}:${value.substring(2, 4)}`}</>,
+        },
+    ]
+
     return (
         <React.Fragment>
             <Table
-                columns={column} dataSource={procedure}
+                rowKey={(record) => record.seq}
+                columns={isIPD ? columnIpdOpers : columnOpdOpers}
+                dataSource={procedureItems || []}
                 pagination={false}
                 style={{ margin: -10, width: "99%" }}
                 sticky

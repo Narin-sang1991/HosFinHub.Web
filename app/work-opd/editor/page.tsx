@@ -20,7 +20,7 @@ import type {
   OpdDataModel,
   OpdDetailModel,
   OpdEditorModel,
-  OpdValidModel,
+  OpdValidModel
 } from "@/store/work-opd/opdEditorModel";
 import type { PatientDetailModel } from "@/store/patient/patientModel";
 import {
@@ -38,17 +38,20 @@ import { additionalPaymentChargePrefix, convertEditorToCha, convertEditorToCht, 
 import { convertEditorToDru, genarateDrugEditors } from "@/client.constant/invoice.drug.constant";
 import { convertEditorToAdp, genarateAdditPaymentEditors } from "@/client.constant/invoice.addit.payment.constant";
 import { recalcAdpCharges } from "@/client.constant/invoice.additional.constant";
-import PatientInfoTab from "./patient.info";
-import InvoiceBillingTab from "./invoice.billing";
-import InsureInfo from "./insure.info";
+import { getVisitDetail } from "@/client.constant/work.editor.constant";
+import { getPatientFullName } from "@/client.constant/work.search.constant";
+
+import PatientInfoTab from "@/app/work-sub-component/patient.info";
+import InsureInfo from "@/app/work-sub-component/insure.info";
+import ProcedureInfo from "@/app/work-sub-component/procedure.info";
+import DiagenosisInfo from "@/app/work-sub-component/diagenosis.info";
+import AccidentEmergencyTab from "@/app/work-sub-component/accident.emergency";
+import ReferInfo from "@/app/work-sub-component/refer.info";
+import InvoiceBillingTab from "@/app/work-sub-component/invoice.billing";
+import { VisitDetailModel } from "@/store/work/workEditorModel";
+import { OpdReferModel } from "@/store/refer/referModel";
 import withTheme from "../../../theme";
 import "@/app/globals.css";
-import { claimOpd } from "@/services/send.fhd.prioviver";
-import ProcedureInfo from "./procedure.info";
-import DiagenosisInfo from "./diagenosis.info";
-import AccidentEmergencyTab from "./accident.emergency";
-import { OpdReferModel } from "@/store/refer/referModel";
-import ReferInfo from "./refer.info";
 //#endregion
 
 interface OpdEditorProps { }
@@ -66,7 +69,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
   const valid: OpdValidModel[] | undefined = useAppSelector(getValid);
   const [editingData, setEditData] = useState<OpdEditorModel>();
   const [editKey, setEditKey] = useState<any>(undefined);
-
+  const [visitDetail, setVisitDetail] = useState<VisitDetailModel>();
 
   //#region Internal Effect
   useEffect(() => {
@@ -91,9 +94,9 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
 
       let adtItems = await genarateAdditPaymentEditors(originData.adp, valid);
       let invoiceItems = await genarateAllCharges(originData.cha, valid);
-
+      let tmpVisitDetail = getVisitDetail(opdDetail);
       invoiceItems = await recalcAdpCharges({
-        visitDetail: opdDetail,
+        visitDetail: tmpVisitDetail,
         patientData: patientDetail,
         invoiceEditors: invoiceItems,
         adtEditors: adtItems,
@@ -116,8 +119,9 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         procedureItems: originData.oop
 
       };
+      // console.log("transformData=>", transformData);
       setEditData(transformData);
-
+      setVisitDetail(tmpVisitDetail);
       formEditor.setFieldsValue({
         CardType: patientDetail.idtype,
         PersonID: getPatientID(patientDetail.person_id),
@@ -154,6 +158,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
   }
 
   async function onSave() {
+    if (editingData == undefined) return;
 
     let invoicedata = formEditor.getFieldValue("InvoiceBilling");
     // console.log("InvoiceBilling=>", invoicedata);
@@ -163,38 +168,37 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         && invoicedata.opdData == undefined
       )) {
       invoicedata = {
-        opdData: editingData?.opdDetail || undefined,
-        patientData: editingData?.patient || undefined,
-        invoiceItems: editingData?.invoiceItems || [],
-        drugItems: editingData?.drugItems || [],
-        additPaymentItems: editingData?.additPayments || [],
+        opdData: editingData.opdDetail ,
+        patientData: editingData.patient ,
+        invoiceItems: editingData.invoiceItems,
+        drugItems: editingData.drugItems ,
+        additPaymentItems: editingData.additPayments ,
       }
     }
-    const uucEditing = formEditor.getFieldValue("UUC");
-    // console.log("invoicedata=>", invoicedata);
-    // console.log("uuc=>", uucEuucEditingditind);
 
-    const visitDetail: OpdDetailModel[] = editingData != undefined ? [{ ...editingData.opdDetail, uuc: uucEditing }] : [];
-    const patData: PatientDetailModel[] = editingData != undefined ? [{ ...editingData.patient }] : [];
-    const referData: OpdReferModel[] = editingData != undefined ? [{ ...editingData.opdRefer }] : [];
+    const uucEditing = formEditor.getFieldValue("UUC");
+    let tmpVisitDetail = getVisitDetail(editingData.opdDetail);
+    const opdDetail: OpdDetailModel[] =  [{ ...editingData.opdDetail, uuc: uucEditing }] ;
+    const patData: PatientDetailModel[] =  [{ ...editingData.patient }] ;
+    const referData: OpdReferModel[] =  [{ ...editingData.opdRefer }] ;
     const savedata: OpdDataModel = {
       adp: convertEditorToAdp(invoicedata.adpItems || invoicedata.additPaymentItems),
       aer: editingData?.accidenEmergencies || [],
       cht: convertEditorToCht(editingData?.invoices || [], invoicedata.invoiceItems),
-      cha: convertEditorToCha(invoicedata.invoiceItems, visitDetail[0], patData[0]),
+      cha: convertEditorToCha(invoicedata.invoiceItems, tmpVisitDetail, patData[0]),
       dru: convertEditorToDru(invoicedata.drugItems),
       ins: editingData?.insureItems || [],
       labfu: editingData?.labfuItems || [],
       odx: editingData?.diagnosisItems || [],
-      opd: visitDetail,
+      opd: opdDetail,
       orf: referData,
       pat: patData,
       oop: editingData?.procedureItems || []
     };
-    // console.log("savedata=>", savedata);
-    (async () => {
-      await dispatch(saveAsync({ ...savedata }));
-    })();
+    console.log("savedata=>", savedata);
+    // (async () => {
+    //   await dispatch(saveAsync({ ...savedata }));
+    // })();
   }
 
   function onClose() {
@@ -203,13 +207,6 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
   //#endregion
 
   //#region Internal function/method
-  function getPatientName(patient?: PatientDetailModel) {
-    if (patient !== undefined) {
-      return `${patient.title}${patient.fname}  ${patient.lname}`;
-    }
-    return defaultStrEmpty;
-  }
-
   const getCardInTab = <T extends { title: string; children: any }>(propCard: T) => {
     return (
       <Card
@@ -268,7 +265,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         title: "ข้อมูลการผ่าตัดหัตถการ",
         children: (
           <Form.Item name={"procedureInfo"}>
-            <ProcedureInfo procedureInfo={editingData?.procedureItems || []} />
+            <ProcedureInfo procedureItems={editingData?.procedureItems || []} />
           </Form.Item>
         )
       })
@@ -281,7 +278,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         title: "ข้อมูลค่ารักษาพยาบาล",
         children: (
           <Form.Item name={"InvoiceBilling"}>
-            <InvoiceBillingTab opdData={editingData?.opdDetail || undefined}
+            <InvoiceBillingTab visitDetail={visitDetail}
               patientData={editingData?.patient || undefined}
               invoiceItems={editingData?.invoiceItems || []}
               drugItems={editingData?.drugItems || []}
@@ -331,7 +328,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                         <Space align="start" size="small">
                           <Text type="secondary">ชื่อ-สกุล :</Text>
                           <Text strong>
-                            {getPatientName(editingData?.patient)}
+                            {getPatientFullName(editingData?.patient)}
                           </Text>
                         </Space>
                       ),

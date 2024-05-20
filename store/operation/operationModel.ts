@@ -23,3 +23,17 @@ export interface OperationModel {
     oper: string;
     dropid: string;
 }
+
+
+export function instanceOfOpdOperation(object: any): object is OpdOperationModel {
+    return true;
+}
+export function instanceOfOpdOperations(object: any): object is OpdOperationModel[] {
+    return true;
+}
+export function instanceOfIpdOperation(object: any): object is IpdOperationModel {
+    return true;
+}
+export function instanceOfIpdOperations(object: any): object is IpdOperationModel[] {
+    return true;
+}

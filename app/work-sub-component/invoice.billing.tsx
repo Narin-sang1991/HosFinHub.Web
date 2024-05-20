@@ -15,14 +15,14 @@ import InvoiceDrugPage from "./invoice.drug";
 import InvoiceAdditionalPage from "./invoice.additional";
 import { adpTypeNonGroup, recalcAdpCharges } from "@/client.constant/invoice.additional.constant";
 import { recalcDrugCharges } from "@/client.constant/invoice.drug.constant";
-import { OpdDetailModel } from "@/store/work-opd/opdEditorModel";
 import { PatientDetailModel } from "@/store/patient/patientModel";
-import "@/app/globals.css";
+import { VisitDetailModel } from "@/store/work/workEditorModel";
 import { ChargeModel } from "@/store/financial/chargeModel";
+import "@/app/globals.css";
 //#endregion
 
 type InvoiceBillingProps = {
-  opdData?: OpdDetailModel,
+  visitDetail?: VisitDetailModel,
   patientData?: PatientDetailModel,
   invoiceItems: InvoiceItemEditorModel[],
   drugItems: InvoiceDrugEditorModel[],
@@ -31,7 +31,7 @@ type InvoiceBillingProps = {
 };
 const { Text } = Typography;
 const defaultCharge: ChargeModel = { prefix: "", name: "", chargeTypes: [] };
-const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoiceItems, drugItems, additPaymentItems, onChange, }: InvoiceBillingProps) {
+const InvoiceBillingTab = function InvoiceBilling({ visitDetail, patientData, invoiceItems, drugItems, additPaymentItems, onChange, }: InvoiceBillingProps) {
 
   const [formBillingEditor] = Form.useForm();
   const [invoiceData, setInvoiceData] = useState<InvoiceItemEditorModel[]>(invoiceItems);
@@ -47,7 +47,7 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
   useEffect(() => {
     // formBillingEditor.resetFields(["InvoiceAdp"]);
     recalcAdpCharges({
-      opdData: opdData,
+      visitDetail: visitDetail,
       patientData: patientData,
       invoiceEditors: invoiceData,
       adtEditors: additPaymentData,
@@ -60,9 +60,8 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
   }, [additPaymentData]);
 
   useEffect(() => {
-    // formBillingEditor.resetFields(["InvoiceDrug"]);
     recalcDrugCharges({
-      seqKey: opdData?.seq || "",
+      seqKey: visitDetail?.seq || visitDetail?.an || "",
       invoiceEditors: invoiceData,
       drugEditors: drugData,
     }).then((invoiceUtdDrug) => {
@@ -127,12 +126,14 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
       let drug = drugItems[drugIndex];
       let feeDrug = { id: drug.id, code: '', name: drug.didname, unitPrice: drug.drugprice.toString() };
       const typeText = getAdpDisplay(adpTypeNonGroup)
+
       let newItem: AdditPaymentModelEditorModel = {
         dummyKey: drug.id.split('-')[0],
         isDurty: false,
         hasError: drug.hasError,
         id: drug.id,
-        seq: opdData?.seq || "",
+        seq: visitDetail?.seq || "",
+        an: visitDetail?.an || "",
         hn: drug.hn,
         dateopd: drug.date_serv,
         type: adpTypeNonGroup,
@@ -147,7 +148,7 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
         dose: drug.unit,
         total: drug.total,
         totcopay: drug.totcopay,
-        clinic: opdData?.clinic || "09900",
+        clinic: visitDetail?.clinic || "",
         itemsrc: 2,
       };
       let adpIndex = newPaymentData.findIndex(a => a.id === t.id);
@@ -336,7 +337,7 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
         size="small"
         className={"MasterBackground"}
         pagination={false}
-        style={{ margin: -10,width: "99%" }}
+        style={{ margin: -10, width: "99%" }}
         sticky
         scroll={{ x: 500 }}
       />
@@ -352,7 +353,7 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
             {`${chargeAdjust.name} (จำนวน ${drugItems.length || 0} รายการ)`}
           </Space>}
           open={isModalDrugOpen} centered width={"90%"}
-       
+
           onCancel={() => setModalDrugOpen(false)} cancelText={"ปิด"}
           onOk={saveInvoiceDrug} okText="นำไปใช้"
         >
@@ -371,7 +372,7 @@ const InvoiceBillingTab = function InvoiceBilling({ opdData, patientData, invoic
           okText="นำไปใช้"
         >
           <Form.Item name="InvoiceAdp">
-            <InvoiceAdditionalPage opdData={opdData} additionalItems={adpInChargeItems}
+            <InvoiceAdditionalPage visitDetail={visitDetail} additionalItems={adpInChargeItems}
               showFeeDrug={adpShowFeeDrug} adpTypes={chargeAdjust.chargeTypes} />
           </Form.Item>
         </Modal>

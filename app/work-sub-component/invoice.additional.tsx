@@ -15,14 +15,14 @@ import { AdditPaymentTypeSelector } from "@/app/catalogs/selector.adp.type";
 import { isNumber } from "@/client.constant/format.constant";
 import { FeeDrugSelectorModel } from "@/store/fee-additional/feeDrugModel";
 import { FeeScheduleSelectorModel } from "@/store/fee-additional/feeScheduleModel";
-import { OpdDetailModel } from "@/store/work-opd/opdEditorModel";
-import { adpTypeFreeSchedule, adpTypeNonGroup } from "@/client.constant/invoice.additional.constant";
+import { adpTypeFreeSchedule, adpTypeNonGroup, getErrorToAdpCharges } from "@/client.constant/invoice.additional.constant";
 import { adpOptionalObj, getAdpDisplay } from "@/client.constant/invoice.addit.payment.constant";
+import { VisitDetailModel } from "@/store/work/workEditorModel";
 // import { dateDisplayFormat, dateInterfaceFormat, } from "@/client.constant/format.constant";
 //#endregion
 
 type InvoiceAdditionalProps = {
-  opdData?: OpdDetailModel,
+  visitDetail?: VisitDetailModel,
   additionalItems?: AdditPaymentModelEditorModel[],
   adpTypes: string[],
   showFeeDrug: boolean,
@@ -31,7 +31,7 @@ type InvoiceAdditionalProps = {
 
 const { Text } = Typography;
 
-const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalItems = [], adpTypes, showFeeDrug, onChange }: InvoiceAdditionalProps) {
+const InvoiceAdditionalPage = function InvoiceAdditional({ visitDetail, additionalItems = [], adpTypes, showFeeDrug, onChange }: InvoiceAdditionalProps) {
 
   const [formAdpEditor] = Form.useForm();
   const [formAdpAdding] = Form.useForm();
@@ -145,7 +145,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
         setEditingData(newData);
         setEditingKey("");
       } else {
-        newData.push({ ...row, hasError: !hasCode, validError: hasCode ? [] : getErrorToAdpCharges(key), });
+        newData.push({ ...row, hasError: !hasCode, validError: hasCode ? [] : getErrorToAdpCharges(key.toString()), });
         setEditingData(newData);
         setEditingKey("");
       }
@@ -168,9 +168,9 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
         isDurty: true,
         hasError: false,
         id: newId,
-        seq: opdData?.seq || "",
-        hn: opdData?.hn || "",
-        dateopd: opdData?.dateopd || new Date,
+        seq: visitDetail?.seq || "",
+        hn: visitDetail?.hn || "",
+        dateopd: visitDetail?.visitDate || new Date,
         type: formData.TypeEditor.id,
         typeDisplay: formData.TypeEditor.text,
         typeEditor: { id: formData.TypeEditor.id, text: formData.TypeEditor.text },
@@ -183,7 +183,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
         dose: formData.Dose,
         total: Number(formData.Total),
         totcopay: Number(formData.OverPayment),
-        clinic: opdData?.clinic || "",
+        clinic: visitDetail?.clinic || "",
         itemsrc: formData.ItemSource,
         cagcode: formData.CagCode,
         ca_type: formData.CaType,
@@ -215,9 +215,9 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
         isDurty: true,
         hasError: false,
         id: newId,
-        seq: opdData?.seq || "",
-        hn: opdData?.hn || "",
-        dateopd: opdData?.dateopd || new Date,
+        seq: visitDetail?.seq || "",
+        hn: visitDetail?.hn || "",
+        dateopd: visitDetail?.visitDate || new Date,
         type: formData.TypeEditor.id,
         typeDisplay: formData.TypeEditor.text,
         typeEditor: { id: formData.TypeEditor.id, text: formData.TypeEditor.text },
@@ -230,7 +230,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
         dose: formData.Dose,
         total: Number(formData.Total),
         totcopay: Number(formData.OverPayment),
-        clinic: opdData?.clinic || "",
+        clinic: visitDetail?.clinic || "",
         itemsrc: formData.ItemSource,
         cagcode: formData.CagCode,
         ca_type: formData.CaType,
@@ -741,7 +741,3 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ opdData, additionalIt
 };
 
 export default InvoiceAdditionalPage;
-function getErrorToAdpCharges(key: React.Key): import("@/store/work-opd/opdEditorModel").WorkValidModel[] | undefined {
-  throw new Error("Function not implemented.");
-}
-

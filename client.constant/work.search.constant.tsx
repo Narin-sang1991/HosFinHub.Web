@@ -66,7 +66,6 @@ function getError(errorItems: any[]) {
 
 function getPatientName(searchPatient: WorkSearchModel) {
     let patient: PatientModel = searchPatient.work_pat;
-
     // if (instanceOfWorkSearch(searchPatient)) {
     //     let workSearch = searchPatient as WorkSearchModel;
     //     if (workSearch.work_pat != undefined) patient = workSearch.work_pat;
@@ -79,8 +78,11 @@ function getPatientName(searchPatient: WorkSearchModel) {
     //     let workSearch = searchPatient as IpdSearchModel;
     //     if (workSearch.ipd_pat != undefined) patient = workSearch.ipd_pat;
     // }
-    if (patient == undefined) return "";
+    return getPatientFullName(patient);
+}
 
+export function getPatientFullName(patient: PatientModel | undefined) {
+    if (patient == undefined) return "";
     return `${patient.title}${patient.fname}  ${patient.lname}`;
 }
 

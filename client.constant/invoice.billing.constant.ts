@@ -1,11 +1,12 @@
 
 import { v4 as uuidv4 } from "uuid";
 import type { InvoiceItemModel, InvoiceItemEditorModel, } from "@/store/financial/invoiceItemModel";
-import { OpdDetailModel, OpdValidModel } from "@/store/work-opd/opdEditorModel";
+import { OpdValidModel } from "@/store/work-opd/opdEditorModel";
 import { InvoiceModel } from "@/store/financial/invoiceModel";
 import { PatientDetailModel } from "@/store/patient/patientModel";
 import { ChargeModel } from "@/store/financial/chargeModel";
-import { IpdDetailModel } from "@/store/work-ipd/ipdEditorModel";
+import { IpdValidModel } from "@/store/work-ipd/ipdEditorModel";
+import { VisitDetailModel } from "@/store/work/workEditorModel";
 const defaultStrEmpty: string = "-";
 
 //#region File and Code
@@ -108,7 +109,7 @@ export const allChargeItems: ChargeModel[] = allCharges.map(chargePrefix => {
 
 export async function genarateAllCharges(
   invoiceItems: InvoiceItemModel[],
-  validItem: OpdValidModel[] | undefined
+  validItem: OpdValidModel[] | IpdValidModel[] | undefined
 ): Promise<InvoiceItemEditorModel[]> {
   let results: InvoiceItemEditorModel[] = [];
 
@@ -276,7 +277,21 @@ export function getStatusDisplayType(status: number) {
   return result;
 }
 
-export function convertEditorToCha(chaEditors: InvoiceItemEditorModel[], visitDetail: OpdDetailModel | IpdDetailModel, patData: PatientDetailModel): InvoiceItemModel[] {
+function getNewInvoiceItemData(visitDetail: VisitDetailModel, patData: PatientDetailModel): InvoiceItemModel {
+  let result: InvoiceItemModel = {
+    id: "",
+    hn: patData.hn,
+    an: visitDetail.an,
+    date: visitDetail.visitDate,
+    chrgitem: "",
+    amount: 0,
+    person_id: patData.person_id,
+    seq: visitDetail.seq,
+  };
+  return result;
+}
+
+export function convertEditorToCha(chaEditors: InvoiceItemEditorModel[], visitDetail: VisitDetailModel, patData: PatientDetailModel): InvoiceItemModel[] {
   let results: InvoiceItemModel[] = [];
   let chaItems: InvoiceItemEditorModel[] = [...chaEditors].filter(t => t.seq != '0');
   let excludeProps = ['dummyKey', 'isDurty', 'totalAmount', 'overAmount', 'chargeDetail', 'status', 'valid'];
@@ -311,20 +326,6 @@ export function convertEditorToCha(chaEditors: InvoiceItemEditorModel[], visitDe
 
   });
   return results.filter(t => t.amount != 0);
-}
-
-function getNewInvoiceItemData( visitDetail: OpdDetailModel | IpdDetailModel, patData: PatientDetailModel): InvoiceItemModel {
-  let result: InvoiceItemModel = {
-    id: "",
-    hn: patData.hn,
-    an: "",
-    date: visitDetail.dateopd,
-    chrgitem: "",
-    amount: 0,
-    person_id: patData.person_id,
-    seq: visitDetail.seq,
-  };
-  return result;
 }
 
 export function convertEditorToCht(chtOriginals: InvoiceModel[], chaEditors: InvoiceItemEditorModel[]): InvoiceModel[] {

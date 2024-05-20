@@ -1,19 +1,22 @@
 import { v4 as uuidv4 } from "uuid";
 import type { InvoiceDrugModel, InvoiceDrugEditorModel } from "@/store/financial/invoiceDrugModel";
 import { InvoiceItemEditorModel } from "@/store/financial/invoiceItemModel";
-import { OpdValidModel, WorkValidModel } from "@/store/work-opd/opdEditorModel";
 import { drugExChargePrefix, getChargeText } from "./invoice.billing.constant";
+import { OpdValidModel, instanceOfOpdValids } from "@/store/work-opd/opdEditorModel";
+import { IpdValidModel, instanceOfIpdValids } from "@/store/work-ipd/ipdEditorModel";
+import { WorkValidModel } from "@/store/work/workValidModel";
 
 export function genarateDrugEditors(
   drugItems: InvoiceDrugModel[],
-  validItems: OpdValidModel[] | undefined
+  validItems: OpdValidModel[] | IpdValidModel[] | undefined
 ) {
   let results: InvoiceDrugEditorModel[] = [];
-  const itemDruError = validItems?.filter((i) => i.dru)[0][
-    "dru"
-  ] as unknown as WorkValidModel[];
+  let itemDruError: WorkValidModel[] = [];
+  if (instanceOfOpdValids(validItems) && validItems.length > 0) itemDruError = validItems[0].dru;
+  if (instanceOfIpdValids(validItems) && validItems.length > 0) itemDruError = validItems[0].dru;
+
   drugItems.forEach((drugItem, i) => {
-    const assignItemError = itemDruError.filter((i) => i.id === drugItem.id);
+    const assignItemError = (itemDruError || []).filter((i) => i.id === drugItem.id);
     let dummyKey: number = i + 1;
     let data: InvoiceDrugEditorModel = {
       ...drugItem,

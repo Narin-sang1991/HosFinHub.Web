@@ -137,3 +137,14 @@ export interface IpdDetailModel {
   svctype: string;
 
 }
+
+
+export function instanceOfIpdDetail(object: any): object is IpdDetailModel {
+  return true;
+}
+export function instanceOfIpdValid(object: any): object is IpdValidModel {
+  return true;
+}
+export function instanceOfIpdValids(object: any): object is IpdValidModel[] {
+  return true;
+}

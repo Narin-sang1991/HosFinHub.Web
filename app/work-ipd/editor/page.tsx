@@ -33,19 +33,22 @@ import {
   getDischargeStatus,
 } from "@/client.constant/patient.constant";
 import { getColResponsive } from "@/client.component/antd.col.resposive";
-import { dateDisplayFormat, timeDisplayFormat } from "@/client.constant/format.constant";
+import { dateDisplayFormat } from "@/client.constant/format.constant";
 import { additionalPaymentChargePrefix, convertEditorToCha, convertEditorToCht, genarateAllCharges } from "@/client.constant/invoice.billing.constant";
 import { convertEditorToDru, genarateDrugEditors } from "@/client.constant/invoice.drug.constant";
 import { convertEditorToAdp, genarateAdditPaymentEditors } from "@/client.constant/invoice.addit.payment.constant";
 import { recalcAdpCharges } from "@/client.constant/invoice.additional.constant";
+import { getVisitDetail } from "@/client.constant/work.editor.constant";
+import { getPatientFullName } from "@/client.constant/work.search.constant";
 
-// import InvoiceBillingTab from "./invoice.billing";
 import PatientInfoTab from "@/app/work-sub-component/patient.info";
 import InsureInfo from "@/app/work-sub-component/insure.info";
 import ProcedureInfo from "@/app/work-sub-component/procedure.info";
 import DiagenosisInfo from "@/app/work-sub-component/diagenosis.info";
 import AccidentEmergencyTab from "@/app/work-sub-component/accident.emergency";
 import ReferInfo from "@/app/work-sub-component/refer.info";
+import InvoiceBillingTab from "@/app/work-sub-component/invoice.billing";
+import { VisitDetailModel } from "@/store/work/workEditorModel";
 import { IpdReferModel } from "@/store/refer/referModel";
 import withTheme from "../../../theme";
 import "@/app/globals.css";
@@ -66,7 +69,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
   const valid: IpdValidModel[] | undefined = useAppSelector(getValid);
   const [editingData, setEditData] = useState<IpdEditorModel>();
   const [editKey, setEditKey] = useState<any>(undefined);
-
+  const [visitDetail, setVisitDetail] = useState<VisitDetailModel>();
 
   //#region Internal Effect
   useEffect(() => {
@@ -89,24 +92,24 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
       let insureDetail = { ...originData.ins[0] };
       let ipdRefer = { ...originData.irf[0] };
 
-      // let adtItems = await genarateAdditPaymentEditors(originData.adp, valid);
+      let adtItems = await genarateAdditPaymentEditors(originData.adp, valid);
       let invoiceItems = await genarateAllCharges(originData.cha, valid);
-
-      // invoiceItems = await recalcAdpCharges({
-      //   visitDetail: ipdDetail,
-      //   patientData: patientDetail,
-      //   invoiceEditors: invoiceItems,
-      //   adtEditors: adtItems,
-      //   reconcile: false,
-      //   chargeCalcScope: additionalPaymentChargePrefix
-      // });
+      let tmpVisitDetail = getVisitDetail(ipdDetail);
+      invoiceItems = await recalcAdpCharges({
+        visitDetail: tmpVisitDetail,
+        patientData: patientDetail,
+        invoiceEditors: invoiceItems,
+        adtEditors: adtItems,
+        reconcile: false,
+        chargeCalcScope: additionalPaymentChargePrefix
+      });
 
       let transformData: IpdEditorModel = {
-        // additPayments: adtItems,
+        additPayments: adtItems,
         accidenEmergencies: originData.aer,
         invoiceItems: invoiceItems,
         invoices: originData.cht,
-        // drugItems: genarateDrugEditors(originData.dru, valid),
+        drugItems: genarateDrugEditors(originData.dru, valid),
         insureItems: originData.ins,
         labfuItems: originData.labfu,
         diagnosisItems: originData.idx,
@@ -116,9 +119,9 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
         procedureItems: originData.iop
 
       };
-      console.log("transformData=>", transformData);
+      // console.log("transformData=>", transformData);
       setEditData(transformData);
-
+      setVisitDetail(tmpVisitDetail);
       formEditor.setFieldsValue({
         CardType: patientDetail.idtype,
         PersonID: getPatientID(patientDetail.person_id),
@@ -155,6 +158,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
   }
 
   async function onSave() {
+    if (editingData == undefined) return;
 
     let invoicedata = formEditor.getFieldValue("InvoiceBilling");
     // console.log("InvoiceBilling=>", invoicedata);
@@ -164,53 +168,45 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
         && invoicedata.opdData == undefined
       )) {
       invoicedata = {
-        visitDetail: editingData?.ipdDetail || undefined,
-        patientData: editingData?.patient || undefined,
-        invoiceItems: editingData?.invoiceItems || [],
-        drugItems: editingData?.drugItems || [],
-        additPaymentItems: editingData?.additPayments || [],
+        visitDetail: editingData.ipdDetail,
+        patientData: editingData.patient,
+        invoiceItems: editingData.invoiceItems,
+        drugItems: editingData.drugItems,
+        additPaymentItems: editingData.additPayments,
       }
     }
-    const uucEditing = formEditor.getFieldValue("UUC");
-    // console.log("invoicedata=>", invoicedata);
-    // console.log("uuc=>", uucEuucEditingditind);
 
-    const visitDetail: IpdDetailModel[] = editingData != undefined ? [{ ...editingData.ipdDetail, uuc: uucEditing }] : [];
-    const patData: PatientDetailModel[] = editingData != undefined ? [{ ...editingData.patient }] : [];
-    const referData: IpdReferModel[] = editingData != undefined ? [{ ...editingData.ipdRefer }] : [];
+    const uucEditing = formEditor.getFieldValue("UUC");
+    let tmpVisitDetail = getVisitDetail(editingData.ipdDetail);
+    const ipdDetail: IpdDetailModel[] = [{ ...editingData.ipdDetail, uuc: uucEditing }];
+    const patData: PatientDetailModel[] = [{ ...editingData.patient }];
+    const referData: IpdReferModel[] = [{ ...editingData.ipdRefer }];
     const savedata: IpdDataModel = {
       adp: convertEditorToAdp(invoicedata.adpItems || invoicedata.additPaymentItems),
       aer: editingData?.accidenEmergencies || [],
       cht: convertEditorToCht(editingData?.invoices || [], invoicedata.invoiceItems),
-      cha: convertEditorToCha(invoicedata.invoiceItems, visitDetail[0], patData[0]),
+      cha: convertEditorToCha(invoicedata.invoiceItems, tmpVisitDetail, patData[0]),
       dru: convertEditorToDru(invoicedata.drugItems),
       ins: editingData?.insureItems || [],
       labfu: editingData?.labfuItems || [],
       idx: editingData?.diagnosisItems || [],
-      ipd: visitDetail,
+      ipd: ipdDetail,
       irf: referData,
       pat: patData,
       iop: editingData?.procedureItems || []
     };
-    // console.log("savedata=>", savedata);
+    console.log("savedata=>", savedata);
     // (async () => {
     //   await dispatch(saveAsync({ ...savedata }));
     // })();
   }
 
   function onClose() {
-    router.push(`/work-opd/search`)
+    router.push(`/work-ipd/search`)
   }
   //#endregion
 
   //#region Internal function/method
-  function getPatientName(patient?: PatientDetailModel) {
-    if (patient !== undefined) {
-      return `${patient.title}${patient.fname}  ${patient.lname}`;
-    }
-    return defaultStrEmpty;
-  }
-
   const getCardInTab = <T extends { title: string; children: any }>(propCard: T) => {
     return (
       <Card
@@ -267,10 +263,10 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
       icon: <MedicineBoxOutlined />,
       children: getCardInTab({
         title: "ข้อมูลการผ่าตัดหัตถการ",
-        children: (<></>
-          // <Form.Item name={"procedureInfo"}>
-          //   <ProcedureInfo procedureInfo={editingData?.procedureItems || []} />
-          // </Form.Item>
+        children: (
+          <Form.Item name={"procedureInfo"}>
+            <ProcedureInfo procedureItems={editingData?.procedureItems || []} />
+          </Form.Item>
         )
       })
     },
@@ -280,15 +276,15 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
       icon: <DollarOutlined />,
       children: getCardInTab({
         title: "ข้อมูลค่ารักษาพยาบาล",
-        children: (<></>
-          // <Form.Item name={"InvoiceBilling"}>
-          //   <InvoiceBillingTab opdData={editingData?.ipdDetail || undefined}
-          //     patientData={editingData?.patient || undefined}
-          //     invoiceItems={editingData?.invoiceItems || []}
-          //     drugItems={editingData?.drugItems || []}
-          //     additPaymentItems={editingData?.additPayments || []}
-          //   />
-          // </Form.Item>
+        children: (
+          <Form.Item name={"InvoiceBilling"}>
+            <InvoiceBillingTab visitDetail={visitDetail}
+              patientData={editingData?.patient || undefined}
+              invoiceItems={editingData?.invoiceItems || []}
+              drugItems={editingData?.drugItems || []}
+              additPaymentItems={editingData?.additPayments || []}
+            />
+          </Form.Item>
         ),
       }),
     },
@@ -300,11 +296,11 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
       <Space size={"small"} direction="vertical" align="end">
         <Affix offsetTop={50}  >
           <Row style={{ margin: -10, marginBottom: 10 }} justify="end" align="middle" gutter={[4, 4]}>
-            {/* <Col>
-              <Button type="text" onClick={onSave} loading={saveState === "loading"}
+            <Col>
+              <Button type="text" onClick={onSave} /*loading={saveState === "loading"}*/
                 icon={<SaveTwoTone twoToneColor={'#52c41a'} style={{ fontSize: '30px' }} />}
               />
-            </Col> */}
+            </Col>
             <Col> <Divider type="vertical" style={{ height: 20 }} /> </Col>
             <Col>
               <Button type="text" onClick={onClose}
@@ -332,7 +328,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
                         <Space align="start" size="small">
                           <Text type="secondary">ชื่อ-สกุล :</Text>
                           <Text strong>
-                            {getPatientName(editingData?.patient)}
+                            {getPatientFullName(editingData?.patient)}
                           </Text>
                         </Space>
                       ),
