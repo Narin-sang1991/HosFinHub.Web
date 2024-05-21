@@ -31,28 +31,28 @@ const IpdTransfer = () => {
   }
 
   function getPatientName(record: IpdTransferMode) {
-    if (record.ipd_pat !== undefined) {
-      let patient = record.ipd_pat;
+    if (record.work_pat !== undefined) {
+      let patient = record.work_pat;
       return `${patient.title}${patient.fname}  ${patient.lname}`;
     }
     return "";
   }
 
   function getRecordPatientID(record: IpdTransferMode) {
-    if (record.ipd_pat !== undefined) {
-      let patient = record.ipd_pat;
+    if (record.work_pat !== undefined) {
+      let patient = record.work_pat;
       return getPatientID(patient.person_id);
     }
     return "";
   }
 
   function getRecordPatientInscl(record: IpdTransferMode) {
-    if (record.ipd_pat !== undefined) {
+    if (record.work_pat !== undefined) {
 
-      if (record.ipd_pat.pat_ins === undefined) {
+      if (record.work_pat.pat_ins === undefined) {
         return ""
       } else {
-        const patientInscl = record.ipd_pat.pat_ins.find((i) => i.cid === record.ipd_pat.person_id)
+        const patientInscl = record.work_pat.pat_ins.find((i) => i.cid === record.work_pat.person_id)
         return patientInscl?.inscl;
       }
     } else {
@@ -72,9 +72,9 @@ const IpdTransfer = () => {
 
     },
     {
-      title: "IPD ADMID",
-      dataIndex: "dateadm",
-      key: "dateadm",
+      title: "วันที่จำหน่าย",
+      dataIndex: "datedsc",
+      key: "datedsc",
       width: 60,
       ellipsis: true,
       render: (date) => {
@@ -87,7 +87,7 @@ const IpdTransfer = () => {
     },
     {
       title: "Patient Name",
-      key: "ipd_pat",
+      key: "work_pat",
       width: 80,
       render: (record) => <>{getPatientName(record)}</>,
     },
@@ -120,7 +120,7 @@ const IpdTransfer = () => {
       key: 'ipd_claim_log',
       width: 40,
       ellipsis: true,
-      render: (_: any, record: IpdTransferMode) => <div>{record.ipd_claim_log.map(i => i.status.description)[0]}</div>
+      render: (_: any, record: IpdTransferMode) => <div>{record.claim_log.map(i => i.status.description)[0]}</div>
     }
   ]
 

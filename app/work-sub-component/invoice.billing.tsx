@@ -327,9 +327,16 @@ const InvoiceBillingTab = function InvoiceBilling({ visitDetail, patientData, in
     },
   ];
   //#endregion
+  const calculetMoney = () => {
+    const adpEditing = formBillingEditor.getFieldValue("InvoiceAdp");
 
+    console.log(adpEditing);
+    
+  }
   return (
     <>
+      <Button onClick={calculetMoney}>คำนวนราคา</Button>
+      <br />
       <Table
         rowKey={(record) => record.id}
         columns={columns}

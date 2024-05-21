@@ -35,6 +35,6 @@ export interface IpdTransferMode {
     datedsc: string
     uuc: string
     error: any[]
-    ipd_pat: IpdPat
-    ipd_claim_log: IpdLog[]
+    work_pat: IpdPat
+    claim_log: IpdLog[]
 }

@@ -429,18 +429,19 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ visitDetail, addition
               />
             </Tooltip>
             <Tooltip title="ลบออก">
-              <Popconfirm okText="ใช่" cancelText="ยกเลิก"
+              {/* <Popconfirm okText="ใช่" cancelText="ยกเลิก"
                 title="แน่ใจการ[ลบ] ?"
                 placement="bottom"
                 onConfirm={() => deleteItem(record.id)}
-              >
+              > */}
                 <Button
+                  onClick={() => deleteItem(record.id)}
                   disabled={!viewMode}
                   type="text" size="small" block
                   danger
                   icon={<DeleteOutlined />}
                 />
-              </Popconfirm>
+              {/* </Popconfirm> */}
             </Tooltip>
           </Space>
         );

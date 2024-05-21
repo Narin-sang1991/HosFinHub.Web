@@ -249,18 +249,19 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
               />
             </Tooltip>
             <Tooltip title="ลบออก">
-              <Popconfirm okText="ใช่" cancelText="ไม่"
+              {/* <Popconfirm okText="ใช่" cancelText="ไม่"
                 title="แน่ใจการ[ลบ] ?"
                 placement="bottom"
                 onConfirm={() => moveItemToCharge(record)}
-              >
+              > */}
                 <Button
+                onClick={() => moveItemToCharge(record)}
                   disabled={!viewMode}
                   type="text" size="small" block
                   danger
                   icon={<DeleteOutlined />}
                 />
-              </Popconfirm>
+              {/* </Popconfirm> */}
             </Tooltip>
           </Space>
         );
@@ -309,7 +310,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
         
         />
       </Form>
-      <Space size={"small"}>
+      <Space size={"small"} wrap>
         {
           moveItems.map((t) => { return <Tag color="warning">{t.name}</Tag> })
         }

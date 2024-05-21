@@ -28,28 +28,28 @@ const OpdTransfer = () => {
   }
 
   function getPatientName(record: OpdSearchModel) {
-    if (record.opd_pat !== undefined) {
-      let patient = record.opd_pat;
+    if (record.work_pat !== undefined) {
+      let patient = record.work_pat;
       return `${patient.title}${patient.fname}  ${patient.lname}`;
     }
     return "";
   }
 
   function getRecordPatientID(record: OpdSearchModel) {
-    if (record.opd_pat !== undefined) {
-      let patient = record.opd_pat;
+    if (record.work_pat !== undefined) {
+      let patient = record.work_pat;
       return getPatientID(patient.person_id);
     }
     return "";
   }
 
   function getRecordPatientInscl(record: OpdSearchModel) {
-    if (record.opd_pat !== undefined) {
+    if (record.work_pat !== undefined) {
 
-      if (record.opd_pat.pat_ins === undefined) {
+      if (record.work_pat.pat_ins === undefined) {
         return ""
       } else {
-        const patientInscl = record.opd_pat.pat_ins.find((i) => i.seq === record.seq)
+        const patientInscl = record.work_pat.pat_ins.find((i) => i.seq === record.seq)
         return patientInscl?.inscl;
       }
     } else {
@@ -118,7 +118,7 @@ const OpdTransfer = () => {
       key: 'seq',
       width: 40,
       ellipsis: true,
-      render: (_: any, record: OpdSearchModel) => <div>{record.opd_claim_log.map(i => i.status.description)[0]}</div>
+      render: (_: any, record: OpdSearchModel) => <div>{record.claim_log.map(i => i.status.description)[0]}</div>
     }
   ]
 

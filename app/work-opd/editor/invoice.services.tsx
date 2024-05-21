@@ -2,8 +2,9 @@
 import { allServicePayment } from "@/client.constant/invoice.map.service";
 import { AdditPaymentModelEditorModel } from "@/store/fee-additional/additionalModel";
 import { useAppSelector } from "@/store/hooks";
-import { OpdValidModel, WorkValidModel } from "@/store/work-opd/opdEditorModel";
+import { OpdValidModel } from "@/store/work-opd/opdEditorModel";
 import { getValid } from "@/store/work-opd/workOpdSlice";
+import { WorkValidModel } from "@/store/work/workValidModel";
 import { WarningTwoTone } from "@ant-design/icons";
 import { Modal, Table, Tooltip } from "antd";
 //#region Import
