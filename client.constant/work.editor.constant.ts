@@ -3,10 +3,10 @@ import { OpdDetailModel, instanceOfOpdDetail } from "@/store/work-opd/opdEditorM
 import { VisitDetailModel } from "@/store/work/workEditorModel";
 
 
-export function getVisitDetail(visitDetail: OpdDetailModel | IpdDetailModel): VisitDetailModel {
+export function getVisitDetail(visitDetail: any, isIPD: boolean): VisitDetailModel {
     let result: VisitDetailModel | undefined = undefined;
 
-    if (instanceOfIpdDetail(visitDetail)) {
+    if (isIPD) {
         let visitData = visitDetail as IpdDetailModel;
         const wardNo = (visitDetail as IpdDetailModel).dept;
         result = {
@@ -15,10 +15,9 @@ export function getVisitDetail(visitDetail: OpdDetailModel | IpdDetailModel): Vi
             an: visitData.an,
             clinic: `1${wardNo}00`,
             isIPD: true,
-            visitDate: visitData.dateadm,
+            visitDate: visitData.datedsc,
         };
-    }
-    if (instanceOfOpdDetail(visitDetail)) {
+    } else {
         let visitData = visitDetail as OpdDetailModel;
         result = {
             hn: visitData.hn,
@@ -29,8 +28,8 @@ export function getVisitDetail(visitDetail: OpdDetailModel | IpdDetailModel): Vi
             visitDate: visitData.dateopd,
         };
     }
- 
-    if(result == undefined) result = {
+
+    if (result == undefined) result = {
         hn: "",
         seq: "",
         an: "",

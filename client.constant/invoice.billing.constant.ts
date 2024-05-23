@@ -1,5 +1,6 @@
 
 import { v4 as uuidv4 } from "uuid";
+import moment from "moment";
 import type { InvoiceItemModel, InvoiceItemEditorModel, } from "@/store/financial/invoiceItemModel";
 import { OpdValidModel } from "@/store/work-opd/opdEditorModel";
 import { InvoiceModel } from "@/store/financial/invoiceModel";
@@ -7,6 +8,7 @@ import { PatientDetailModel } from "@/store/patient/patientModel";
 import { ChargeModel } from "@/store/financial/chargeModel";
 import { IpdValidModel } from "@/store/work-ipd/ipdEditorModel";
 import { VisitDetailModel } from "@/store/work/workEditorModel";
+import { dateInterfaceFormat } from "@/client.constant/format.constant";
 const defaultStrEmpty: string = "-";
 
 //#region File and Code
@@ -302,7 +304,12 @@ export function convertEditorToCha(chaEditors: InvoiceItemEditorModel[], visitDe
 
     let dataSuffix1: InvoiceItemModel = getNewInvoiceItemData(visitDetail, patData);
     Object.keys(item).forEach((prop1) => {
-      if (!excludeProps.includes(prop1)) dataSuffix1 = { ...dataSuffix1, [prop1]: item[prop1] };
+      if (excludeProps.includes(prop1)) return;
+
+      let prop1Value = item[prop1];
+      if (prop1 == 'date') prop1Value = moment(item[prop1]).format(dateInterfaceFormat);
+
+      dataSuffix1 = { ...dataSuffix1, [prop1]: prop1Value };
     });
     results.push({
       ...dataSuffix1,
@@ -314,7 +321,12 @@ export function convertEditorToCha(chaEditors: InvoiceItemEditorModel[], visitDe
     if (overAmount > 0) {
       let dataSuffix2: InvoiceItemModel = getNewInvoiceItemData(visitDetail, patData);
       Object.keys(item).forEach((prop2) => {
-        if (!excludeProps.includes(prop2)) dataSuffix2 = { ...dataSuffix2, [prop2]: item[prop2] };
+        if (excludeProps.includes(prop2)) return;
+
+        let prop2Value = item[prop2];
+        if (prop2 == 'date') prop2Value = moment(item[prop2]).format(dateInterfaceFormat);
+
+        dataSuffix2 = { ...dataSuffix2, [prop2]: prop2Value };
       });
       results.push({
         ...dataSuffix2,

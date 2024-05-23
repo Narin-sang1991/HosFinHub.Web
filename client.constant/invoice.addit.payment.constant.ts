@@ -1,8 +1,11 @@
+
+import moment from "moment";
 import type { AdditionalPaymentModel, AdditPaymentModelEditorModel } from "@/store/fee-additional/additionalModel";
 import { FeeScheduleSelectorModel } from "@/store/fee-additional/feeScheduleModel";
 import { instanceOfIpdValids, IpdValidModel } from "@/store/work-ipd/ipdEditorModel";
 import { instanceOfOpdValids, OpdValidModel } from "@/store/work-opd/opdEditorModel";
 import { WorkValidModel } from "@/store/work/workValidModel";
+import { dateInterfaceFormat } from "@/client.constant/format.constant";
 
 export const allAdditTypes: { id: string, text: string }[] = [
   { id: "1", text: "HC (OPD)" },
@@ -126,7 +129,12 @@ export function convertEditorToAdp(adtEditors: AdditPaymentModelEditorModel[]): 
       lmp: "",
     };
     Object.keys(item).forEach((prop) => {
-      if (!excludeProps.includes(prop)) data = { ...data, [prop]: item[prop] };
+      if (excludeProps.includes(prop)) return;
+      
+      let propValue = item[prop];
+      if (prop == 'dateopd') propValue = moment(item[prop]).format(dateInterfaceFormat);
+
+      data = { ...data, [prop]: propValue };
     });
     results.push(data);
   });

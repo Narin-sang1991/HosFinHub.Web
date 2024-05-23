@@ -1,10 +1,13 @@
+
 import { v4 as uuidv4 } from "uuid";
+import moment from "moment";
 import type { InvoiceDrugModel, InvoiceDrugEditorModel } from "@/store/financial/invoiceDrugModel";
 import { InvoiceItemEditorModel } from "@/store/financial/invoiceItemModel";
 import { drugExChargePrefix, getChargeText } from "./invoice.billing.constant";
 import { OpdValidModel, instanceOfOpdValids } from "@/store/work-opd/opdEditorModel";
 import { IpdValidModel, instanceOfIpdValids } from "@/store/work-ipd/ipdEditorModel";
 import { WorkValidModel } from "@/store/work/workValidModel";
+import { dateInterfaceFormat } from "@/client.constant/format.constant";
 
 export function genarateDrugEditors(
   drugItems: InvoiceDrugModel[],
@@ -94,7 +97,12 @@ export function convertEditorToDru(druEditors: InvoiceDrugEditorModel[]): Invoic
   druEditors.forEach(item => {
     let data: InvoiceDrugModel;
     Object.keys(item).forEach((prop) => {
-      if (!excludeProps.includes(prop)) data = { ...data, [prop]: item[prop] };
+      if (excludeProps.includes(prop)) return;
+
+      let propValue = item[prop];
+      if (prop == 'date_serv') propValue = moment(item[prop]).format(dateInterfaceFormat);
+
+      data = { ...data, [prop]: propValue };
     });
     results.push(data);
   });
