@@ -94,7 +94,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
 
       let adtItems = await genarateAdditPaymentEditors(originData.adp, valid);
       let invoiceItems = await genarateAllCharges(originData.cha, valid);
-      let tmpVisitDetail = getVisitDetail(ipdDetail);
+      let tmpVisitDetail = getVisitDetail(ipdDetail, true);
       invoiceItems = await recalcAdpCharges({
         visitDetail: tmpVisitDetail,
         patientData: patientDetail,
@@ -177,7 +177,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
     }
 
     const uucEditing = formEditor.getFieldValue("UUC");
-    let tmpVisitDetail = getVisitDetail(editingData.ipdDetail);
+    let tmpVisitDetail = getVisitDetail(editingData.ipdDetail, true);
     const ipdDetail: IpdDetailModel[] = [{ ...editingData.ipdDetail, uuc: uucEditing }];
     const patData: PatientDetailModel[] = [{ ...editingData.patient }];
     const referData: IpdReferModel[] = [{ ...editingData.ipdRefer }];
