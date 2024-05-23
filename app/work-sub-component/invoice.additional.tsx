@@ -26,7 +26,7 @@ type InvoiceAdditionalProps = {
   additionalItems?: AdditPaymentModelEditorModel[],
   adpTypes: string[],
   showFeeDrug: boolean,
-  onChange?: any,
+  onChange?: any
 };
 
 const { Text } = Typography;
@@ -169,6 +169,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ visitDetail, addition
         hasError: false,
         id: newId,
         seq: visitDetail?.seq || "",
+        an: visitDetail?.an || "",
         hn: visitDetail?.hn || "",
         dateopd: visitDetail?.visitDate || new Date,
         type: formData.TypeEditor.id,
@@ -216,6 +217,7 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ visitDetail, addition
         hasError: false,
         id: newId,
         seq: visitDetail?.seq || "",
+        an: visitDetail?.an || "",
         hn: visitDetail?.hn || "",
         dateopd: visitDetail?.visitDate || new Date,
         type: formData.TypeEditor.id,
