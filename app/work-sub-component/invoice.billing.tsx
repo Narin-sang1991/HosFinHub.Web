@@ -107,13 +107,14 @@ const InvoiceBillingTab = function InvoiceBilling({ visitDetail, patientData, in
     const drugEditing = formBillingEditor.getFieldValue("InvoiceDrug");
     // console.log("drugEditing.drugItems=>", drugEditing.drugItems);
     setDruData(drugEditing.drugItems);
-    if (drugEditing.moveInvoiceItems.length > 0) {
-      let moveInvoiceItems = drugEditing.moveInvoiceItems as MoveInvoiceItemModel[];
-      let newPaymentData = await MoveDrugTo(moveInvoiceItems.filter(t => t.sourceFileID === drugFileCode));
-      setAdditPaymentData(newPaymentData);
-    } else {
-      setAdditPaymentData(additPaymentItems || []);
-    }
+    // if (drugEditing.moveInvoiceItems.length > 0) {
+    //   let moveInvoiceItems = drugEditing.moveInvoiceItems as MoveInvoiceItemModel[];
+    //   let newPaymentData = await MoveDrugTo(moveInvoiceItems.filter(t => t.sourceFileID === drugFileCode));
+    //   setAdditPaymentData(newPaymentData);
+    // } else {
+    //   setAdditPaymentData(additPaymentItems || []);
+    // }
+    setAdditPaymentData(additPaymentItems || []);
     setModalDrugOpen(false);
   }
   const MoveDrugTo = async (drugMoveItems: MoveInvoiceItemModel[]) => {
@@ -126,7 +127,7 @@ const InvoiceBillingTab = function InvoiceBilling({ visitDetail, patientData, in
       let drug = drugItems[drugIndex];
       let feeDrug = { id: drug.id, code: '', name: drug.didname, unitPrice: drug.drugprice.toString() };
       const typeText = getAdpDisplay(adpTypeNonGroup)
-
+      console.log('visitDetail=>', visitDetail);
       let newItem: AdditPaymentModelEditorModel = {
         dummyKey: drug.id.split('-')[0],
         isDurty: false,
@@ -331,7 +332,7 @@ const InvoiceBillingTab = function InvoiceBilling({ visitDetail, patientData, in
     const adpEditing = formBillingEditor.getFieldValue("InvoiceAdp");
 
     console.log(adpEditing);
-    
+
   }
   return (
     <>
