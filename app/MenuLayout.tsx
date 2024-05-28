@@ -1,21 +1,25 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-  LeftOutlined,
-  MenuUnfoldOutlined,
-  ReconciliationOutlined,
-  BookOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
-import { Breadcrumb, Col, Input, Layout, Menu, Row, Select, theme } from "antd";
+import React, { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import Image from 'next/image'
+import { LeftOutlined, MenuUnfoldOutlined, } from "@ant-design/icons";
+import { Breadcrumb, Col, Input, Layout, Menu, Row, Select, theme, Space } from "antd";
 import type { MenuProps } from "antd";
+import { MenuModel, menuList } from "@/client.constant/menu.constant";
 import "@/app/globals.css";
+
 const { Header, Content, Sider } = Layout;
+const { Option } = Select;
 
 type MenuItem = Required<MenuProps>["items"][number];
-const { Option } = Select;
+
+type BreadcrumbRouteModel = {
+  id: string,
+  parent?: string,
+  href: string,
+  breadcrumbName: string,
+};
 
 function getItem(
   label: React.ReactNode,
@@ -37,57 +41,98 @@ const MenuLayout = function MenuLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
+  const { token: { colorBgContainer, borderRadiusLG }, } = theme.useToken();
   const [collapsed, setCollapsed] = useState(false);
   const [visitType, setVisitType] = useState('opd');
+  const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbRouteModel[]>([]);
+  const [focusBreadcrumbs, setFocusBreadcrumbs] = useState<BreadcrumbRouteModel[]>([]);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const router = useRouter();
+  const pathname = usePathname();
 
-  const menuItems: MenuProps["items"] = [
-    getItem(<p className="Center" onClick={() => router.push("/")}>{collapsed ? "Task" : "My Task"}</p>, "1"),
+  useEffect(() => {
+    let newMenuItems: MenuProps["items"] = genarateParentMenu();
+    setMenuItems(newMenuItems);
+  }, [])
 
-    { type: "divider" },
+  useEffect(() => {
+    // console.log('pathname=>', pathname);
+    let pathArr = pathname.split('/').filter(t => t != '');
+    refreshBreadcrumb(pathArr);
+  }, [pathname])
 
-    getItem("งานผู้ป่วยนอก", "sub1", <ReconciliationOutlined />, [
-      getItem(
-        <p onClick={() => router.push("/work-opd/search")}>OPD ค้นหารายการ</p>,
-        "2"
-      ),
-      getItem(
-        <p onClick={() => router.push("/work-opd/transfer")}>OPD ส่งข้อมูล</p>,
-        "3"
-      ),
-      getItem(
-        <p onClick={() => router.push("/work-opd/history")}>OPD ประวัติการส่ง</p>,
-        "03"
-      ),
-    ]),
-    getItem("งานผู้ป่วยใน", "sub2", <BookOutlined />, [
-      getItem(
-        <p onClick={() => router.push("/work-ipd/search")}>IPD ค้นหารายการ</p>,
-        "4"
-      ),
-      getItem(
-        <p onClick={() => router.push("/work-ipd/transfer")}>IPD ส่งข้อมูล</p>,
-        "5"
-      ),
-      getItem(
-        <p onClick={() => router.push("/work-ipd/history")}>IPD ประวัติการส่ง</p>,
-        "05"
-      ),
-    ]),
-    getItem("ประมวลผลข้อมูล", "sub3", <SettingOutlined />, [
-      getItem(<p onClick={() => router.push("/process")}>ประมวลผล</p>, "6"),
-    ]),
+  //#region Genarate Menu
+  function genarateParentMenu(): MenuItem[] {
+    let tmpGroupId: number = 0;
+    let results: MenuItem[] = [];
+    let breadcrumbItems: BreadcrumbRouteModel[] = [];
+    menuList.map(item => {
 
-    // { type: 'divider' },
+      if (tmpGroupId != item.groupId) {
+        tmpGroupId = item.groupId ?? 0;
+        results.push({ type: "divider" });
+      }
+      results.push(getItem(
+        <p onClick={() => navComponentBoby(item)} >
+          {item.label}
+        </p >,
+        item.id,
+        <item.icon />,
+        generateMenu(item.children)
+      ));
 
-    // getItem(<p onClick={() => router.push('/master')}>Master Data</p>, 'sub9', <AppstoreAddOutlined />, [
-    //     getItem(<p onClick={() => router.push('/master/company')}>Company </p>, 'm1'),
-    //     getItem(<p onClick={() => router.push('/master/category')}>Category </p>, 'm2'),
-    // ]),
-  ];
+      breadcrumbItems.push({
+        id: item.id,
+        href: item.breadcrumb || "",
+        breadcrumbName: item.label
+      });
+      if (item.children != undefined) {
+        item.children.forEach(child => breadcrumbItems.push({
+          id: child.id,
+          parent: item.breadcrumb || "",
+          href: child.breadcrumb || "",
+          breadcrumbName: child.label
+        }));
+      }
+
+    });
+    setBreadcrumbs(breadcrumbItems);
+    return results;
+  }
+
+  function generateMenu(menuChilds: MenuModel[] | undefined): MenuItem[] | undefined {
+    if (menuChilds == undefined) return;
+    let results: MenuItem[] = menuChilds.map(item => {
+      //To do [Narin.sa] : generate with Breadcrumb
+      return getItem(
+        <p onClick={() => navComponentBoby(item)} >
+          {item.label}
+        </p>,
+        item.id,
+        item.icon ? <item.icon /> : undefined,
+        generateMenu(item.children)
+      )
+    });
+
+    return results;
+  }
+  //#endregio
+
+  function navComponentBoby(item: MenuModel) {
+    if (!item.path) return;
+
+    router.push(item.path);
+  }
+
+  function refreshBreadcrumb(pathArr: string[]) {
+    let temps = breadcrumbs.filter(t =>
+      t.href != undefined && pathArr.includes(t.href.replace('/', ''))
+      && (t.parent == undefined
+        || (t.parent != undefined && pathArr.includes(t.parent.replace('/', '')))
+      )
+    );
+    setFocusBreadcrumbs([...temps]);
+  }
 
   const onSearchSeq = (seq: string) => {
     if (seq == undefined || seq == "") return;
@@ -96,7 +141,7 @@ const MenuLayout = function MenuLayout({
       router.push(`/work-opd/editor?id=${seq}`);
       return;
     }
-    
+
     if (visitType == 'ipd') {
       router.push(`/work-ipd/editor?id=${seq}`);
       return;
@@ -126,7 +171,7 @@ const MenuLayout = function MenuLayout({
         }
         onCollapse={(value) => setCollapsed(value)}
       >
-        <div
+        {/* <div
           style={{
             padding: 15,
             margin: 2,
@@ -138,10 +183,18 @@ const MenuLayout = function MenuLayout({
           }}
         >
           {"Financial Data \n HospitalOS"}
+        </div> */}
+        <div className="Center" style={{ height: collapsed ? 70 : 100 }} >
+          {/* <Image src={'/FinOsHub-TopMenu.png'} style={{ marginTop: -20 }}
+            width={collapsed ? 80 : 160} height={collapsed ? 80 : 150} alt="Logo" /> */}
+          <img src={'/FinOsHub-TopMenu.png'}
+            style={{
+              height: collapsed ? 80 : 160,
+              marginTop: collapsed ? 0 : -25,
+            }}
+            className="cover" alt="fin-os-logo" />
         </div>
-        <Menu
-          theme="light"
-          mode="inline"
+        <Menu theme="light" mode="inline"
           inlineCollapsed={collapsed}
           defaultSelectedKeys={["1"]}
           items={menuItems}
@@ -157,10 +210,14 @@ const MenuLayout = function MenuLayout({
             </Col>
           </Row>
         </Header>
-        <Breadcrumb style={{ margin: "0 0 5px 10px" }} separator=">">
-          <Breadcrumb.Item>OPD</Breadcrumb.Item>
-          <Breadcrumb.Item>Search</Breadcrumb.Item>
-          <Breadcrumb.Item>Edit</Breadcrumb.Item>
+        <Breadcrumb style={{ margin: "5px 10px" }} separator=">" >
+          {
+            focusBreadcrumbs.map(item => {
+              return <Breadcrumb.Item key={item.id} href={item.href}>
+                {item.breadcrumbName}
+              </Breadcrumb.Item>
+            })
+          }
         </Breadcrumb>
         <Content
           style={{

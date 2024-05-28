@@ -114,3 +114,20 @@ a {
   color: #dfa111;
   font-weight: 500;
 }
+
+
+.fill {
+  object-fit: fill;
+}
+
+.contain {
+  object-fit: contain;
+}
+
+.cover {
+  object-fit: cover;
+}
+
+.none {
+  object-fit: none;
+}
