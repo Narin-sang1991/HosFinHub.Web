@@ -2,7 +2,7 @@
 import { v4 as uuidv4 } from "uuid";
 import {
     HomeOutlined, ReconciliationOutlined,
-    ClusterOutlined, QrcodeOutlined,
+    ClusterOutlined, BookOutlined,
 } from "@ant-design/icons";
 
 export interface MenuModel {
@@ -57,7 +57,7 @@ export const menuList: MenuModel[] = [
         id: uuidv4(),
         ordinal: 3,
         groupId: 2,
-        icon: ClusterOutlined,
+        icon: BookOutlined,
         label: "งานผู้ป่วยใน",
         breadcrumb: '/work-ipd',
         children: [{
