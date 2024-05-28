@@ -99,6 +99,7 @@ a {
 
 .Center {
   text-align: center;
+  vertical-align: middle;
 }
 
 .Right {
@@ -110,6 +111,6 @@ a {
 }
 
 .Col-Table-Row-Error {
-  color: #df1111;
+  color: #dfa111;
   font-weight: 500;
 }

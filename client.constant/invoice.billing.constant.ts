@@ -340,12 +340,12 @@ export function convertEditorToCha(chaEditors: InvoiceItemEditorModel[], visitDe
   return results.filter(t => t.amount != 0);
 }
 
-export function convertEditorToCht(chtOriginals: InvoiceModel[], chaEditors: InvoiceItemEditorModel[]): InvoiceModel[] {
+export function convertEditorToCht(chtOriginals: InvoiceModel[], chaEditors: InvoiceItemEditorModel[], isIPD: boolean): InvoiceModel[] {
   let results: InvoiceModel[] = [];
   chtOriginals.forEach((cht) => {
-    let items = [...chaEditors.filter(t => t.seq == cht.seq)];
+    let items = isIPD ? [...chaEditors.filter(t => t.an == cht.an)] : [...chaEditors.filter(t => t.seq == cht.seq)];
     let totalAmount: number = items.length > 0
-      ? items.filter(t => t.seq == cht.seq).map(a => a.totalAmount).reduce(function (a, b) { return Number(a.toString()) + Number(b.toString()); })
+      ? items.map(a => a.totalAmount).reduce(function (a, b) { return Number(a.toString()) + Number(b.toString()); })
       : 0;
     results.push({
       ...cht,

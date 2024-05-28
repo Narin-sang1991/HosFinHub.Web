@@ -43,7 +43,7 @@ const InvoiceBillingTab = function InvoiceBilling({ visitDetail, patientData, in
   const [adpShowFeeDrug, setModalAdpShowFeeDrug] = useState(false);
   const [chargeAdjust, setChargeAdjust] = useState<ChargeModel>(defaultCharge);
 
-
+//#region Internal Effect
   useEffect(() => {
     // formBillingEditor.resetFields(["InvoiceAdp"]);
     recalcAdpCharges({
@@ -81,6 +81,7 @@ const InvoiceBillingTab = function InvoiceBilling({ visitDetail, patientData, in
       adpItems: additPaymentData,
     });
   };
+  //#endregion
 
   //#region Editor
   function takeAction(chargeCode: InvoiceItemModel) {
@@ -328,16 +329,9 @@ const InvoiceBillingTab = function InvoiceBilling({ visitDetail, patientData, in
     },
   ];
   //#endregion
-  const calculetMoney = () => {
-    const adpEditing = formBillingEditor.getFieldValue("InvoiceAdp");
 
-    console.log(adpEditing);
-
-  }
   return (
     <>
-      <Button onClick={calculetMoney}>คำนวนราคา</Button>
-      <br />
       <Table
         rowKey={(record) => record.id}
         columns={columns}
