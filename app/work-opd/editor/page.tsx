@@ -349,14 +349,14 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
 
   return (
     <Skeleton active loading={status === "loading"} >
-      <Affix offsetTop={50}  >
+      {/* <Affix offsetTop={50}  > */}
         <Row justify="space-between" align="middle" gutter={[4, 4]}>
           <Col>
             <Space>
               <Button type="primary" shape="round" ghost style={{ fontSize: '15px' }}
                 onClick={reCalculation}
                 icon={<RetweetOutlined style={{ fontSize: '18px' }} />}
-              >คำนวนราคา</Button>
+              >{"คำนวนราคา"}</Button>
               <Divider type="vertical" style={{ height: 20 }} />
               <Statistic value={originTotalInvoice}
                 title="จำนวนเงินตั้งต้น" precision={2}
@@ -389,7 +389,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
             </Space>
           </Col>
         </Row>
-      </Affix>
+      {/* </Affix> */}
       <Form
         name="workOpdEditor"
         layout="vertical"

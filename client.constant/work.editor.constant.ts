@@ -5,6 +5,8 @@ import { VisitDetailModel } from "@/store/work/workEditorModel";
 
 export function getVisitDetail(visitDetail: any, isIPD: boolean): VisitDetailModel {
     let result: VisitDetailModel | undefined = undefined;
+    console.log();
+
 
     if (isIPD) {
         let visitData = visitDetail as IpdDetailModel;

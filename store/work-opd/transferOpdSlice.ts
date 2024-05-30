@@ -1,6 +1,6 @@
 import { fetchOpdTransfer } from "@/services/transfer.ipd.provicer";
 import { createAppSlice } from "../createAppSlice";
-import { OpdTransferMode } from "./opdTransderModel";
+import { OpdTransferMode } from "./opdTransferModel";
 
 
 export interface transferOpdSlice {

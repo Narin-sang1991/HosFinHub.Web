@@ -1,6 +1,6 @@
 import { IpdTransferMode } from "@/store/work-ipd/ipdTransderModel"
 import { axiosHosProvider } from "./axios.interceptor"
-import { OpdTransferMode } from "@/store/work-opd/opdTransderModel"
+import { OpdTransferMode } from "@/store/work-opd/opdTransferModel"
 
 
 export const fetchIpdTransfer = async (criteria: { startDate: string, endDate: string }) => {

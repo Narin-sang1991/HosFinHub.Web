@@ -9,17 +9,31 @@ import { IpdValidModel, instanceOfIpdValids } from "@/store/work-ipd/ipdEditorMo
 import { WorkValidModel } from "@/store/work/workValidModel";
 import { dateInterfaceFormat } from "@/client.constant/format.constant";
 
-export function genarateDrugEditors(
-  drugItems: InvoiceDrugModel[],
-  validItems: OpdValidModel[] | IpdValidModel[] | undefined
-) {
+export function genarateDrugEditors(drugItems: InvoiceDrugModel[], validItems: OpdValidModel[] | IpdValidModel[] | undefined) {
   let results: InvoiceDrugEditorModel[] = [];
   let itemDruError: WorkValidModel[] = [];
-  if (instanceOfOpdValids(validItems) && validItems.length > 0) itemDruError = validItems[0].dru;
-  if (instanceOfIpdValids(validItems) && validItems.length > 0) itemDruError = validItems[0].dru;
+
+  // if (instanceOfOpdValids(validItems) && validItems.length > 0) itemDruError = validItems[0].dru
+  // if (instanceOfIpdValids(validItems) && validItems.length > 0) itemDruError = validItems[0].dru
+
+
+  if (validItems !== undefined) {
+    const druError = validItems.filter(item => item.dru)[0]
+    console.log(druError);
+    if (druError.dru !== undefined) {
+
+      if (druError.dru.length > 0) {
+        itemDruError = druError.dru
+      }
+  
+    }
+
+  }
+
+  console.log(itemDruError);
 
   drugItems.forEach((drugItem, i) => {
-    const assignItemError = (itemDruError || []).filter((i) => i.id === drugItem.id);
+    const assignItemError = (itemDruError).filter((i) => i.id === drugItem.id);
     let dummyKey: number = i + 1;
     let data: InvoiceDrugEditorModel = {
       ...drugItem,
@@ -94,7 +108,7 @@ export async function recalcDrugCharges({
 export function convertEditorToDru(druEditors: InvoiceDrugEditorModel[]): InvoiceDrugModel[] {
   let results: InvoiceDrugModel[] = [];
   let excludeProps = ['dummyKey', 'isDurty', 'hasError', 'validError'];
-  druEditors.forEach(item => {
+  druEditors.forEach((item) => {
     let data: InvoiceDrugModel;
     Object.keys(item).forEach((prop) => {
       if (excludeProps.includes(prop)) return;

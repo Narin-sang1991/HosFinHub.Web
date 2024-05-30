@@ -58,6 +58,7 @@ export const suffixColumns: TableColumnsType<any> = [
 ];
 
 function getError(errorItems: any[]) {
+   
     if (errorItems.length == 0) return "";
 
     let distinctValues = errorItems.map(t => { return t.code_error }).filter(uniqueFilter);

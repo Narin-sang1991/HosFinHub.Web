@@ -185,7 +185,11 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
       width: 20,
       ellipsis: true,
       render: (_: any, record: InvoiceDrugEditorModel) => {
+        console.log(record);
+        
         return record.validError?.map((i) => {
+          console.log(i);
+          
           return (
             <Tooltip title={`${i.code_error}: ${i.code_error_descriptions}`} >
               <WarningTwoTone twoToneColor="#ffab00" style={{ fontSize: '20px' }} />

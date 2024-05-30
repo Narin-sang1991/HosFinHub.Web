@@ -1,4 +1,4 @@
-import { WorkValidModel } from "../work-opd/opdEditorModel";
+import { WorkValidModel } from "../work/workValidModel";
 
 export interface InvoiceDrugModel {
   id: string; // unique key of data

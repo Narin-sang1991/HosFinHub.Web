@@ -40,10 +40,11 @@ export const workOpdSlice = createAppSlice({
         pending: (state) => {
           state.searchStatus = "loading";
         },
-        fulfilled: (state, action: PayloadAction<OpdSearchReponse>) => {
+        fulfilled: (state, action) => {
+          const payload = action.payload as unknown as OpdSearchReponse
           state.searchStatus = "idle";
-          state.searchResult = action.payload
-          state.tableResult = action.payload.data
+          state.searchResult = payload
+          state.tableResult = payload.data
         },
         rejected: (state) => {
           state.searchStatus = "failed";
