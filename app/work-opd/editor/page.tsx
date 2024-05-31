@@ -233,11 +233,15 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
 
     if (firstLoad.current === true) {
       firstLoad.current = false;
+
+ 
       let originTotalInvoice = originData?.cha.map(a => a.amount).reduce(function (a, b) {
         return Number(a.toString()) + Number(b.toString());
-      });
+      },0);
+      
       setOriginTotalInvoice(originTotalInvoice || 0);
       setTotalInvoice(undefined);
+
 
     } else {
       let invoiceBilling = formEditor.getFieldValue("InvoiceBilling");
@@ -350,45 +354,45 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
   return (
     <Skeleton active loading={status === "loading"} >
       {/* <Affix offsetTop={50}  > */}
-        <Row justify="space-between" align="middle" gutter={[4, 4]}>
-          <Col>
-            <Space>
-              <Button type="primary" shape="round" ghost style={{ fontSize: '15px' }}
-                onClick={reCalculation}
-                icon={<RetweetOutlined style={{ fontSize: '18px' }} />}
-              >{"คำนวนราคา"}</Button>
-              <Divider type="vertical" style={{ height: 20 }} />
-              <Statistic value={originTotalInvoice}
-                title="จำนวนเงินตั้งต้น" precision={2}
-                valueStyle={{ color: 'gray' }}
-                prefix={<HistoryOutlined />}
-                suffix="บาท" />
-              <Divider type="vertical" style={{ height: 20 }} />
-              <Statistic value={totalInvoice ? totalInvoice.totalAmount : '-'}
-                title="รวมเงินขอเบิก" precision={2}
-                valueStyle={{ color: '#52c41a' }}
-                prefix={totalInvoice ? <CalculatorOutlined /> : ''}
-                suffix={totalInvoice ? "บาท" : ''} />
-              <Divider type="vertical" style={{ height: 20 }} />
-              <Statistic value={totalInvoice ? totalInvoice.overAmount : '-'}
-                title="รวมเบิกไม่ได้" precision={2}
-                valueStyle={{ color: '#dfa111' }}
-                prefix={totalInvoice ? <WarningOutlined /> : ''}
-                suffix={totalInvoice ? "บาท" : ''} />
-            </Space>
-          </Col>
-          <Col>
-            <Space>
-              <Button type="text" onClick={onSave} loading={saveState === "loading"}
-                icon={<SaveTwoTone twoToneColor={'#52c41a'} style={{ fontSize: '30px' }} />}
-              />
-              <Divider type="vertical" style={{ height: 20 }} />
-              <Button type="text" onClick={onClose}
-                icon={<CloseCircleTwoTone twoToneColor={'#f5222d'} style={{ fontSize: '30px' }} />}
-              />
-            </Space>
-          </Col>
-        </Row>
+      <Row justify="space-between" align="middle" gutter={[4, 4]}>
+        <Col>
+          <Space>
+            <Button type="primary" shape="round" ghost style={{ fontSize: '15px' }}
+              onClick={reCalculation}
+              icon={<RetweetOutlined style={{ fontSize: '18px' }} />}
+            >{"คำนวนราคา"}</Button>
+            <Divider type="vertical" style={{ height: 20 }} />
+            <Statistic value={originTotalInvoice}
+              title="จำนวนเงินตั้งต้น" precision={2}
+              valueStyle={{ color: 'gray' }}
+              prefix={<HistoryOutlined />}
+              suffix="บาท" />
+            <Divider type="vertical" style={{ height: 20 }} />
+            <Statistic value={totalInvoice ? totalInvoice.totalAmount : '-'}
+              title="รวมเงินขอเบิก" precision={2}
+              valueStyle={{ color: '#52c41a' }}
+              prefix={totalInvoice ? <CalculatorOutlined /> : ''}
+              suffix={totalInvoice ? "บาท" : ''} />
+            <Divider type="vertical" style={{ height: 20 }} />
+            <Statistic value={totalInvoice ? totalInvoice.overAmount : '-'}
+              title="รวมเบิกไม่ได้" precision={2}
+              valueStyle={{ color: '#dfa111' }}
+              prefix={totalInvoice ? <WarningOutlined /> : ''}
+              suffix={totalInvoice ? "บาท" : ''} />
+          </Space>
+        </Col>
+        <Col>
+          <Space>
+            <Button type="text" onClick={onSave} loading={saveState === "loading"}
+              icon={<SaveTwoTone twoToneColor={'#52c41a'} style={{ fontSize: '30px' }} />}
+            />
+            <Divider type="vertical" style={{ height: 20 }} />
+            <Button type="text" onClick={onClose}
+              icon={<CloseCircleTwoTone twoToneColor={'#f5222d'} style={{ fontSize: '30px' }} />}
+            />
+          </Space>
+        </Col>
+      </Row>
       {/* </Affix> */}
       <Form
         name="workOpdEditor"
