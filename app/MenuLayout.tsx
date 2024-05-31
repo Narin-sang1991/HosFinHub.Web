@@ -184,13 +184,11 @@ const MenuLayout = function MenuLayout({
         >
           {"Financial Data \n HospitalOS"}
         </div> */}
-        <div className="Center" style={{ height: collapsed ? 70 : 100 }} >
-          {/* <Image src={'/FinOsHub-TopMenu.png'} style={{ marginTop: -20 }}
-            width={collapsed ? 80 : 160} height={collapsed ? 80 : 150} alt="Logo" /> */}
+        <div className="Center" style={{ height: collapsed ? 80 : 120 }} >
           <img src={'/FinOsHub-TopMenu.png'}
             style={{
-              height: collapsed ? 80 : 160,
-              marginTop: collapsed ? 0 : -25,
+              height: collapsed ? 80 : 120,
+              marginTop: 5,
             }}
             className="cover" alt="fin-os-logo" />
         </div>
