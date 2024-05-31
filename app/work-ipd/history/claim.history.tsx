@@ -4,8 +4,8 @@ import { IpdClamHistory, IpdClamService } from "@/store/history/claimModel";
 import Table, { ColumnsType } from "antd/es/table";
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { getIpdClaim, selectClaimService, } from "@/store/history/historyIpdSlice";
-import { Card, Col, Row } from "antd";
+import { getIpdClaim, selectClaimService, selectStatus } from "@/store/history/historyIpdSlice";
+import { Badge, Card, Col, Row, Tag, Tooltip } from "antd";
 
 interface ClaimHistoryProps {
   ipdHistory: IpdClamHistory[]
@@ -18,12 +18,13 @@ interface ClaimServiceType {
   inscl: string,
   moneyClaim: string
   moneyNotClaim: string
+  fdh: any[]
 }
 
 const ClaimHistory = (props: ClaimHistoryProps) => {
   const dispatch = useAppDispatch()
   const claimService = useAppSelector(selectClaimService)
-
+  const claimStatus = useAppSelector(selectStatus)
   const [dataClaimService, setDataClaimService] = useState<ClaimServiceType[]>([])
 
   useEffect(() => {
@@ -40,16 +41,16 @@ const ClaimHistory = (props: ClaimHistoryProps) => {
         const setObjClaim: ClaimServiceType = {
           hn: item.hn,
           vn: item.an,
-          patien: item.pat[0].namepat,
-          inscl: item.ins[0].inscl,
+          patien: item.pat[0]?.namepat,
+          inscl: item.ins[0]?.inscl,
           moneyClaim: claimTotal,
-          moneyNotClaim: paid
+          moneyNotClaim: paid,
+          fdh: item.fdh
         }
 
         ListObjClaim.push(setObjClaim)
       })
     }
-
     setDataClaimService(ListObjClaim)
   }
 
@@ -114,6 +115,38 @@ const ClaimHistory = (props: ClaimHistoryProps) => {
       title: 'เบิกไม่ได้',
       key: 'moneyNotClaim',
       dataIndex: 'moneyNotClaim',
+    }, {
+      title: 'สถานะ',
+      key: 'fdh',
+      dataIndex: 'fdh',
+      render: (row) => {
+        const list = row.slice(-1).pop()
+        let color = ''
+        if (list?.process_status === "0") {
+          color = 'processing'
+        } else if (list?.process_status === "1") {
+          color = 'processing'
+        } else if (list?.process_status === "2") {
+          color = 'warning'
+        } else if (list?.process_status === "3") {
+          color = 'lime'
+        } else if (list?.process_status === "4") {
+          color = 'success'
+        } else if (list?.process_status === "5") {
+          color = 'lime'
+        } else if (list?.process_status === "6") {
+          color = 'success'
+        }
+        else {
+          color = 'error'
+        }
+        return <Tooltip title={list.reject_list !== undefined ? list.reject_list.slice(-1).pop().description : 'success'}>
+          <Badge count={row.length}>
+            <Tag color={color}>{list === undefined ? 'ไม่พบข้อมูล' : list.status_message_th}</Tag>
+          </Badge>
+        </Tooltip>
+
+      }
     }
   ]
 
@@ -128,15 +161,18 @@ const ClaimHistory = (props: ClaimHistoryProps) => {
               dataSource={props.ipdHistory}
               rowKey={'opd_claim_number'}
               rowHoverable={true}
+              loading={claimStatus === 'loading' ? true : false}
             />
           </Card>
         </Col>
-        <Col sm={{ span: 24 }} xl={{ span: 14 }}>
+        <Col sm={{ span: 24 }} xl={{ span: 16 }}>
           <Card size="small">
             <Table
               size='small'
               columns={columnClaimOpdList}
               dataSource={dataClaimService}
+              pagination={false}
+              loading={claimStatus === 'loading' ? true : false}
             />
           </Card>
         </Col>

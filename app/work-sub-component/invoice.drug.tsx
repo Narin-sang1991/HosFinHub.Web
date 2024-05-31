@@ -130,7 +130,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
       dataIndex: "dummyKey",
       key: "dummyKey",
       width: 15,
-    
+
       className: "Center",
     },
     {
@@ -185,11 +185,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
       width: 20,
       ellipsis: true,
       render: (_: any, record: InvoiceDrugEditorModel) => {
-        console.log(record);
-        
         return record.validError?.map((i) => {
-          console.log(i);
-          
           return (
             <Tooltip title={`${i.code_error}: ${i.code_error_descriptions}`} >
               <WarningTwoTone twoToneColor="#ffab00" style={{ fontSize: '20px' }} />
@@ -217,7 +213,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
         </p>
       ),
       dataIndex: "operation",
-     // className: "Center",
+      // className: "Center",
       fixed: 'right',
       width: 30,
       render: (_: any, record: InvoiceDrugEditorModel) => {
@@ -258,13 +254,13 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
                 placement="bottom"
                 onConfirm={() => moveItemToCharge(record)}
               > */}
-                <Button
+              <Button
                 onClick={() => moveItemToCharge(record)}
-                  disabled={!viewMode}
-                  type="text" size="small" block
-                  danger
-                  icon={<DeleteOutlined />}
-                />
+                disabled={!viewMode}
+                type="text" size="small" block
+                danger
+                icon={<DeleteOutlined />}
+              />
               {/* </Popconfirm> */}
             </Tooltip>
           </Space>
@@ -311,7 +307,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
           className={"MasterBackground"}
           pagination={{ pageSize: 10, simple: true }}
           style={{ margin: "10px 0", height: "500px", width: "99%" }}
-        
+
         />
       </Form>
       <Space size={"small"} wrap>

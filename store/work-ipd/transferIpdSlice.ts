@@ -23,11 +23,9 @@ export const transferIpdSlice = createAppSlice({
                 state.searchStatus = 'loading'
             },
             fulfilled: (state, action) => {
-                const paload = action.payload as unknown as IpdTransferMode[]
-                console.log(paload);
-
+                const payload = action.payload as unknown as IpdTransferMode[]
                 state.searchStatus = 'idle'
-                state.searchResultTransferIpd = paload
+                state.searchResultTransferIpd = payload
             },
             rejected: (state) => {
                 state.searchStatus = 'failed'

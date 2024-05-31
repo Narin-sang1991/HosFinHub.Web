@@ -27,7 +27,7 @@ export const historyIpdSlice = createAppSlice({
             },
             fulfilled: (state, action) => {
                 state.searchStatus = 'idle'
-                state.searchResult = action.payload as unknown as IpdClamHistory[]
+                state.searchResult = (action.payload as unknown as IpdClamHistory[]).sort((a, b) => a.sent_date < b.sent_date ? 1 : (b.sent_date < a.sent_date ? -1 : 0))
             },
             rejected: (state) => {
                 state.searchStatus = 'failed'
@@ -37,8 +37,15 @@ export const historyIpdSlice = createAppSlice({
             const response = await fetchHistoryServiceIpd(body);
             return response;
         }, {
+            pending: (state) => {
+                state.searchStatus = 'loading'
+            },
             fulfilled: (state, action) => {
+                state.searchStatus = 'idle'
                 state.ipdClamService = action.payload as unknown as IpdClamService[]
+            },
+            rejected: (state) => {
+                state.searchStatus = 'failed'
             }
         })
     }),
