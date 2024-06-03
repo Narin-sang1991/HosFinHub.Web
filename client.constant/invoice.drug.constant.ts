@@ -1,5 +1,5 @@
 
-import { v4 as uuidv4 } from "uuid";
+import { v1 as newUid } from "uuid";
 import moment from "moment";
 import type { InvoiceDrugModel, InvoiceDrugEditorModel } from "@/store/financial/invoiceDrugModel";
 import { InvoiceItemEditorModel } from "@/store/financial/invoiceItemModel";
@@ -75,7 +75,7 @@ export async function recalcDrugCharges({
     let chrgitem = drugExChargePrefix + '1';
     let newInvoiceItem: InvoiceItemEditorModel = {
       ...invoiceFirst,
-      id: uuidv4(),
+      id: newUid(),
       seq: seqKey,
       dummyKey: (invoiceEditors.length || 0) + 1,
       isDurty: true,

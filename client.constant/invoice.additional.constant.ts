@@ -1,5 +1,5 @@
 
-import { v4 as uuidv4 } from "uuid";
+import { v1 as newUid } from "uuid";
 import type { InvoiceItemEditorModel, } from "@/store/financial/invoiceItemModel";
 import { AdditPaymentModelEditorModel, AdditionalPaymentModel } from "@/store/fee-additional/additionalModel";
 import { additionalPaymentChargePrefix, allChargeItems, drugExChargePrefix, drugInChargePrefix, getChargeText } from "./invoice.billing.constant";
@@ -45,7 +45,7 @@ export async function recalcAdpCharges({
   let invoiceItemIndex = invoiceEditors.findIndex(t => t.chrgitem.startsWith(chargeItem.prefix));
   if (invoiceItemIndex <= -1) {
     let chrgitem = additionalPaymentChargePrefix + '1';
-    const newId = uuidv4();
+    const newId = newUid();
     let newInvoiceItem: InvoiceItemEditorModel = {
       id: newId,
       hn: visitDetail?.hn || "",

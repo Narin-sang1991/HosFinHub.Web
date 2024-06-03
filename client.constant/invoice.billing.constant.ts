@@ -1,5 +1,5 @@
 
-import { v4 as uuidv4 } from "uuid";
+import { v1 as newUid } from "uuid";
 import moment from "moment";
 import type { InvoiceItemModel, InvoiceItemEditorModel, } from "@/store/financial/invoiceItemModel";
 import { OpdValidModel } from "@/store/work-opd/opdEditorModel";
@@ -146,7 +146,7 @@ export async function genarateAllCharges(
     } else {
       let chrgitem: string = chargePrefix + "1";
       let data: InvoiceItemEditorModel = {
-        id: uuidv4(),
+        id: newUid(),
         seq: '0',
         dummyKey,
         isDurty: false,
@@ -313,7 +313,7 @@ export function convertEditorToCha(chaEditors: InvoiceItemEditorModel[], visitDe
     });
     results.push({
       ...dataSuffix1,
-      id: uuidv4(),
+      id: newUid(),
       chrgitem: item.chrgitem[0] + '1',
       amount: (totalAmount < 0 ? 0 : totalAmount),
     });
@@ -330,7 +330,7 @@ export function convertEditorToCha(chaEditors: InvoiceItemEditorModel[], visitDe
       });
       results.push({
         ...dataSuffix2,
-        id: uuidv4(),
+        id: newUid(),
         chrgitem: item.chrgitem[0] + '2',
         amount: overAmount,
       });
