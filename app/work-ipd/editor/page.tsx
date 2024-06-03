@@ -8,8 +8,8 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   Card, Form, Row, Col,
   Tabs, Space, Avatar, Typography,
-  Collapse, Skeleton, Affix, Button,
-  Divider, Statistic
+  Collapse, Skeleton, Button,
+  Divider, Statistic, Popconfirm
 } from "antd";
 import {
   ManOutlined, WomanOutlined, MehOutlined,
@@ -17,11 +17,11 @@ import {
   MedicineBoxOutlined, DollarOutlined,
   SaveTwoTone, CloseCircleTwoTone,
   RetweetOutlined, HistoryOutlined, CalculatorOutlined,
-  WarningOutlined
+  WarningOutlined, CloudSyncOutlined
 } from "@ant-design/icons";
 import {
   getAsync, getResult, getStatus, getValid,
-  saveAsync, saveStatus,
+  saveAsync, saveStatus, reProcessAsync, reProcessStatus
 } from "@/store/work-ipd/workIpdSlice";
 import type {
   IpdDataModel,
@@ -74,6 +74,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
   const status = useAppSelector(getStatus);
   const saveState = useAppSelector(saveStatus);
   const originData = useAppSelector(getResult);
+  const reProcessState = useAppSelector(reProcessStatus);
   const valid: IpdValidModel[] | undefined = useAppSelector(getValid);
   const [editingData, setEditData] = useState<IpdEditorModel>();
   const [editKey, setEditKey] = useState<any>(undefined);
@@ -160,6 +161,14 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
   function onClose() {
     router.push(`/work-ipd/search`)
   }
+
+  async function onReProcess() {
+    if (editingData == undefined) return;
+    (async () => {
+      await dispatch(reProcessAsync({ seq: editKey }));
+      await dispatch(getAsync({ seq: editKey }));
+    })();
+  }
   //#endregion
 
   //#region  Internal function/method
@@ -197,7 +206,6 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
         ipdRefer: ipdRefer,
         patient: patientDetail,
         procedureItems: originData.iop
-
       };
       // console.log("transformData=>", transformData);
       setEditData(transformData);
@@ -236,10 +244,9 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
       firstLoad.current = false;
       let originTotalInvoice = originData?.cha.map(a => a.amount).reduce(function (a, b) {
         return Number(a.toString()) + Number(b.toString());
-      });
+      }, 0);
       setOriginTotalInvoice(originTotalInvoice || 0);
       setTotalInvoice(undefined);
-
     } else {
       let invoiceBilling = formEditor.getFieldValue("InvoiceBilling");
       if (invoiceBilling == undefined) return;
@@ -350,7 +357,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
 
   return (
     <Skeleton active loading={status === "loading"} >
-      {/* <Affix offsetTop={50}> */}
+
       <Row justify="space-between" align="middle" gutter={[4, 4]}>
         <Col>
           <Space>
@@ -380,6 +387,16 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
         </Col>
         <Col>
           <Space>
+            <Popconfirm okText="ใช่" cancelText="ไม่"
+              title="แน่ใจการ[Re-process] ?"
+              placement="bottom"
+              onConfirm={onReProcess}
+            >
+              <Button type="text" loading={reProcessState === "loading"}
+                icon={<CloudSyncOutlined style={{ fontSize: '30px', color: '#dfa111' }} />}
+              />
+            </Popconfirm>
+            <Divider type="vertical" style={{ height: 20 }} />
             <Button type="text"
               onClick={onSave}
               loading={saveState === "loading"}
@@ -395,7 +412,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
           </Space>
         </Col>
       </Row>
-      {/* </Affix> */}
+
       <Form
         name="workIpdEditor"
         layout="vertical"
@@ -581,6 +598,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
         />
         <Tabs items={tabItems} />
       </Form>
+
     </Skeleton>
   );
 };

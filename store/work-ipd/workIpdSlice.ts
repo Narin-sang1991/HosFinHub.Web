@@ -1,6 +1,6 @@
 import { createAppSlice } from "@/store/createAppSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
-import { fetchSearch, fetchGet, fetchSave } from "@/services/work.ipd.provider";
+import { fetchSearch, fetchGet, fetchSave, fetchReProcessGetHosOS } from "@/services/work.ipd.provider";
 import type { IpdSearchReponse } from "@/store/work-ipd/ipdSearchModel";
 import type { IpdDataModel, IpdResponse, IpdValidModel, } from "@/store/work-ipd/ipdEditorModel";
 
@@ -12,6 +12,7 @@ export interface WorkIpdSliceState {
   getValid?: Array<IpdValidModel>;
   getValidStatus: "idle" | "loading" | "failed";
   saveStatus: "idle" | "loading" | "failed";
+  reProcessStatus: "idle" | "loading" | "failed";
 }
 
 const initialState: WorkIpdSliceState = {
@@ -22,6 +23,7 @@ const initialState: WorkIpdSliceState = {
   getValid: undefined,
   getValidStatus: "idle",
   saveStatus: "idle",
+  reProcessStatus: "idle",
 };
 
 export const workIpdSlice = createAppSlice({
@@ -41,7 +43,7 @@ export const workIpdSlice = createAppSlice({
         fulfilled: (state, action: PayloadAction<IpdSearchReponse>) => {
           state.searchStatus = "idle";
           state.searchResult = action.payload;
-          // state.tableResult = action.payload;
+          // state.tableResult = action.payload.data;
         },
         rejected: (state) => {
           state.searchStatus = "failed";
@@ -87,6 +89,24 @@ export const workIpdSlice = createAppSlice({
       }
     ),
 
+    reProcessAsync: create.asyncThunk(
+      async (body: any) => {
+        const response = await fetchReProcessGetHosOS(body);
+        return response;
+      },
+      {
+        pending: (state) => {
+          state.reProcessStatus = "loading";
+        },
+        fulfilled: (state, action) => {
+          state.reProcessStatus = "idle";
+        },
+        rejected: (state) => {
+          state.reProcessStatus = "failed";
+        },
+      }
+    ),
+
   }),
 
   selectors: {
@@ -96,11 +116,13 @@ export const workIpdSlice = createAppSlice({
     getStatus: (workIpd) => workIpd.getStatus,
     getValid: (workIpd) => workIpd.getValid,
     saveStatus: (workIpd) => workIpd.saveStatus,
+    reProcessStatus: (workIpd) => workIpd.reProcessStatus,
   },
 });
 
-export const { searchAsync, getAsync, saveAsync
-} = workIpdSlice.actions;
+export const { searchAsync, getAsync, saveAsync,
+  reProcessAsync } = workIpdSlice.actions;
 
-export const { selectResult, selectStatus, getResult, getStatus, getValid, saveStatus
-} = workIpdSlice.selectors;
+export const { selectResult, selectStatus, getResult,
+  getStatus, getValid, saveStatus,
+  reProcessStatus } = workIpdSlice.selectors;

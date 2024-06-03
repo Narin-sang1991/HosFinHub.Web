@@ -8,8 +8,8 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   Card, Form, Row, Col,
   Tabs, Space, Avatar, Typography,
-  Collapse, Skeleton, Affix, Button,
-  Divider, Statistic
+  Collapse, Skeleton, Button,
+  Divider, Statistic, Popconfirm
 } from "antd";
 import {
   ManOutlined, WomanOutlined, MehOutlined,
@@ -17,11 +17,11 @@ import {
   MedicineBoxOutlined, DollarOutlined,
   SaveTwoTone, CloseCircleTwoTone,
   RetweetOutlined, HistoryOutlined, CalculatorOutlined,
-  WarningOutlined
+  WarningOutlined, CloudSyncOutlined
 } from "@ant-design/icons";
 import {
   getAsync, getResult, getStatus, getValid,
-  saveAsync, saveStatus,
+  saveAsync, saveStatus, reProcessAsync, reProcessStatus
 } from "@/store/work-opd/workOpdSlice";
 import type {
   OpdDataModel,
@@ -74,6 +74,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
   const status = useAppSelector(getStatus);
   const saveState = useAppSelector(saveStatus);
   const originData = useAppSelector(getResult);
+  const reProcessState = useAppSelector(reProcessStatus);
   const valid: OpdValidModel[] | undefined = useAppSelector(getValid);
   const [editingData, setEditData] = useState<OpdEditorModel>();
   const [editKey, setEditKey] = useState<any>(undefined);
@@ -160,11 +161,20 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
   function onClose() {
     router.push(`/work-opd/search`)
   }
+
+  async function onReProcess() {
+    if (editingData == undefined) return;
+    (async () => {
+      await dispatch(reProcessAsync({ seq: editKey }));
+      await dispatch(getAsync({ seq: editKey }));
+    })();
+  }
   //#endregion
 
   //#region  Internal function/method
   const loadOriginalSource = () => {
     if (originData === undefined) return;
+
     (async () => {
       let opdDetail = { ...originData.opd[0] };
       let patientDetail = { ...originData.pat[0] };
@@ -196,7 +206,6 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         opdRefer: opdRefer,
         patient: patientDetail,
         procedureItems: originData.oop
-
       };
       // console.log("transformData=>", transformData);
       setEditData(transformData);
@@ -233,16 +242,11 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
 
     if (firstLoad.current === true) {
       firstLoad.current = false;
-
- 
       let originTotalInvoice = originData?.cha.map(a => a.amount).reduce(function (a, b) {
         return Number(a.toString()) + Number(b.toString());
-      },0);
-      
+      }, 0);
       setOriginTotalInvoice(originTotalInvoice || 0);
       setTotalInvoice(undefined);
-
-
     } else {
       let invoiceBilling = formEditor.getFieldValue("InvoiceBilling");
       if (invoiceBilling == undefined) return;
@@ -353,7 +357,6 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
 
   return (
     <Skeleton active loading={status === "loading"} >
-      {/* <Affix offsetTop={50}  > */}
       <Row justify="space-between" align="middle" gutter={[4, 4]}>
         <Col>
           <Space>
@@ -383,6 +386,16 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         </Col>
         <Col>
           <Space>
+            <Popconfirm okText="ใช่" cancelText="ไม่"
+              title="แน่ใจการ[Re-process] ?"
+              placement="bottom"
+              onConfirm={onReProcess}
+            >
+              <Button type="text" loading={reProcessState === "loading"}
+                icon={<CloudSyncOutlined style={{ fontSize: '30px', color: '#dfa111' }} />}
+              />
+            </Popconfirm>
+            <Divider type="vertical" style={{ height: 20 }} />
             <Button type="text" onClick={onSave} loading={saveState === "loading"}
               icon={<SaveTwoTone twoToneColor={'#52c41a'} style={{ fontSize: '30px' }} />}
             />
@@ -393,7 +406,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
           </Space>
         </Col>
       </Row>
-      {/* </Affix> */}
+
       <Form
         name="workOpdEditor"
         layout="vertical"
@@ -559,6 +572,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         />
         <Tabs items={tabItems} />
       </Form>
+
     </Skeleton>
   );
 };

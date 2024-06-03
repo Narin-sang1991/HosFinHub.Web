@@ -31,3 +31,12 @@ export const fetchSave = async (data: any) => {
         .catch((e) => console.log("API-Error: ", e))
     return apiResult;
 };
+
+export const fetchReProcessGetHosOS = async (data: any) => {
+    const apiResult = await axiosHosProvider.post('/re-procress/opd-re-process', data)
+        .then((response) => {
+            console.log("API-Response: ", response);
+        })
+        .catch((e) => console.log("API-Error: ", e))
+    return apiResult;
+};
