@@ -165,8 +165,8 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
   async function onReProcess() {
     if (editingData == undefined) return;
     (async () => {
-      await dispatch(reProcessAsync({ seq: editKey }));
-      await dispatch(getAsync({ seq: editKey }));
+      await dispatch(reProcessAsync({ an: editKey }));
+      await dispatch(getAsync({ an: editKey }));
     })();
   }
   //#endregion
@@ -402,9 +402,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
               loading={saveState === "loading"}
               style={{ display: 'inline-flex', alignItems: 'center' }}
               icon={<SaveTwoTone twoToneColor={'#52c41a'} style={{ fontSize: '30px' }} />}
-            >{"บันทึก"}</Button>
-            <Divider type="vertical" style={{ height: 20 }} />
-            <Button>{"ประมวลผลใหม่"}</Button>
+            />
             <Divider type="vertical" style={{ height: 20 }} />
             <Button type="text" onClick={onClose}
               icon={<CloseCircleTwoTone twoToneColor={'#f5222d'} style={{ fontSize: '30px' }} />}
