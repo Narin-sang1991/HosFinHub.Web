@@ -58,6 +58,7 @@ import InvoiceBillingTab from "@/app/work-sub-component/invoice.billing";
 import { VisitDetailModel } from "@/store/work/workEditorModel";
 import { OpdReferModel } from "@/store/refer/referModel";
 import { InvoiceItemEditorModel } from "@/store/financial/invoiceItemModel";
+import { AccidentEmergencyModel } from "@/store/refer/accidentEmergencyModel";
 import withTheme from "../../../theme";
 import "@/app/globals.css";
 //#endregion
@@ -138,9 +139,13 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
     const opdDetail: OpdDetailModel[] = [{ ...editingData.opdDetail, uuc: uucEditing }];
     const patData: PatientDetailModel[] = [{ ...editingData.patient }];
     const referData: OpdReferModel[] = [{ ...editingData.opdRefer }];
+    let aerItems: AccidentEmergencyModel[] = [];
+    if (editingData?.accidenEmergencyIn) aerItems.push({ ...editingData?.accidenEmergencyIn });
+    if (editingData?.accidenEmergencyOut) aerItems.push({ ...editingData?.accidenEmergencyOut });
+
     const savedata: OpdDataModel = {
       adp: convertEditorToAdp(invoicedata.adpItems || invoicedata.additPaymentItems),
-      aer: editingData?.accidenEmergencies || [],
+      aer: aerItems,
       cht: convertEditorToCht(editingData?.invoices || [], invoicedata.invoiceItems, false),
       cha: convertEditorToCha(invoicedata.invoiceItems, tmpVisitDetail, patData[0]),
       dru: convertEditorToDru(invoicedata.drugItems),
@@ -192,10 +197,13 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         reconcile: false,
         chargeCalcScope: additionalPaymentChargePrefix
       });
+      let aerIn: AccidentEmergencyModel | undefined = (originData.aer || []).find(t => t.refmaini != '' && t.refmaino == '');
+      let aerOut: AccidentEmergencyModel | undefined = (originData.aer || []).find(t => t.refmaini == '' && t.refmaino != '');
 
       let transformData: OpdEditorModel = {
         additPayments: adtItems,
-        accidenEmergencies: originData.aer,
+        accidenEmergencyIn: aerIn,
+        accidenEmergencyOut: aerOut,
         invoiceItems: invoiceItems,
         invoices: originData.cht,
         drugItems: genarateDrugEditors(originData.dru, valid),
@@ -302,7 +310,12 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         title: "ข้อมูลอุบัติเหตุ ฉุกเฉิน และรับส่ง เพื่อรักษา",
         children: (
           <>
-            <AccidentEmergencyTab accidentEmergencies={editingData?.accidenEmergencies || []} />
+            <AccidentEmergencyTab key='refer-in' isReferIn={true}
+              accidenEmergency={editingData?.accidenEmergencyIn}
+            />
+            <AccidentEmergencyTab key='refer-out' isReferIn={false}
+              accidenEmergency={editingData?.accidenEmergencyOut}
+            />
             <ReferInfo />
           </>
         )
