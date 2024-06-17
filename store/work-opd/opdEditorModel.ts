@@ -21,7 +21,12 @@ export interface OpdEditorModel {
   /**
    * #origin => AER
    **/
-  accidenEmergencies: AccidentEmergencyModel[];
+  accidenEmergencyIn?: AccidentEmergencyModel;
+
+  /**
+   * #origin => AER
+   **/
+  accidenEmergencyOut?: AccidentEmergencyModel;
 
   /**
   * #origin => CHT
