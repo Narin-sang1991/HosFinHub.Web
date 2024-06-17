@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import Image from 'next/image'
 import { LeftOutlined, MenuUnfoldOutlined, } from "@ant-design/icons";
 import { Breadcrumb, Col, Input, Layout, Menu, Row, Select, theme, Space } from "antd";
 import type { MenuProps } from "antd";
@@ -204,7 +203,7 @@ const MenuLayout = function MenuLayout({
             <Col span={8}>
               <Input.Search addonBefore={selectVisitType}
                 onSearch={onSearchSeq}
-                allowClear placeholder="ค้นหาด้วยVN" />
+                allowClear placeholder={`ค้นหาด้วย ${visitType == 'opd' ? "VN" : "AN"}`} />
             </Col>
           </Row>
         </Header>
