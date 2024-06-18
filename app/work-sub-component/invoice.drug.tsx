@@ -168,6 +168,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
       key: "total",
       width: 30,
       ellipsis: true,
+      editable: true,
     },
     {
       title: "ส่วนเกิน",
