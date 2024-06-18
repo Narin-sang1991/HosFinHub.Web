@@ -119,6 +119,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
 
   async function onSave() {
     if (editingData == undefined) return;
+    await formEditor.validateFields();
 
     let invoicedata = formEditor.getFieldValue("InvoiceBilling");
     // console.log("InvoiceBilling=>", invoicedata);
@@ -145,8 +146,8 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
     let tmpVisitDetail = getVisitDetail(editingData.opdDetail, false);
     const referData: OpdReferModel[] = [{ ...editingData.opdRefer }];
     let aerItems: AccidentEmergencyModel[] = [];
-    if (editingData?.accidenEmergencyIn) aerItems.push({ ...editingData?.accidenEmergencyIn });
-    if (editingData?.accidenEmergencyOut) aerItems.push({ ...editingData?.accidenEmergencyOut });
+    const aerEditor = formEditor.getFieldValue("AccidenEmergency");
+    if (aerEditor != undefined) aerItems = aerEditor.accidenEmergencyItems as AccidentEmergencyModel[];
 
     const savedata: OpdDataModel = {
       adp: convertEditorToAdp(invoicedata.adpItems || invoicedata.additPaymentItems),
@@ -202,13 +203,10 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         reconcile: false,
         chargeCalcScope: additionalPaymentChargePrefix
       });
-      let aerIn: AccidentEmergencyModel | undefined = (originData.aer || []).find(t => t.refmaini != '' && t.refmaino == '');
-      let aerOut: AccidentEmergencyModel | undefined = (originData.aer || []).find(t => t.refmaini == '' && t.refmaino != '');
 
       let transformData: OpdEditorModel = {
         additPayments: adtItems,
-        accidenEmergencyIn: aerIn,
-        accidenEmergencyOut: aerOut,
+        accidenEmergencies: originData.aer,
         invoiceItems: invoiceItems,
         invoices: originData.cht,
         drugItems: genarateDrugEditors(originData.dru, valid),
@@ -246,7 +244,8 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
           invoiceItems: transformData?.invoiceItems || [],
           drugItems: transformData?.drugItems || [],
           additPaymentItems: transformData?.additPayments || [],
-        }
+        },
+        AccidenEmergency: { accidenEmergencyItems: originData.aer }
       });
     })();
   }
@@ -316,13 +315,14 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         title: "ข้อมูลอุบัติเหตุ ฉุกเฉิน และรับส่ง เพื่อรักษา",
         children: (
           <>
-            <AccidentEmergencyTab key='refer-in' isReferIn={true}
-              accidenEmergency={editingData?.accidenEmergencyIn}
-            />
-            <AccidentEmergencyTab key='refer-out' isReferIn={false}
-              accidenEmergency={editingData?.accidenEmergencyOut}
-            />
-            <ReferInfo />
+            <Form.Item name={"AccidenEmergency"}>
+              <AccidentEmergencyTab
+                accidenEmergencyItems={editingData?.accidenEmergencies}
+              />
+            </Form.Item>
+            <Form.Item name={"ReferInfo"}>
+              <ReferInfo />
+            </Form.Item>
           </>
         )
       }),

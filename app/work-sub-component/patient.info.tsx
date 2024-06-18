@@ -1,10 +1,9 @@
 "use client";
 
 import React from 'react';
-import { Form, Row, Input, Select, Typography } from 'antd';
+import { Form, Row, Input, Select } from 'antd';
 import { getColResponsive } from "@/client.component/antd.col.resposive";
 
-const { Text } = Typography;
 
 const PatientInfoTab = function PatientInfo() {
     return (

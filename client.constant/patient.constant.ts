@@ -23,31 +23,35 @@ export function getPatientID(personID: string) {
     return "";
 }
 
-export function getPatientInscl(){
-    
-}
-
 export function getPatientSex(typeIn?: number) {
+    if (defaultStrEmpty == undefined || !defaultStrEmpty) return defaultStrEmpty;
     if (typeIn == 1) return "เพศชาย";
     if (typeIn == 2) return "เพศหญิง";
     return defaultStrEmpty;
 }
 
+export const opTypes = [
+    { key: 0, text: "Refer-ในบัญชีเครือข่ายเดียวกัน" },
+    { key: 1, text: "Refer-นอกบัญชีเครือข่ายเดียวกัน" },
+    { key: 2, text: "AE-ในบัญชีเครือข่าย" },
+    { key: 3, text: "AE-นอกบัญชีเครือข่าย" },
+    { key: 4, text: "OP-พิการ" },
+    { key: 5, text: "OP-บัตรตัวเอง" },
+    { key: 6, text: "Clearing House ศบส" },
+    { key: 7, text: "OP-อื่นๆ (Individual data)" },
+    { key: 8, text: "ผู้ป่วยกึ่ง OP/IP (NONI)" },
+    { key: 9, text: "บริการแพทย์แผนไทย" },
+]
 export function getProviderType(opType?: number) {
-    if (opType == 0) return "Refer-ในบัญชีเครือข่ายเดียวกัน";
-    if (opType == 1) return "Refer-นอกบัญชีเครือข่ายเดียวกัน";
-    if (opType == 2) return "AE-ในบัญชีเครือข่าย";
-    if (opType == 3) return "AE-นอกบัญชีเครือข่าย";
-    if (opType == 4) return "OP-พิการ";
-    if (opType == 5) return "OP-บัตรตัวเอง";
-    if (opType == 6) return "Clearing House ศบส";
-    if (opType == 7) return "OP-อื่นๆ (Individual data)";
-    if (opType == 8) return "ผู้ป่วยกึ่ง OP/IP (NONI)";
-    if (opType == 8) return "บริการแพทย์แผนไทย";
-    return defaultStrEmpty;
+    if (opType == undefined || !opType) return defaultStrEmpty;
+
+    let opTypeItem = opTypes.find(t => t.key == opType);
+    if (opTypeItem != undefined) return opTypeItem.text;
+    else return defaultStrEmpty;
 }
 
 export function getDischargeOPD(typeOut?: number) {
+    if (typeOut == undefined || !typeOut) return defaultStrEmpty;
     if (typeOut == 1) return "Discharge";
     if (typeOut == 2) return "Admit";
     if (typeOut == 3) return "Refer-out";
@@ -60,6 +64,7 @@ export function getDischargeOPD(typeOut?: number) {
 }
 
 export function getVisitType(typeIn?: number) {
+    if (typeIn == undefined || !typeIn) return defaultStrEmpty;
     if (typeIn == 1) return "Walk-in";
     if (typeIn == 2) return "Appointment";
     if (typeIn == 3) return "Refer-in";

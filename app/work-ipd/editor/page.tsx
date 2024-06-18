@@ -291,7 +291,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
       icon: <IdcardOutlined />,
       children: getCardInTab({
         title: "ข้อมูลผู้ป่วย",
-        children: <><PatientInfoTab /> <InsureInfo /></>,
+        children: <><PatientInfoTab /> <InsureInfo isIPD={true} /></>,
       }),
     },
     {
@@ -302,8 +302,14 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
         title: "ข้อมูลอุบัติเหตุ ฉุกเฉิน และรับส่ง เพื่อรักษา",
         children: (
           <>
-            <AccidentEmergencyTab accidentEmergencies={editingData?.accidenEmergencies || []} />
-            <ReferInfo />
+            <Form.Item name={"AccidenEmergency"}>
+              <AccidentEmergencyTab
+                accidenEmergencyItems={editingData?.accidenEmergencies}
+              />
+            </Form.Item>
+            <Form.Item name={"ReferInfo"}>
+              <ReferInfo />
+            </Form.Item>
           </>
         )
       }),

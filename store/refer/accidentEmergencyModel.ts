@@ -22,6 +22,7 @@ export interface AccidentEmergencyModel {
 }
 
 export interface AccidentEmergencyEditorModel {
+    HasReferData : boolean;
     DateText: string,
     ReferNo: string,
     HospitalRefCode: string,
