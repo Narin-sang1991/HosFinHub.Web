@@ -135,9 +135,14 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
     }
 
     const uucEditing = formEditor.getFieldValue("UUC");
-    let tmpVisitDetail = getVisitDetail(editingData.opdDetail, false);
-    const opdDetail: OpdDetailModel[] = [{ ...editingData.opdDetail, uuc: uucEditing }];
+    const optypeEditing = formEditor.getFieldValue("OpType");
+    const opdDetail: OpdDetailModel[] = [{
+      ...editingData.opdDetail,
+      uuc: uucEditing,
+      optype: optypeEditing,
+    }];
     const patData: PatientDetailModel[] = [{ ...editingData.patient }];
+    let tmpVisitDetail = getVisitDetail(editingData.opdDetail, false);
     const referData: OpdReferModel[] = [{ ...editingData.opdRefer }];
     let aerItems: AccidentEmergencyModel[] = [];
     if (editingData?.accidenEmergencyIn) aerItems.push({ ...editingData?.accidenEmergencyIn });
@@ -233,6 +238,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         Inscl: insureDetail.inscl,
         Premitno: insureDetail.permitno,
         UUC: opdDetail.uuc,
+        OpType: opdDetail.optype,
         SubType: insureDetail.subinscl,
         InvoiceBilling: {
           visitDetail: transformData?.opdDetail || undefined,
@@ -299,7 +305,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       icon: <IdcardOutlined />,
       children: getCardInTab({
         title: "ข้อมูลผู้ป่วย",
-        children: <><PatientInfoTab /> <InsureInfo /></>,
+        children: <><PatientInfoTab /> <InsureInfo isIPD={false} /></>,
       }),
     },
     {

@@ -1,10 +1,15 @@
 import { getColResponsive } from "@/client.component/antd.col.resposive";
+import { opTypes } from "@/client.constant/patient.constant";
 import { useAppSelector } from "@/store/hooks";
 import { selectUccOption } from "@/store/insure/insureOpdSlice";
 import { Divider, Form, Input, Row, Select } from "antd";
 import React from "react";
 
-const InsureInfo = () => {
+interface InsureInfoProps {
+  isIPD: boolean
+}
+
+const InsureInfo = ({ isIPD }: InsureInfoProps) => {
   const selectUccOptions = useAppSelector(selectUccOption);
   return (
     <React.Fragment>
@@ -14,9 +19,7 @@ const InsureInfo = () => {
           getColResponsive({
             key: 'UUC',
             children: <Form.Item label="การใช้สิทธิ์" name="UUC" >
-              <Select
-                options={selectUccOptions}>
-              </Select>
+              <Select options={selectUccOptions} />
             </Form.Item>
           })
         }
@@ -41,6 +44,14 @@ const InsureInfo = () => {
             key: 'Premitno',
             children: <Form.Item label="รหัส Authen Code / เลขอนุมัติ" name="Premitno" >
               <Input readOnly variant="filled" />
+            </Form.Item>
+          })
+        }
+        {
+          isIPD ? <></> : getColResponsive({
+            key: 'OpType',
+            children: <Form.Item label="ประเภทการให้บริการ" name="OpType" rules={[{ required: true }]} >
+              <Select options={opTypes.map(t => { return { label: t.text, value: t.key.toString() } })} />
             </Form.Item>
           })
         }
