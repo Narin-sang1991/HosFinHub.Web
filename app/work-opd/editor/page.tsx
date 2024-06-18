@@ -143,7 +143,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       optype: optypeEditing,
     }];
     const patData: PatientDetailModel[] = [{ ...editingData.patient }];
-    let tmpVisitDetail = getVisitDetail(editingData.opdDetail, false);
+    const tmpVisitDetail = getVisitDetail(editingData.opdDetail, false);
     const referData: OpdReferModel[] = [{ ...editingData.opdRefer }];
     let aerItems: AccidentEmergencyModel[] = [];
     const aerEditor = formEditor.getFieldValue("AccidenEmergency");

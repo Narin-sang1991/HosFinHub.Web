@@ -58,6 +58,7 @@ import InvoiceBillingTab from "@/app/work-sub-component/invoice.billing";
 import { VisitDetailModel } from "@/store/work/workEditorModel";
 import { IpdReferModel } from "@/store/refer/referModel";
 import { InvoiceItemEditorModel } from "@/store/financial/invoiceItemModel";
+import { AccidentEmergencyModel } from "@/store/refer/accidentEmergencyModel";
 import withTheme from "../../../theme";
 import "@/app/globals.css";
 //#endregion
@@ -134,13 +135,17 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
     }
 
     const uucEditing = formEditor.getFieldValue("UUC");
-    let tmpVisitDetail = getVisitDetail(editingData.ipdDetail, true);
     const ipdDetail: IpdDetailModel[] = [{ ...editingData.ipdDetail, uuc: uucEditing }];
     const patData: PatientDetailModel[] = [{ ...editingData.patient }];
+    const tmpVisitDetail = getVisitDetail(editingData.ipdDetail, true);
     const referData: IpdReferModel[] = [{ ...editingData.ipdRefer }];
+    let aerItems: AccidentEmergencyModel[] = [];
+    const aerEditor = formEditor.getFieldValue("AccidenEmergency");
+    if (aerEditor != undefined) aerItems = aerEditor.accidenEmergencyItems as AccidentEmergencyModel[];
+    
     const savedata: IpdDataModel = {
       adp: convertEditorToAdp(invoicedata.adpItems || invoicedata.additPaymentItems),
-      aer: editingData?.accidenEmergencies || [],
+      aer: aerItems,
       cht: convertEditorToCht(editingData?.invoices || [], invoicedata.invoiceItems, true),
       cha: convertEditorToCha(invoicedata.invoiceItems, tmpVisitDetail, patData[0]),
       dru: convertEditorToDru(invoicedata.drugItems),
@@ -232,7 +237,8 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
           invoiceItems: transformData?.invoiceItems || [],
           drugItems: transformData?.drugItems || [],
           additPaymentItems: transformData?.additPayments || [],
-        }
+        },
+        AccidenEmergency: { accidenEmergencyItems: originData.aer }
       });
     })();
   }
