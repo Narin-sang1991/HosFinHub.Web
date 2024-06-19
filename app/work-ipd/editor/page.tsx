@@ -119,6 +119,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
 
   async function onSave() {
     if (editingData == undefined) return;
+    await formEditor.validateFields();
 
     let invoicedata = formEditor.getFieldValue("InvoiceBilling");
     // console.log("InvoiceBilling=>", invoicedata);

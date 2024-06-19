@@ -50,7 +50,9 @@ const InsureInfo = ({ isIPD }: InsureInfoProps) => {
         {
           isIPD ? <></> : getColResponsive({
             key: 'OpType',
-            children: <Form.Item label="ประเภทการให้บริการ" name="OpType" rules={[{ required: true }]} >
+            children: <Form.Item label="ประเภทการให้บริการ" name="OpType"
+              // rules={[{ required: true }]}
+            >
               <Select options={opTypes.map(t => { return { label: t.text, value: t.key.toString() } })} />
             </Form.Item>
           })
