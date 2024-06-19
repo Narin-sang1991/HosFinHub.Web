@@ -47,13 +47,13 @@ import { convertEditorToAdp, genarateAdditPaymentEditors } from "@/client.consta
 import { recalcAdpCharges } from "@/client.constant/invoice.additional.constant";
 import { getClinic, getReferType, getVisitDetail } from "@/client.constant/work.editor.constant";
 import { getPatientFullName } from "@/client.constant/work.search.constant";
+import { defaultReferObjective } from "@/client.constant/emergency.refer.constant";
 
 import PatientInfoTab from "@/app/work-sub-component/patient.info";
 import InsureInfo from "@/app/work-sub-component/insure.info";
 import ProcedureInfo from "@/app/work-sub-component/procedure.info";
 import DiagenosisInfo from "@/app/work-sub-component/diagenosis.info";
 import AccidentEmergencyTab from "@/app/work-sub-component/accident.emergency";
-import ReferInfo from "@/app/work-sub-component/refer.info";
 import InvoiceBillingTab from "@/app/work-sub-component/invoice.billing";
 import { VisitDetailModel } from "@/store/work/workEditorModel";
 import { OpdReferModel } from "@/store/refer/referModel";
@@ -144,10 +144,14 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
     }];
     const patData: PatientDetailModel[] = [{ ...editingData.patient }];
     const tmpVisitDetail = getVisitDetail(editingData.opdDetail, false);
-    const referData: OpdReferModel[] = [{ ...editingData.opdRefer }];
+    let referData: OpdReferModel[] = [{ ...editingData.opdRefer }];
     let aerItems: AccidentEmergencyModel[] = [];
-    const aerEditor = formEditor.getFieldValue("AccidenEmergency");
-    if (aerEditor != undefined) aerItems = aerEditor.accidenEmergencyItems as AccidentEmergencyModel[];
+    const aerEditor = formEditor.getFieldValue("AccidenEmergencyRefer");
+    if (aerEditor != undefined) {
+      aerItems = aerEditor.accidenEmergencyItems as AccidentEmergencyModel[];
+      const noClaimRefer: boolean = aerItems.some(t => t.ireftype == defaultReferObjective || t.oreftype == defaultReferObjective);
+      if (noClaimRefer == true) referData = [];
+    }
 
     const savedata: OpdDataModel = {
       adp: convertEditorToAdp(invoicedata.adpItems || invoicedata.additPaymentItems),
@@ -159,7 +163,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       labfu: editingData?.labfuItems || [],
       odx: editingData?.diagnosisItems || [],
       opd: opdDetail,
-      orf: aerItems.length > 0 ? referData : [],
+      orf: referData,
       pat: patData,
       oop: editingData?.procedureItems || []
     };
@@ -203,7 +207,15 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         reconcile: false,
         chargeCalcScope: additionalPaymentChargePrefix
       });
-
+      let accidenEmergencyReferEditor = {
+        accidenEmergencyItems: originData.aer,
+        clinic: getClinic(opdRefer?.clinic),
+        insRefercl: opdRefer?.refer,
+        referType: getReferType(opdRefer?.refertype),
+        referDate: opdRefer?.referdate
+          ? moment(opdRefer?.referdate).format(dateDisplayFormat
+          ) : "",
+      };
       let transformData: OpdEditorModel = {
         additPayments: adtItems,
         accidenEmergencies: originData.aer,
@@ -216,9 +228,10 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         opdDetail: opdDetail,
         opdRefer: opdRefer,
         patient: patientDetail,
-        procedureItems: originData.oop
+        procedureItems: originData.oop,
+        accidenEmergencyRefer: { ...accidenEmergencyReferEditor }
       };
-      // console.log("transformData=>", transformData);
+
       setEditData(transformData);
       setVisitDetail(tmpVisitDetail);
       formEditor.setFieldsValue({
@@ -238,12 +251,6 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         UUC: opdDetail.uuc,
         OpType: opdDetail.optype,
         SubType: insureDetail.subinscl,
-        Clinic: getClinic(opdRefer?.clinic),
-        InsRefercl: opdRefer?.refer,
-        ReferType: getReferType(opdRefer?.refertype),
-        ReferDate: opdRefer?.referdate
-          ? moment(opdRefer?.referdate).format(dateDisplayFormat
-          ) : "",
         InvoiceBilling: {
           visitDetail: transformData?.opdDetail || undefined,
           patientData: transformData?.patient || undefined,
@@ -251,7 +258,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
           drugItems: transformData?.drugItems || [],
           additPaymentItems: transformData?.additPayments || [],
         },
-        AccidenEmergency: { accidenEmergencyItems: originData.aer }
+        AccidenEmergencyRefer: { ...accidenEmergencyReferEditor }
       });
     })();
   }
@@ -321,12 +328,9 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         title: "ข้อมูลอุบัติเหตุ ฉุกเฉิน และรับส่ง เพื่อรักษา",
         children: (
           <>
-            <Form.Item name={"AccidenEmergency"}>
-              <AccidentEmergencyTab
-                accidenEmergencyItems={editingData?.accidenEmergencies}
-              />
+            <Form.Item name={"AccidenEmergencyRefer"}>
+              <AccidentEmergencyTab {...editingData?.accidenEmergencyRefer} />
             </Form.Item>
-            <ReferInfo isIPD={false} />
           </>
         )
       }),

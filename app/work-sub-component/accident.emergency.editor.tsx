@@ -62,23 +62,7 @@ const AccidentEmergencyEditor = function AccidentEmergency({ accidentEmergency, 
 
         const data = { ...allValues };
         let changedData: AccidentEmergencyModel = { ...accidentEmergency };
-        // let changedData: AccidentEmergencyModel = accidentEmergency != undefined ? { ...accidentEmergency }
-        //     : {
-        //         id: "",
-        //         hn: "",
-        //         an: "",
-        //         dateopd: "",
-        //         aedate: "",
-        //         refer_no: "",
-        //         refmaini: "",
-        //         ireftype: "",
-        //         refmaino: "",
-        //         oreftype: "",
-        //         seq: "",
-        //         aestatus: "",
-        //         dalert: "",
-        //         talert: ""
-        //     };
+
         let referStateType: string = revertToReferStat(data);
         if (isReferIn) changedData.ireftype = referStateType;
         else changedData.oreftype = referStateType;

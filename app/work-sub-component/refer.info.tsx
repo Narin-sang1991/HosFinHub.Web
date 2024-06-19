@@ -14,7 +14,7 @@ const ReferInfo = ({ isIPD }: ReferInfoProps) => {
         {
           isIPD ? <></> : getColResponsive({
             key: 'Clinic',
-            children: <Form.Item label="คลีนิกที่รับบริการ" name="Clinic" >
+            children: <Form.Item label="คลีนิกที่รับบริการ" name="clinic" >
               <Input readOnly variant="filled" />
             </Form.Item>
           })
@@ -22,7 +22,7 @@ const ReferInfo = ({ isIPD }: ReferInfoProps) => {
         {
           getColResponsive({
             key: 'Refer',
-            children: <Form.Item label="รหัสสถานพยาบาลที่ส่งต่อ" name="InsRefercl" >
+            children: <Form.Item label="รหัสสถานพยาบาลที่ส่งต่อ" name="insRefercl" >
               <Input readOnly variant="filled" />
             </Form.Item>
           })
@@ -30,7 +30,7 @@ const ReferInfo = ({ isIPD }: ReferInfoProps) => {
         {
           getColResponsive({
             key: 'ReferType',
-            children: <Form.Item label="ประเภทการส่งต่อ" name="ReferType" >
+            children: <Form.Item label="ประเภทการส่งต่อ" name="referType" >
               <Input readOnly variant="filled" />
             </Form.Item>
           })
@@ -38,7 +38,7 @@ const ReferInfo = ({ isIPD }: ReferInfoProps) => {
         {
           isIPD ? <></> : getColResponsive({
             key: 'ReferDate',
-            children: <Form.Item label="วันที่ส่งต่อ" name="ReferDate" >
+            children: <Form.Item label="วันที่ส่งต่อ" name="referDate" >
               <Input readOnly variant="filled" />
             </Form.Item>
           })

@@ -18,7 +18,7 @@ import { FeeScheduleSelectorModel } from "@/store/fee-additional/feeScheduleMode
 import { adpTypeFreeSchedule, adpTypeNonGroup, getErrorToAdpCharges } from "@/client.constant/invoice.additional.constant";
 import { adpOptionalObj, getAdpDisplay } from "@/client.constant/invoice.addit.payment.constant";
 import { VisitDetailModel } from "@/store/work/workEditorModel";
-// import { dateDisplayFormat, dateInterfaceFormat, } from "@/client.constant/format.constant";
+import "@/app/globals.css";
 //#endregion
 
 type InvoiceAdditionalProps = {

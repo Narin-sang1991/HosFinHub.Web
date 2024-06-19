@@ -130,7 +130,6 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
       dataIndex: "dummyKey",
       key: "dummyKey",
       width: 15,
-
       className: "Center",
     },
     {

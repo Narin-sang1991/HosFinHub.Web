@@ -72,6 +72,14 @@ export interface OpdEditorModel {
  * #origin => OOP
  **/
   procedureItems: OpdOperationModel[];
+
+  accidenEmergencyRefer: {
+    accidenEmergencyItems?: AccidentEmergencyModel[],
+    clinic?: string,
+    insRefercl?: string,
+    referType?: string,
+    referDate?: string,
+  };
 }
 
 export interface OpdValidModel {
