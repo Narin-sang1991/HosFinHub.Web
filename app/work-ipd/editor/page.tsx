@@ -47,13 +47,13 @@ import { convertEditorToAdp, genarateAdditPaymentEditors } from "@/client.consta
 import { recalcAdpCharges } from "@/client.constant/invoice.additional.constant";
 import { getReferType, getVisitDetail } from "@/client.constant/work.editor.constant";
 import { getPatientFullName } from "@/client.constant/work.search.constant";
+import { defaultReferObjective } from "@/client.constant/emergency.refer.constant";
 
 import PatientInfoTab from "@/app/work-sub-component/patient.info";
 import InsureInfo from "@/app/work-sub-component/insure.info";
 import ProcedureInfo from "@/app/work-sub-component/procedure.info";
 import DiagenosisInfo from "@/app/work-sub-component/diagenosis.info";
 import AccidentEmergencyTab from "@/app/work-sub-component/accident.emergency";
-import ReferInfo from "@/app/work-sub-component/refer.info";
 import InvoiceBillingTab from "@/app/work-sub-component/invoice.billing";
 import { VisitDetailModel } from "@/store/work/workEditorModel";
 import { IpdReferModel } from "@/store/refer/referModel";
@@ -139,10 +139,14 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
     const ipdDetail: IpdDetailModel[] = [{ ...editingData.ipdDetail, uuc: uucEditing }];
     const patData: PatientDetailModel[] = [{ ...editingData.patient }];
     const tmpVisitDetail = getVisitDetail(editingData.ipdDetail, true);
-    const referData: IpdReferModel[] = [{ ...editingData.ipdRefer }];
+    let referData: IpdReferModel[] = [{ ...editingData.ipdRefer }];
     let aerItems: AccidentEmergencyModel[] = [];
-    const aerEditor = formEditor.getFieldValue("AccidenEmergency");
-    if (aerEditor != undefined) aerItems = aerEditor.accidenEmergencyItems as AccidentEmergencyModel[];
+    const aerEditor = formEditor.getFieldValue("AccidenEmergencyRefer");
+    if (aerEditor != undefined) {
+      aerItems = aerEditor.accidenEmergencyItems as AccidentEmergencyModel[];
+      const noClaimRefer: boolean = aerItems.some(t => t.ireftype == defaultReferObjective || t.oreftype == defaultReferObjective);
+      if (noClaimRefer == true) referData = [];
+    }
 
     const savedata: IpdDataModel = {
       adp: convertEditorToAdp(invoicedata.adpItems || invoicedata.additPaymentItems),
@@ -154,7 +158,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
       labfu: editingData?.labfuItems || [],
       idx: editingData?.diagnosisItems || [],
       ipd: ipdDetail,
-      irf: aerItems.length > 0 ? referData : [],
+      irf: referData,
       pat: patData,
       iop: editingData?.procedureItems || []
     };
@@ -198,7 +202,11 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
         reconcile: false,
         chargeCalcScope: additionalPaymentChargePrefix
       });
-
+      let accidenEmergencyReferEditor = {
+        accidenEmergencyItems: originData.aer,
+        insRefercl: ipdRefer?.refer,
+        referType: getReferType(ipdRefer?.refertype),
+      };
       let transformData: IpdEditorModel = {
         additPayments: adtItems,
         accidenEmergencies: originData.aer,
@@ -211,9 +219,10 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
         ipdDetail: ipdDetail,
         ipdRefer: ipdRefer,
         patient: patientDetail,
-        procedureItems: originData.iop
+        procedureItems: originData.iop,
+        accidenEmergencyRefer: { ...accidenEmergencyReferEditor }
       };
-      // console.log("transformData=>", transformData);
+
       setEditData(transformData);
       setVisitDetail(tmpVisitDetail);
       formEditor.setFieldsValue({
@@ -241,7 +250,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
           drugItems: transformData?.drugItems || [],
           additPaymentItems: transformData?.additPayments || [],
         },
-        AccidenEmergency: { accidenEmergencyItems: originData.aer }
+        AccidenEmergencyRefer: { ...accidenEmergencyReferEditor }
       });
     })();
   }
@@ -310,14 +319,9 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
       children: getCardInTab({
         title: "ข้อมูลอุบัติเหตุ ฉุกเฉิน และรับส่ง เพื่อรักษา",
         children: (
-          <>
-            <Form.Item name={"AccidenEmergency"}>
-              <AccidentEmergencyTab
-                accidenEmergencyItems={editingData?.accidenEmergencies}
-              />
-            </Form.Item>
-            <ReferInfo isIPD={true} />
-          </>
+          <Form.Item name={"AccidenEmergencyRefer"}>
+            <AccidentEmergencyTab {...editingData?.accidenEmergencyRefer} isIPD={true} />
+          </Form.Item>
         )
       }),
     },

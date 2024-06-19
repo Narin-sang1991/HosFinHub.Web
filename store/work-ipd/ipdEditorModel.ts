@@ -72,6 +72,14 @@ export interface IpdEditorModel {
  * #origin => IOP
  **/
   procedureItems: IpdOperationModel[];
+
+  accidenEmergencyRefer: {
+    accidenEmergencyItems?: AccidentEmergencyModel[],
+    clinic?: string,
+    insRefercl?: string,
+    referType?: string,
+    referDate?: string,
+  };
 }
 
 export interface IpdValidModel {

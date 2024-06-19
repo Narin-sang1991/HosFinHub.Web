@@ -327,11 +327,9 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       children: getCardInTab({
         title: "ข้อมูลอุบัติเหตุ ฉุกเฉิน และรับส่ง เพื่อรักษา",
         children: (
-          <>
-            <Form.Item name={"AccidenEmergencyRefer"}>
-              <AccidentEmergencyTab {...editingData?.accidenEmergencyRefer} />
-            </Form.Item>
-          </>
+          <Form.Item name={"AccidenEmergencyRefer"}>
+            <AccidentEmergencyTab {...editingData?.accidenEmergencyRefer} isIPD={false} />
+          </Form.Item>
         )
       }),
     },

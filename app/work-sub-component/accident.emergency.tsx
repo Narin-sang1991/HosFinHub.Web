@@ -25,13 +25,14 @@ interface AccidentEmergencyProps {
     insRefercl?: string,
     referType?: string,
     referDate?: string,
+    isIPD: boolean,
     onChange?: any,
 }
 
 const AccidentEmergencyTab = function AccidentEmergency({
     accidenEmergencyItems,
     clinic, insRefercl, referType, referDate,
-    onChange }: AccidentEmergencyProps) {
+    isIPD, onChange }: AccidentEmergencyProps) {
 
     const [formEmergencyEditor] = Form.useForm();
     const [formReferDisplay] = Form.useForm();
@@ -258,7 +259,7 @@ const AccidentEmergencyTab = function AccidentEmergency({
                     onChange={triggerChange}
                 />
                 <Form name="formReferDisplay" form={formReferDisplay} layout="horizontal" >
-                    <ReferInfo isIPD={false} />
+                    <ReferInfo isIPD={isIPD} />
                 </Form>
             </Space>
         </React.Fragment >
