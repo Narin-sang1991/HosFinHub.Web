@@ -45,7 +45,7 @@ import { additionalPaymentChargePrefix, convertEditorToCha, convertEditorToCht, 
 import { convertEditorToDru, genarateDrugEditors } from "@/client.constant/invoice.drug.constant";
 import { convertEditorToAdp, genarateAdditPaymentEditors } from "@/client.constant/invoice.addit.payment.constant";
 import { recalcAdpCharges } from "@/client.constant/invoice.additional.constant";
-import { getVisitDetail } from "@/client.constant/work.editor.constant";
+import { getReferType, getVisitDetail } from "@/client.constant/work.editor.constant";
 import { getPatientFullName } from "@/client.constant/work.search.constant";
 
 import PatientInfoTab from "@/app/work-sub-component/patient.info";
@@ -142,7 +142,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
     let aerItems: AccidentEmergencyModel[] = [];
     const aerEditor = formEditor.getFieldValue("AccidenEmergency");
     if (aerEditor != undefined) aerItems = aerEditor.accidenEmergencyItems as AccidentEmergencyModel[];
-    
+
     const savedata: IpdDataModel = {
       adp: convertEditorToAdp(invoicedata.adpItems || invoicedata.additPaymentItems),
       aer: aerItems,
@@ -231,6 +231,8 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
         Premitno: insureDetail.permitno,
         UUC: ipdDetail.uuc,
         SubType: insureDetail.subinscl,
+        InsRefercl: ipdRefer?.refer,
+        ReferType: getReferType(ipdRefer?.refertype),
         InvoiceBilling: {
           visitDetail: transformData?.ipdDetail || undefined,
           patientData: transformData?.patient || undefined,
@@ -313,9 +315,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
                 accidenEmergencyItems={editingData?.accidenEmergencies}
               />
             </Form.Item>
-            <Form.Item name={"ReferInfo"}>
-              <ReferInfo />
-            </Form.Item>
+            <ReferInfo isIPD={true} />
           </>
         )
       }),
@@ -368,13 +368,12 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
   //#endregion
 
   return (
-    <Skeleton active loading={status === "loading"} >
-
+    <>
       <Row justify="space-between" align="middle" gutter={[4, 4]}>
         <Col>
           <Space>
             <Button type="primary" shape="round" ghost style={{ fontSize: '15px' }}
-              onClick={reCalculation}
+              onClick={reCalculation} disabled={status === "loading" || saveState === "loading" || reProcessState === "loading"}
               icon={<RetweetOutlined style={{ fontSize: '18px' }} />}
             >คำนวนราคา</Button>
             <Divider type="vertical" style={{ height: 20 }} />
@@ -405,6 +404,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
               onConfirm={onReProcess}
             >
               <Button type="text" loading={reProcessState === "loading"}
+                disabled={status === "loading" || saveState === "loading"}
                 icon={<CloudSyncOutlined style={{ fontSize: '30px', color: '#dfa111' }} />}
               />
             </Popconfirm>
@@ -412,6 +412,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
             <Button type="text"
               onClick={onSave}
               loading={saveState === "loading"}
+              disabled={status === "loading" || reProcessState === "loading"}
               style={{ display: 'inline-flex', alignItems: 'center' }}
               icon={<SaveTwoTone twoToneColor={'#52c41a'} style={{ fontSize: '30px' }} />}
             />
@@ -422,194 +423,195 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
           </Space>
         </Col>
       </Row>
+      <Skeleton active loading={status === "loading" || saveState === "loading" || reProcessState === "loading"} >
+        <Form
+          name="workIpdEditor"
+          layout="vertical"
+          form={formEditor}
+        >
+          <Collapse
+            size="small"
+            style={{ margin: 5 }}
+            items={[
+              {
+                key: "1",
+                label: (
+                  <Row justify="start" align="middle" gutter={[4, 8]}>
+                    {getColResponsive({
+                      key: "patient",
+                      children: (
+                        <Space align="start" size="small">
+                          <Text type="secondary">ชื่อ-สกุล :</Text>
+                          <Text strong>
+                            {getPatientFullName(editingData?.patient)}
+                          </Text>
+                        </Space>
+                      ),
+                    })}
+                    {getColResponsive({
+                      key: "svctype",
+                      children: (
+                        <Space align="start" size="small">
+                          <Text type="secondary">ประเภทการ admit :</Text>
+                          <Text strong>
+                            {getAdmitType(editingData?.ipdDetail.svctype)}
+                          </Text>
+                        </Space>
+                      ),
+                    })}
+                    {getColResponsive({
+                      key: "dischs",
+                      children: (
+                        <Space align="start" size="small">
+                          <Text type="secondary">สถานภาพการจำหน่าย :</Text>
+                          <Text strong>
+                            {getDischargeStatus(editingData?.ipdDetail.dischs)}
+                          </Text>
+                        </Space>
+                      ),
+                    })}
+                  </Row>
+                ),
+                children: (
+                  <Row justify="space-around" align="top">
+                    <Col
+                      key={"hn"}
+                      xs={{ flex: "100%" }}
+                      sm={{ flex: "20%" }}
+                      md={{ flex: "18%" }}
+                      lg={{ flex: "13%" }}
+                    >
+                      <Space direction="vertical" align="center" size="small">
+                        <Avatar
+                          shape="square"
+                          size={48}
+                          icon={
+                            editingData?.patient.sex == 1 ? (
+                              <ManOutlined />
+                            ) : editingData?.patient.sex == 2 ? (
+                              <WomanOutlined rotate={45} />
+                            ) : (
+                              <MehOutlined />
+                            )
+                          }
+                        />
+                        <Text strong keyboard>{`HN:${editingData?.ipdDetail.hn || "N/A"
+                          }`}</Text>
+                      </Space>
+                    </Col>
+                    <Col
+                      key={"patient"}
+                      xs={{ flex: "100%" }}
+                      sm={{ flex: "80%" }}
+                      md={{ flex: "82%" }}
+                      lg={{ flex: "87%" }}
+                    >
+                      <Row justify="start" align="middle" gutter={[4, 8]}>
+                        {getColResponsive({
+                          key: "adm_w",
+                          children: (
+                            <Space align="start" size="small">
+                              <Text type="secondary">น้ำหนัก admit :</Text>
+                              <Text strong>
+                                {editingData?.ipdDetail?.adm_w ?? defaultStrEmpty}
+                              </Text>
+                              <Text type="secondary">กิโลกรัม</Text>
+                            </Space>
+                          ),
+                        })}
+                        {getColResponsive({
+                          key: "dateadm",
+                          children: (
+                            <Space align="start" size="small">
+                              <Text type="secondary">วันที่ admit :</Text>
+                              <Text type="warning">
+                                {moment(editingData?.ipdDetail.dateadm).format(
+                                  dateDisplayFormat
+                                )}
+                              </Text>
+                            </Space>
+                          ),
+                        })}
+                        {getColResponsive({
+                          key: "timeadm",
+                          children: (
+                            <Space align="start" size="small">
+                              <Text type="secondary">เวลา admit :</Text>
+                              <Text type="warning">
+                                {`${editingData?.ipdDetail.timeadm.substring(0, 2)}:${editingData?.ipdDetail.timeadm.substring(2, 4)}`}
+                              </Text>
+                            </Space>
+                          ),
+                        })}
+                        {getColResponsive({
+                          key: "discht",
+                          children: (
+                            <Space align="start" size="small">
+                              <Text type="secondary">วิธีการจำหน่าย :</Text>
+                              <Text strong>
+                                {getDischargeIPD(editingData?.ipdDetail.discht)}
+                              </Text>
+                            </Space>
+                          ),
+                        })}
+                        {getColResponsive({
+                          key: "datedsc",
+                          children: (
+                            <Space align="start" size="small">
+                              <Text type="secondary">วันที่จำหน่าย :</Text>
+                              <Text type="warning">
+                                {moment(editingData?.ipdDetail.datedsc).format(
+                                  dateDisplayFormat
+                                )}
+                              </Text>
+                            </Space>
+                          ),
+                        })}
+                        {getColResponsive({
+                          key: "timedsc",
+                          children: (
+                            <Space align="start" size="small">
+                              <Text type="secondary">เวลาจำหน่าย :</Text>
+                              <Text type="warning">
+                                {`${editingData?.ipdDetail.timedsc.substring(0, 2)}:${editingData?.ipdDetail.timedsc.substring(2, 4)}`}
+                              </Text>
+                            </Space>
+                          ),
+                        })}
+                        {getColResponsive({
+                          key: "dept",
+                          children: (
+                            <Space align="start" size="small">
+                              <Text type="secondary">แผนก :</Text>
+                              <Text strong>
+                                {`Ward ${editingData?.ipdDetail.dept}`}
+                              </Text>
+                            </Space>
+                          ),
+                        })}
+                        {getColResponsive({
+                          key: "warddsc",
+                          children: (
+                            <Space align="start" size="small">
+                              <Text type="secondary">รหัสตึก :</Text>
+                              <Text strong>
+                                {editingData?.ipdDetail.warddsc}
+                              </Text>
+                            </Space>
+                          ),
+                        })}
+                      </Row>
+                    </Col>
+                  </Row>
+                ),
+              },
+            ]}
+          />
+          <Tabs items={tabItems} />
+        </Form>
 
-      <Form
-        name="workIpdEditor"
-        layout="vertical"
-        form={formEditor}
-      >
-        <Collapse
-          size="small"
-          style={{ margin: 5 }}
-          items={[
-            {
-              key: "1",
-              label: (
-                <Row justify="start" align="middle" gutter={[4, 8]}>
-                  {getColResponsive({
-                    key: "patient",
-                    children: (
-                      <Space align="start" size="small">
-                        <Text type="secondary">ชื่อ-สกุล :</Text>
-                        <Text strong>
-                          {getPatientFullName(editingData?.patient)}
-                        </Text>
-                      </Space>
-                    ),
-                  })}
-                  {getColResponsive({
-                    key: "svctype",
-                    children: (
-                      <Space align="start" size="small">
-                        <Text type="secondary">ประเภทการ admit :</Text>
-                        <Text strong>
-                          {getAdmitType(editingData?.ipdDetail.svctype)}
-                        </Text>
-                      </Space>
-                    ),
-                  })}
-                  {getColResponsive({
-                    key: "dischs",
-                    children: (
-                      <Space align="start" size="small">
-                        <Text type="secondary">สถานภาพการจำหน่าย :</Text>
-                        <Text strong>
-                          {getDischargeStatus(editingData?.ipdDetail.dischs)}
-                        </Text>
-                      </Space>
-                    ),
-                  })}
-                </Row>
-              ),
-              children: (
-                <Row justify="space-around" align="top">
-                  <Col
-                    key={"hn"}
-                    xs={{ flex: "100%" }}
-                    sm={{ flex: "20%" }}
-                    md={{ flex: "18%" }}
-                    lg={{ flex: "13%" }}
-                  >
-                    <Space direction="vertical" align="center" size="small">
-                      <Avatar
-                        shape="square"
-                        size={48}
-                        icon={
-                          editingData?.patient.sex == 1 ? (
-                            <ManOutlined />
-                          ) : editingData?.patient.sex == 2 ? (
-                            <WomanOutlined rotate={45} />
-                          ) : (
-                            <MehOutlined />
-                          )
-                        }
-                      />
-                      <Text strong keyboard>{`HN:${editingData?.ipdDetail.hn || "N/A"
-                        }`}</Text>
-                    </Space>
-                  </Col>
-                  <Col
-                    key={"patient"}
-                    xs={{ flex: "100%" }}
-                    sm={{ flex: "80%" }}
-                    md={{ flex: "82%" }}
-                    lg={{ flex: "87%" }}
-                  >
-                    <Row justify="start" align="middle" gutter={[4, 8]}>
-                      {getColResponsive({
-                        key: "adm_w",
-                        children: (
-                          <Space align="start" size="small">
-                            <Text type="secondary">น้ำหนัก admit :</Text>
-                            <Text strong>
-                              {editingData?.ipdDetail?.adm_w ?? defaultStrEmpty}
-                            </Text>
-                            <Text type="secondary">กิโลกรัม</Text>
-                          </Space>
-                        ),
-                      })}
-                      {getColResponsive({
-                        key: "dateadm",
-                        children: (
-                          <Space align="start" size="small">
-                            <Text type="secondary">วันที่ admit :</Text>
-                            <Text type="warning">
-                              {moment(editingData?.ipdDetail.dateadm).format(
-                                dateDisplayFormat
-                              )}
-                            </Text>
-                          </Space>
-                        ),
-                      })}
-                      {getColResponsive({
-                        key: "timeadm",
-                        children: (
-                          <Space align="start" size="small">
-                            <Text type="secondary">เวลา admit :</Text>
-                            <Text type="warning">
-                              {`${editingData?.ipdDetail.timeadm.substring(0, 2)}:${editingData?.ipdDetail.timeadm.substring(2, 4)}`}
-                            </Text>
-                          </Space>
-                        ),
-                      })}
-                      {getColResponsive({
-                        key: "discht",
-                        children: (
-                          <Space align="start" size="small">
-                            <Text type="secondary">วิธีการจำหน่าย :</Text>
-                            <Text strong>
-                              {getDischargeIPD(editingData?.ipdDetail.discht)}
-                            </Text>
-                          </Space>
-                        ),
-                      })}
-                      {getColResponsive({
-                        key: "datedsc",
-                        children: (
-                          <Space align="start" size="small">
-                            <Text type="secondary">วันที่จำหน่าย :</Text>
-                            <Text type="warning">
-                              {moment(editingData?.ipdDetail.datedsc).format(
-                                dateDisplayFormat
-                              )}
-                            </Text>
-                          </Space>
-                        ),
-                      })}
-                      {getColResponsive({
-                        key: "timedsc",
-                        children: (
-                          <Space align="start" size="small">
-                            <Text type="secondary">เวลาจำหน่าย :</Text>
-                            <Text type="warning">
-                              {`${editingData?.ipdDetail.timedsc.substring(0, 2)}:${editingData?.ipdDetail.timedsc.substring(2, 4)}`}
-                            </Text>
-                          </Space>
-                        ),
-                      })}
-                      {getColResponsive({
-                        key: "dept",
-                        children: (
-                          <Space align="start" size="small">
-                            <Text type="secondary">แผนก :</Text>
-                            <Text strong>
-                              {`Ward ${editingData?.ipdDetail.dept}`}
-                            </Text>
-                          </Space>
-                        ),
-                      })}
-                      {getColResponsive({
-                        key: "warddsc",
-                        children: (
-                          <Space align="start" size="small">
-                            <Text type="secondary">รหัสตึก :</Text>
-                            <Text strong>
-                              {editingData?.ipdDetail.warddsc}
-                            </Text>
-                          </Space>
-                        ),
-                      })}
-                    </Row>
-                  </Col>
-                </Row>
-              ),
-            },
-          ]}
-        />
-        <Tabs items={tabItems} />
-      </Form>
-
-    </Skeleton>
+      </Skeleton>
+    </>
   );
 };
 

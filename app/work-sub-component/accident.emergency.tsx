@@ -13,7 +13,6 @@ interface AccidentEmergencyProps {
     onChange?: any,
 }
 
-
 const AccidentEmergencyTab = function AccidentEmergency({ accidenEmergencyItems, onChange }: AccidentEmergencyProps) {
 
     const [referIn, setReferIn] = useState<AccidentEmergencyModel>();

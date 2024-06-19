@@ -45,7 +45,7 @@ import { additionalPaymentChargePrefix, convertEditorToCha, convertEditorToCht, 
 import { convertEditorToDru, genarateDrugEditors } from "@/client.constant/invoice.drug.constant";
 import { convertEditorToAdp, genarateAdditPaymentEditors } from "@/client.constant/invoice.addit.payment.constant";
 import { recalcAdpCharges } from "@/client.constant/invoice.additional.constant";
-import { getVisitDetail } from "@/client.constant/work.editor.constant";
+import { getClinic, getReferType, getVisitDetail } from "@/client.constant/work.editor.constant";
 import { getPatientFullName } from "@/client.constant/work.search.constant";
 
 import PatientInfoTab from "@/app/work-sub-component/patient.info";
@@ -159,7 +159,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       labfu: editingData?.labfuItems || [],
       odx: editingData?.diagnosisItems || [],
       opd: opdDetail,
-      orf: referData,
+      orf: aerItems.length > 0 ? referData : [],
       pat: patData,
       oop: editingData?.procedureItems || []
     };
@@ -238,6 +238,12 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         UUC: opdDetail.uuc,
         OpType: opdDetail.optype,
         SubType: insureDetail.subinscl,
+        Clinic: getClinic(opdRefer?.clinic),
+        InsRefercl: opdRefer?.refer,
+        ReferType: getReferType(opdRefer?.refertype),
+        ReferDate: opdRefer?.referdate
+          ? moment(opdRefer?.referdate).format(dateDisplayFormat
+          ) : "",
         InvoiceBilling: {
           visitDetail: transformData?.opdDetail || undefined,
           patientData: transformData?.patient || undefined,
@@ -320,9 +326,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                 accidenEmergencyItems={editingData?.accidenEmergencies}
               />
             </Form.Item>
-            <Form.Item name={"ReferInfo"}>
-              <ReferInfo />
-            </Form.Item>
+            <ReferInfo isIPD={false} />
           </>
         )
       }),
@@ -375,12 +379,12 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
   //#endregion
 
   return (
-    <Skeleton active loading={status === "loading"} >
+    <>
       <Row justify="space-between" align="middle" gutter={[4, 4]}>
         <Col>
           <Space>
             <Button type="primary" shape="round" ghost style={{ fontSize: '15px' }}
-              onClick={reCalculation}
+              onClick={reCalculation} disabled={status === "loading" || saveState === "loading" || reProcessState === "loading"}
               icon={<RetweetOutlined style={{ fontSize: '18px' }} />}
             >{"คำนวนราคา"}</Button>
             <Divider type="vertical" style={{ height: 20 }} />
@@ -411,11 +415,15 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
               onConfirm={onReProcess}
             >
               <Button type="text" loading={reProcessState === "loading"}
+                disabled={status === "loading" || saveState === "loading"}
                 icon={<CloudSyncOutlined style={{ fontSize: '30px', color: '#dfa111' }} />}
               />
             </Popconfirm>
             <Divider type="vertical" style={{ height: 20 }} />
-            <Button type="text" onClick={onSave} loading={saveState === "loading"}
+            <Button type="text" onClick={onSave}
+              loading={saveState === "loading"}
+              disabled={status === "loading" || reProcessState === "loading"}
+              style={{ display: 'inline-flex', alignItems: 'center' }}
               icon={<SaveTwoTone twoToneColor={'#52c41a'} style={{ fontSize: '30px' }} />}
             />
             <Divider type="vertical" style={{ height: 20 }} />
@@ -425,174 +433,174 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
           </Space>
         </Col>
       </Row>
-
-      <Form
-        name="workOpdEditor"
-        layout="vertical"
-        form={formEditor}
-      >
-        <Collapse
-          size="small"
-          style={{ margin: 5 }}
-          items={[
-            {
-              key: "1",
-              label: (
-                <Row justify="start" align="middle" gutter={[4, 8]}>
-                  {getColResponsive({
-                    key: "patient",
-                    children: (
-                      <Space align="start" size="small">
-                        <Text type="secondary">ชื่อ-สกุล :</Text>
-                        <Text strong>
-                          {getPatientFullName(editingData?.patient)}
-                        </Text>
+      <Skeleton active loading={status === "loading" || saveState === "loading" || reProcessState === "loading"} >
+        <Form
+          name="workOpdEditor"
+          layout="vertical"
+          form={formEditor}
+        >
+          <Collapse
+            size="small"
+            style={{ margin: 5 }}
+            items={[
+              {
+                key: "1",
+                label: (
+                  <Row justify="start" align="middle" gutter={[4, 8]}>
+                    {getColResponsive({
+                      key: "patient",
+                      children: (
+                        <Space align="start" size="small">
+                          <Text type="secondary">ชื่อ-สกุล :</Text>
+                          <Text strong>
+                            {getPatientFullName(editingData?.patient)}
+                          </Text>
+                        </Space>
+                      ),
+                    })}
+                    {getColResponsive({
+                      key: "typein",
+                      children: (
+                        <Space align="start" size="small">
+                          <Text type="secondary">รูปแบบ :</Text>
+                          <Text strong>
+                            {getVisitType(editingData?.opdDetail.typein)}
+                          </Text>
+                        </Space>
+                      ),
+                    })}
+                    {getColResponsive({
+                      key: "typeout",
+                      children: (
+                        <Space align="start" size="small">
+                          <Text type="secondary">สถานะบริการ :</Text>
+                          <Text strong>
+                            {getDischargeOPD(editingData?.opdDetail.typeout)}
+                          </Text>
+                        </Space>
+                      ),
+                    })}
+                  </Row>
+                ),
+                children: (
+                  <Row justify="space-around" align="top">
+                    <Col
+                      key={"hn"}
+                      xs={{ flex: "100%" }}
+                      sm={{ flex: "20%" }}
+                      md={{ flex: "18%" }}
+                      lg={{ flex: "13%" }}
+                    >
+                      <Space direction="vertical" align="center" size="small">
+                        <Avatar
+                          shape="square"
+                          size={48}
+                          icon={
+                            editingData?.patient.sex == 1 ? (
+                              <ManOutlined />
+                            ) : editingData?.patient.sex == 2 ? (
+                              <WomanOutlined rotate={45} />
+                            ) : (
+                              <MehOutlined />
+                            )
+                          }
+                        />
+                        <Text strong keyboard>{`HN:${editingData?.opdDetail.hn || "N/A"
+                          }`}</Text>
                       </Space>
-                    ),
-                  })}
-                  {getColResponsive({
-                    key: "typein",
-                    children: (
-                      <Space align="start" size="small">
-                        <Text type="secondary">รูปแบบ :</Text>
-                        <Text strong>
-                          {getVisitType(editingData?.opdDetail.typein)}
-                        </Text>
-                      </Space>
-                    ),
-                  })}
-                  {getColResponsive({
-                    key: "typeout",
-                    children: (
-                      <Space align="start" size="small">
-                        <Text type="secondary">สถานะบริการ :</Text>
-                        <Text strong>
-                          {getDischargeOPD(editingData?.opdDetail.typeout)}
-                        </Text>
-                      </Space>
-                    ),
-                  })}
-                </Row>
-              ),
-              children: (
-                <Row justify="space-around" align="top">
-                  <Col
-                    key={"hn"}
-                    xs={{ flex: "100%" }}
-                    sm={{ flex: "20%" }}
-                    md={{ flex: "18%" }}
-                    lg={{ flex: "13%" }}
-                  >
-                    <Space direction="vertical" align="center" size="small">
-                      <Avatar
-                        shape="square"
-                        size={48}
-                        icon={
-                          editingData?.patient.sex == 1 ? (
-                            <ManOutlined />
-                          ) : editingData?.patient.sex == 2 ? (
-                            <WomanOutlined rotate={45} />
-                          ) : (
-                            <MehOutlined />
-                          )
-                        }
-                      />
-                      <Text strong keyboard>{`HN:${editingData?.opdDetail.hn || "N/A"
-                        }`}</Text>
-                    </Space>
-                  </Col>
-                  <Col
-                    key={"patient"}
-                    xs={{ flex: "100%" }}
-                    sm={{ flex: "80%" }}
-                    md={{ flex: "82%" }}
-                    lg={{ flex: "87%" }}
-                  >
-                    <Row justify="start" align="middle" gutter={[4, 8]}>
-                      {getColResponsive({
-                        key: "btemp",
-                        children: (
-                          <Space align="start" size="small">
-                            <Text type="secondary">อุณหภูมิร่างกาย :</Text>
-                            <Text strong>
-                              {editingData?.opdDetail.btemp || defaultStrEmpty}
-                            </Text>
-                            <Text type="secondary">°C</Text>
-                          </Space>
-                        ),
-                      })}
-                      {getColResponsive({
-                        key: "sbp-dbp",
-                        children: (
-                          <Space align="start" size="small">
-                            <Text type="secondary">ความดันโลหิต :</Text>
-                            <Text strong>{`${editingData?.opdDetail.sbp || defaultStrEmpty
-                              }/${editingData?.opdDetail.dbp || defaultStrEmpty
-                              }`}</Text>
-                            <Text type="secondary">mmHg</Text>
-                          </Space>
-                        ),
-                      })}
-                      {getColResponsive({
-                        key: "pr",
-                        children: (
-                          <Space align="start" size="small">
-                            <Text type="secondary">อัตราของหัวใจ :</Text>
-                            <Text strong>
-                              {editingData?.opdDetail.pr || defaultStrEmpty}
-                            </Text>
-                            <Text type="secondary">/ min.</Text>
-                          </Space>
-                        ),
-                      })}
-                      {getColResponsive({
-                        key: "rr",
-                        children: (
-                          <Space align="start" size="small">
-                            <Text type="secondary">อัตราการหายใจ :</Text>
-                            <Text strong>
-                              {editingData?.opdDetail.rr || defaultStrEmpty}
-                            </Text>
-                            <Text type="secondary">/ min.</Text>
-                          </Space>
-                        ),
-                      })}
-                      {getColResponsive({
-                        key: "optype",
-                        span: 2,
-                        children: (
-                          <Space align="start" size="small">
-                            <Text type="secondary">ประเภทการให้บริการ :</Text>
-                            <Text strong>
-                              {getProviderType(editingData?.opdDetail.optype)}
-                            </Text>
-                          </Space>
-                        ),
-                      })}
-                      {getColResponsive({
-                        key: "rr",
-                        children: (
-                          <Space align="start" size="small">
-                            <Text type="secondary">วันที่รับบริการ :</Text>
-                            <Text type="warning">
-                              {moment(editingData?.opdDetail.dateopd).format(
-                                dateDisplayFormat
-                              )}
-                            </Text>
-                          </Space>
-                        ),
-                      })}
-                    </Row>
-                  </Col>
-                </Row>
-              ),
-            },
-          ]}
-        />
-        <Tabs items={tabItems} />
-      </Form>
-
-    </Skeleton>
+                    </Col>
+                    <Col
+                      key={"patient"}
+                      xs={{ flex: "100%" }}
+                      sm={{ flex: "80%" }}
+                      md={{ flex: "82%" }}
+                      lg={{ flex: "87%" }}
+                    >
+                      <Row justify="start" align="middle" gutter={[4, 8]}>
+                        {getColResponsive({
+                          key: "btemp",
+                          children: (
+                            <Space align="start" size="small">
+                              <Text type="secondary">อุณหภูมิร่างกาย :</Text>
+                              <Text strong>
+                                {editingData?.opdDetail.btemp || defaultStrEmpty}
+                              </Text>
+                              <Text type="secondary">°C</Text>
+                            </Space>
+                          ),
+                        })}
+                        {getColResponsive({
+                          key: "sbp-dbp",
+                          children: (
+                            <Space align="start" size="small">
+                              <Text type="secondary">ความดันโลหิต :</Text>
+                              <Text strong>{`${editingData?.opdDetail.sbp || defaultStrEmpty
+                                }/${editingData?.opdDetail.dbp || defaultStrEmpty
+                                }`}</Text>
+                              <Text type="secondary">mmHg</Text>
+                            </Space>
+                          ),
+                        })}
+                        {getColResponsive({
+                          key: "pr",
+                          children: (
+                            <Space align="start" size="small">
+                              <Text type="secondary">อัตราของหัวใจ :</Text>
+                              <Text strong>
+                                {editingData?.opdDetail.pr || defaultStrEmpty}
+                              </Text>
+                              <Text type="secondary">/ min.</Text>
+                            </Space>
+                          ),
+                        })}
+                        {getColResponsive({
+                          key: "rr",
+                          children: (
+                            <Space align="start" size="small">
+                              <Text type="secondary">อัตราการหายใจ :</Text>
+                              <Text strong>
+                                {editingData?.opdDetail.rr || defaultStrEmpty}
+                              </Text>
+                              <Text type="secondary">/ min.</Text>
+                            </Space>
+                          ),
+                        })}
+                        {getColResponsive({
+                          key: "optype",
+                          span: 2,
+                          children: (
+                            <Space align="start" size="small">
+                              <Text type="secondary">ประเภทการให้บริการ :</Text>
+                              <Text strong>
+                                {getProviderType(editingData?.opdDetail.optype)}
+                              </Text>
+                            </Space>
+                          ),
+                        })}
+                        {getColResponsive({
+                          key: "rr",
+                          children: (
+                            <Space align="start" size="small">
+                              <Text type="secondary">วันที่รับบริการ :</Text>
+                              <Text type="warning">
+                                {moment(editingData?.opdDetail.dateopd).format(
+                                  dateDisplayFormat
+                                )}
+                              </Text>
+                            </Space>
+                          ),
+                        })}
+                      </Row>
+                    </Col>
+                  </Row>
+                ),
+              },
+            ]}
+          />
+          <Tabs items={tabItems} />
+        </Form>
+      </Skeleton >
+    </>
   );
 };
 

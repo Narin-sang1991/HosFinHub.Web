@@ -2,13 +2,17 @@ import { getColResponsive } from "@/client.component/antd.col.resposive";
 import { Divider, Form, Input, Row, Select } from "antd";
 import React from "react";
 
-const ReferInfo = () => {
+interface ReferInfoProps {
+  isIPD: boolean,
+}
+
+const ReferInfo = ({ isIPD }: ReferInfoProps) => {
   return (
     <React.Fragment>
       <Divider orientation="left" plain><h3>ข้อมูลการส่งต่อ</h3></Divider>
       <Row gutter={[16, 16]}>
         {
-          getColResponsive({
+          isIPD ? <></> : getColResponsive({
             key: 'Clinic',
             children: <Form.Item label="คลีนิกที่รับบริการ" name="Clinic" >
               <Input readOnly variant="filled" />
@@ -32,7 +36,7 @@ const ReferInfo = () => {
           })
         }
         {
-          getColResponsive({
+          isIPD ? <></> : getColResponsive({
             key: 'ReferDate',
             children: <Form.Item label="วันที่ส่งต่อ" name="ReferDate" >
               <Input readOnly variant="filled" />
