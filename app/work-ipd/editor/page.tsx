@@ -153,7 +153,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
       labfu: editingData?.labfuItems || [],
       idx: editingData?.diagnosisItems || [],
       ipd: ipdDetail,
-      irf: referData,
+      irf: aerItems.length > 0 ? referData : [],
       pat: patData,
       iop: editingData?.procedureItems || []
     };
