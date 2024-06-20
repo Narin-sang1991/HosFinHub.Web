@@ -31,8 +31,9 @@ export function getEmTypes(emType?: string) {
 export const uCaseItems = [
     { key: 'A', text: "อุบัติเหตุ(Accident / Accident + Emergency)" },
     { key: 'E', text: "ฉุกเฉิน (Emergency)" },
-    { key: "1", text: "OP Refer ในจังหวัด" },
-    { key: "0", text: "OP Refer ข้ามจังหวัด" },
+    { key: 'N', text: "ไม่เป็น A / E" },
+    { key: "I", text: "OP Refer ในจังหวัด" },
+    { key: "O", text: "OP Refer ข้ามจังหวัด" },
     { key: "C", text: "ย้ายหน่วยบริการเกิดสิทธิทันที" },
     { key: "Z", text: "บริการเชิงรุก" },
 ]
