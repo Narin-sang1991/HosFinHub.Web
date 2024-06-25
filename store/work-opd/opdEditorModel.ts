@@ -75,7 +75,6 @@ export interface OpdEditorModel {
 
   accidenEmergencyRefer: {
     accidenEmergencyItems?: AccidentEmergencyModel[],
-    clinic?: string,
     insRefercl?: string,
     referType?: string,
     referDate?: string,

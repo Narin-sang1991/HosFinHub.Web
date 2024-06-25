@@ -1,11 +1,15 @@
-import { Form, Input, InputNumber } from "antd";
+import { dateDisplayFormat, timeDisplayFormat } from "@/client.constant/format.constant";
+import {
+    Form, Input, InputNumber,
+    DatePicker, TimePicker
+} from "antd";
 
 
 export interface EditableCellProps<T> extends React.HTMLAttributes<HTMLElement> {
     editing: boolean;
     dataIndex: string;
     title: any;
-    inputType: 'number' | 'text' | 'selector';
+    inputType: 'number' | 'text' | 'selector' | 'date' | 'time';
     record: T;
     index: number;
     children: React.ReactNode;
@@ -49,10 +53,19 @@ export function EditableCell<T>({
     );
 };
 
+function onSelectDate(value : Date){
+    console.log('onSelectDate=>',value);
+}
+
 function getInputNode(inputType: string, selectorNode: any) {
     return inputType === 'number'
         ? <InputNumber />
         : inputType === 'selector'
             ? selectorNode
-            : <Input />;
+            : inputType === 'date'
+                ? <DatePicker format={dateDisplayFormat} onChange={onSelectDate} />
+                : inputType === 'time'
+                    ? <TimePicker showHour={true} showMinute={true} showSecond={false}
+                        minuteStep={5} format={timeDisplayFormat} />
+                    : <Input />;
 }

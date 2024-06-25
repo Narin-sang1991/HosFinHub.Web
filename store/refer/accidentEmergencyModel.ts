@@ -3,9 +3,9 @@ export interface AccidentEmergencyModel {
     id: string
     hn: string
     an: string
-    dateopd: string
+    dateopd: Date
     authae?: string
-    aedate: string
+    aedate?: string
     aetime?: string
     aetype?: string
     refer_no: string

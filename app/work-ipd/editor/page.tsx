@@ -47,7 +47,7 @@ import { convertEditorToAdp, genarateAdditPaymentEditors } from "@/client.consta
 import { recalcAdpCharges } from "@/client.constant/invoice.additional.constant";
 import { getReferType, getVisitDetail } from "@/client.constant/work.editor.constant";
 import { getPatientFullName } from "@/client.constant/work.search.constant";
-import { defaultReferObjective } from "@/client.constant/emergency.refer.constant";
+import { convertEditorToAer, defaultReferObjective } from "@/client.constant/emergency.refer.constant";
 
 import PatientInfoTab from "@/app/work-sub-component/patient.info";
 import InsureInfo from "@/app/work-sub-component/insure.info";
@@ -59,6 +59,7 @@ import { VisitDetailModel } from "@/store/work/workEditorModel";
 import { IpdReferModel } from "@/store/refer/referModel";
 import { InvoiceItemEditorModel } from "@/store/financial/invoiceItemModel";
 import { AccidentEmergencyModel } from "@/store/refer/accidentEmergencyModel";
+import { primaryColor } from "@/client.constant/styles..component.constant";
 import withTheme from "../../../theme";
 import "@/app/globals.css";
 //#endregion
@@ -150,7 +151,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
 
     const savedata: IpdDataModel = {
       adp: convertEditorToAdp(invoicedata.adpItems || invoicedata.additPaymentItems),
-      aer: aerItems,
+      aer: convertEditorToAer(aerItems),
       cht: convertEditorToCht(editingData?.invoices || [], invoicedata.invoiceItems, true),
       cha: convertEditorToCha(invoicedata.invoiceItems, tmpVisitDetail, patData[0]),
       dru: convertEditorToDru(invoicedata.drugItems),
@@ -320,7 +321,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
         title: "ข้อมูลอุบัติเหตุ ฉุกเฉิน และรับส่ง เพื่อรักษา",
         children: (
           <Form.Item name={"AccidenEmergencyRefer"}>
-            <AccidentEmergencyTab {...editingData?.accidenEmergencyRefer} isIPD={true} />
+            <AccidentEmergencyTab {...editingData?.accidenEmergencyRefer} visitDetail={visitDetail} />
           </Form.Item>
         )
       }),
@@ -390,7 +391,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
             <Divider type="vertical" style={{ height: 20 }} />
             <Statistic value={totalInvoice ? totalInvoice.totalAmount : '-'}
               title="รวมเงินขอเบิก" precision={2}
-              valueStyle={{ color: '#52c41a' }}
+              valueStyle={{ color: primaryColor }}
               prefix={totalInvoice ? <CalculatorOutlined /> : ''}
               suffix={totalInvoice ? "บาท" : ''} />
             <Divider type="vertical" style={{ height: 20 }} />
@@ -419,7 +420,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
               loading={saveState === "loading"}
               disabled={status === "loading" || reProcessState === "loading"}
               style={{ display: 'inline-flex', alignItems: 'center' }}
-              icon={<SaveTwoTone twoToneColor={'#52c41a'} style={{ fontSize: '30px' }} />}
+              icon={<SaveTwoTone twoToneColor={primaryColor} style={{ fontSize: '30px' }} />}
             />
             <Divider type="vertical" style={{ height: 20 }} />
             <Button type="text" onClick={onClose}

@@ -1,3 +1,6 @@
+import moment from "moment";
+import { dateInterfaceFormat, timeInterfaceFormat } from "./format.constant";
+import { AccidentEmergencyModel } from "@/store/refer/accidentEmergencyModel";
 
 const defaultStrEmpty: string = "-";
 export const defaultReferObjective = "0000";
@@ -45,3 +48,18 @@ export function getUcase(uCase?: string) {
     else return defaultStrEmpty;
 }
 
+export function convertEditorToAer(aerOriginals: AccidentEmergencyModel[]): AccidentEmergencyModel[] {
+    let results: AccidentEmergencyModel[] = [];
+    const dateTypes = ["dateopd", "aedate"];
+    aerOriginals.forEach(item => {
+        let data: AccidentEmergencyModel;
+        Object.keys(item).forEach((prop) => {
+            let propValue = item[prop];
+            if (dateTypes.includes(prop)) propValue = moment(propValue).format(dateInterfaceFormat)
+            // if (prop == 'aetime') propValue = moment(propValue).format(timeInterfaceFormat)
+            data = { ...data, [prop]: propValue };
+        });
+        results.push({ ...item });
+    });
+    return results;
+}
