@@ -169,9 +169,9 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       oop: editingData?.procedureItems || []
     };
     console.log("savedata=>", savedata);
-    // (async () => {
-    //   await dispatch(saveAsync({ ...savedata }));
-    // })();
+    (async () => {
+      await dispatch(saveAsync({ ...savedata }));
+    })();
   }
 
   function onClose() {
