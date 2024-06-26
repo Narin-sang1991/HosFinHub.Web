@@ -2,7 +2,8 @@
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { selectIpdTransferReady, searchAsync, selectStatus } from '@/store/work-ipd/transferIpdSlice'
 import { SearchOutlined, SendOutlined } from '@ant-design/icons'
-import { Space, Button, DatePicker, Form, FormProps, message, Table, TableColumnsType } from 'antd'
+import { Space, Button, DatePicker, Form, FormProps, message, Table } from 'antd';
+import type { TableColumnsType } from "antd";
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { dateDisplayFormat, } from "@/client.constant/format.constant";
@@ -46,21 +47,21 @@ const IpdTransfer = () => {
     return "";
   }
 
-  function getRecordPatientInscl(record: IpdTransferMode) {
+  function getRecordPatientInscl(record: IpdTransferMode): string {
     if (record.work_pat !== undefined) {
 
       if (record.work_pat.pat_ins === undefined) {
         return ""
       } else {
         const patientInscl = record.work_pat.pat_ins.find((i) => i.cid === record.work_pat.person_id)
-        return patientInscl?.inscl;
+        return patientInscl?.inscl ?? "";
       }
     } else {
       return "";
     }
   }
 
-  const columns: TableColumnsType = [
+  const columns: TableColumnsType<any> = [
     {
       title: "HN",
       dataIndex: "hn",
@@ -68,8 +69,7 @@ const IpdTransfer = () => {
       width: 40,
       fixed: "left",
       ellipsis: true,
-      sorter: (a, b) => a.hn.localeCompare(b.hn),
-
+      sorter: (a: any, b: any) => a.hn.localeCompare(b.hn),
     },
     {
       title: "วันที่จำหน่าย",
@@ -77,7 +77,7 @@ const IpdTransfer = () => {
       key: "datedsc",
       width: 60,
       ellipsis: true,
-      render: (date) => {
+      render: (date: string) => {
         return moment(new Date(date)).format("YYYY") === "1970" ? (
           <></>
         ) : (
@@ -89,13 +89,13 @@ const IpdTransfer = () => {
       title: "Patient Name",
       key: "work_pat",
       width: 80,
-      render: (record) => <>{getPatientName(record)}</>,
+      render: (record: IpdTransferMode) => <>{getPatientName(record)}</>,
     },
     {
       title: "Person ID",
       key: "person_id",
       width: 80,
-      render: (record) => <>{getRecordPatientID(record)}</>,
+      render: (record: IpdTransferMode) => <>{getRecordPatientID(record)}</>,
     },
     {
       title: "สิทธิ.",
@@ -103,9 +103,7 @@ const IpdTransfer = () => {
       key: "inscl",
       width: 40,
       ellipsis: true,
-      render: (_: any, record: IpdTransferMode) => (
-        <>{getRecordPatientInscl(record)}</>
-      ),
+      render: (record: IpdTransferMode) => <>{getRecordPatientInscl(record)}</>
     },
     {
       title: "AN.",
@@ -120,7 +118,7 @@ const IpdTransfer = () => {
       key: 'ipd_claim_log',
       width: 40,
       ellipsis: true,
-      render: (_: any, record: IpdTransferMode) => <div>{record.claim_log.map(i => i.status.description)[0]}</div>
+      render: (record: IpdTransferMode) => <div>{record.claim_log.map(i => i.status.description)[0]}</div>
     }
   ]
 

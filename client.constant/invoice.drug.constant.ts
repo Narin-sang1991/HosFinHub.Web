@@ -108,24 +108,40 @@ export async function recalcDrugCharges({
 export function convertEditorToDru(druEditors: InvoiceDrugEditorModel[]): InvoiceDrugModel[] {
   let results: InvoiceDrugModel[] = [];
   let excludeProps = ['dummyKey', 'isDurty', 'hasError', 'validError'];
-
-
-  for (let a in druEditors) {
-    let item: any = a
-    let data: InvoiceDrugModel;
+  druEditors.forEach((item) => {
+    let data: InvoiceDrugModel = {
+      id: "",
+      hcode: "",
+      hn: "",
+      clinic: "",
+      date_serv: new Date(),
+      person_id: "",
+      did: "",
+      didname: "",
+      amount: 0,
+      drugprice: 0,
+      drugcost: 0,
+      didstd: 0,
+      unit: "",
+      unit_pack: "",
+      seq: "",
+      drugremark: "",
+      totcopay: 0,
+      use_status: 0,
+      total: 0,
+      sigcode: "",
+      sigtext: ""
+    };
     Object.keys(item).forEach((prop) => {
       if (excludeProps.includes(prop)) return;
 
-      let propValue = item[prop];
+      let propValue = item[prop as keyof InvoiceDrugModel];
       if (prop == 'date_serv') propValue = moment(item[prop]).format(dateInterfaceFormat);
 
       data = { ...data, [prop]: propValue };
       results.push(data);
     });
-  }
-  // druEditors.forEach((item: any) => {
-
-  // });
+  });
 
   return results;
 }

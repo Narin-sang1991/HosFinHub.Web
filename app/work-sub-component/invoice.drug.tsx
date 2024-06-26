@@ -185,9 +185,9 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
       width: 20,
       ellipsis: true,
       render: (_: any, record: InvoiceDrugEditorModel) => {
-        return record.validError?.map((i, key) => {
+        return record.validError?.map((i, index) => {
           return (
-            <Tooltip key={key} title={`${i.code_error}: ${i.code_error_descriptions}`} >
+            <Tooltip key={index} title={`${i.code_error}: ${i.code_error_descriptions}`} >
               <WarningTwoTone twoToneColor="#ffab00" style={{ fontSize: '20px' }} />
             </Tooltip>
           );
@@ -312,7 +312,7 @@ const InvoiceDrugPage = function InvoiceDrug({ drugItems = [], onChange }: Invoi
       </Form>
       <Space size={"small"} wrap>
         {
-          moveItems.map((t, key) => { return <Tag key={key} color="warning">{t.name}</Tag> })
+          moveItems.map((t, index) => { return <Tag key={index} color="warning">{t.name}</Tag> })
         }
       </Space>
     </Space>

@@ -1,11 +1,11 @@
 'use client'
 
 import { IpdClamHistory, IpdClamService } from "@/store/history/claimModel";
-import Table, { ColumnsType } from "antd/es/table";
+import { Badge, Card, Col, Row, Tag, Tooltip, Table } from "antd";
+import type { TableColumnsType } from "antd";
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { getIpdClaim, selectClaimService, selectStatus } from "@/store/history/historyIpdSlice";
-import { Badge, Card, Col, Row, Tag, Tooltip } from "antd";
 
 interface ClaimHistoryProps {
   ipdHistory: IpdClamHistory[]
@@ -59,12 +59,12 @@ const ClaimHistory = (props: ClaimHistoryProps) => {
     await dispatch(getIpdClaim(getAn))
   }
 
-  const columnClaimNumber: ColumnsType = [
+  const columnClaimNumber: TableColumnsType<IpdClamHistory> = [
     {
       title: 'HOS CALIM',
       key: 'ipd_claim_number',
       dataIndex: 'ipd_claim_number',
-      render: (row, record) => (<a onClick={() => onSelectRow(record)}>{row}</a>)
+      render: (row: any, record: IpdClamHistory) => (<a onClick={() => onSelectRow(record)}>{row}</a>)
     }, {
       title: 'จำนวน',
       key: 'service',
@@ -75,7 +75,7 @@ const ClaimHistory = (props: ClaimHistoryProps) => {
       title: 'วันที่ส่งเคลม',
       key: 'sent_date',
       dataIndex: 'sent_date',
-      render: (value, date) => {
+      render: (value: string) => {
         const newDate = new Date((value.substr(0, 4) + '-' + value.substr(4, 2) + '-' + value.substr(6, 2))).toLocaleDateString('th-TH')
         return (
           <>{newDate}</>
@@ -89,7 +89,7 @@ const ClaimHistory = (props: ClaimHistoryProps) => {
     }
   ]
 
-  const columnClaimOpdList: ColumnsType = [
+  const columnClaimOpdList = [
     {
       title: 'HN',
       key: 'hn',
@@ -119,8 +119,8 @@ const ClaimHistory = (props: ClaimHistoryProps) => {
       title: 'สถานะ',
       key: 'fdh',
       dataIndex: 'fdh',
-      render: (row) => {
-        const list = row.slice(-1).pop()
+      render: (fdh: any[]) => {
+        const list = fdh.slice(-1).pop()
         let color = ''
         if (list?.process_status === "0") {
           color = 'processing'
@@ -141,7 +141,7 @@ const ClaimHistory = (props: ClaimHistoryProps) => {
           color = 'error'
         }
         return <Tooltip title={list.reject_list !== undefined ? list.reject_list.slice(-1).pop().description : 'success'}>
-          <Badge count={row.length}>
+          <Badge count={fdh.length}>
             <Tag color={color}>{list === undefined ? 'ไม่พบข้อมูล' : list.status_message_th}</Tag>
           </Badge>
         </Tooltip>
@@ -160,7 +160,7 @@ const ClaimHistory = (props: ClaimHistoryProps) => {
               size='small'
               dataSource={props.ipdHistory}
               rowKey={'opd_claim_number'}
-              rowHoverable={true}
+              // rowHoverable={true}
               loading={claimStatus === 'loading' ? true : false}
             />
           </Card>

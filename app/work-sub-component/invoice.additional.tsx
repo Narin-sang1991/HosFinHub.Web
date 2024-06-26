@@ -381,9 +381,9 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ visitDetail, addition
       width: 10,
       ellipsis: true,
       render: (_: any, record: AdditPaymentModelEditorModel) => {
-        return record.validError?.map((i, key: number) => {
+        return record.validError?.map((i, index) => {
           return (
-            <Tooltip title={`${i.code_error}: ${i.code_error_descriptions}`} key={key} >
+            <Tooltip key={index} title={`${i.code_error}: ${i.code_error_descriptions}`} >
               <WarningTwoTone twoToneColor="#ffab00" style={{ fontSize: '20px' }} />
             </Tooltip >
           );

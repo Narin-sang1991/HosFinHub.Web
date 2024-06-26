@@ -8,20 +8,20 @@ import React from "react";
 
 const Fillter = () => {
   const dispatch = useAppDispatch();
-  const searchResult = useAppSelector(selectResult) as unknown as any[];
+  const searchResult = useAppSelector(selectResult);
 
   const findOnFillterHn: SearchProps['onSearch'] = (hn: string, _e, info) => {
     if (hn === '') {
       reloadData()
     } else {
-      const setTable = searchResult.filter(item => {
-        const index = item.hn.indexOf(hn)
-        if (index > -1) {
-          return item
-        } else {
-          return null
-        }
-      })
+      if (searchResult == undefined) return null;
+
+      const setTable = searchResult.data.filter(item => {
+        const index = item.hn.indexOf(hn);
+        if (index <= -1) return null;
+
+        return item;
+      });
 
       dispatch(fillterAsync(setTable))
     }
@@ -31,14 +31,13 @@ const Fillter = () => {
     if (vn === '') {
       reloadData()
     } else {
-      const setTable = searchResult.filter(item => {
+      if (searchResult == undefined) return null;
+
+      const setTable = searchResult.data.filter(item => {
         const index = item.seq.indexOf(vn)
-        if (index > -1) {
-          return item
-        } else {
-          return null
-        }
-      })
+        if (index <= -1) return null;
+        return item;
+      });
 
       dispatch(fillterAsync(setTable))
     }
