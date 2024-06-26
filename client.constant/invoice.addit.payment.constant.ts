@@ -131,7 +131,7 @@ export function convertEditorToAdp(adtEditors: AdditPaymentModelEditorModel[]): 
     Object.keys(item).forEach((prop) => {
       if (excludeProps.includes(prop)) return;
       
-      let propValue = item[prop];
+      let propValue = item[prop as keyof AdditionalPaymentModel];
       if (prop == 'dateopd') propValue = moment(item[prop]).format(dateInterfaceFormat);
 
       data = { ...data, [prop]: propValue };

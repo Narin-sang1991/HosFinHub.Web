@@ -25,7 +25,7 @@ export function genarateDrugEditors(drugItems: InvoiceDrugModel[], validItems: O
       if (druError.dru.length > 0) {
         itemDruError = druError.dru
       }
-  
+
     }
 
   }
@@ -109,11 +109,33 @@ export function convertEditorToDru(druEditors: InvoiceDrugEditorModel[]): Invoic
   let results: InvoiceDrugModel[] = [];
   let excludeProps = ['dummyKey', 'isDurty', 'hasError', 'validError'];
   druEditors.forEach((item) => {
-    let data: InvoiceDrugModel;
+    let data: InvoiceDrugModel = {
+      id: "",
+      hcode: "",
+      hn: "",
+      clinic: "",
+      date_serv: new Date(),
+      person_id: "",
+      did: "",
+      didname: "",
+      amount: 0,
+      drugprice: 0,
+      drugcost: 0,
+      didstd: 0,
+      unit: "",
+      unit_pack: "",
+      seq: "",
+      drugremark: "",
+      totcopay: 0,
+      use_status: 0,
+      total: 0,
+      sigcode: "",
+      sigtext: ""
+    };
     Object.keys(item).forEach((prop) => {
       if (excludeProps.includes(prop)) return;
 
-      let propValue = item[prop];
+      let propValue = item[prop as keyof InvoiceDrugModel];
       if (prop == 'date_serv') propValue = moment(item[prop]).format(dateInterfaceFormat);
 
       data = { ...data, [prop]: propValue };

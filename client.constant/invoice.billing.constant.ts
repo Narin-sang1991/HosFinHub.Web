@@ -306,7 +306,7 @@ export function convertEditorToCha(chaEditors: InvoiceItemEditorModel[], visitDe
     Object.keys(item).forEach((prop1) => {
       if (excludeProps.includes(prop1)) return;
 
-      let prop1Value = item[prop1];
+      let prop1Value = item[prop1 as keyof InvoiceItemModel];
       if (prop1 == 'date') prop1Value = moment(item[prop1]).format(dateInterfaceFormat);
 
       dataSuffix1 = { ...dataSuffix1, [prop1]: prop1Value };
@@ -323,7 +323,7 @@ export function convertEditorToCha(chaEditors: InvoiceItemEditorModel[], visitDe
       Object.keys(item).forEach((prop2) => {
         if (excludeProps.includes(prop2)) return;
 
-        let prop2Value = item[prop2];
+        let prop2Value = item[prop2 as keyof InvoiceItemModel];
         if (prop2 == 'date') prop2Value = moment(item[prop2]).format(dateInterfaceFormat);
 
         dataSuffix2 = { ...dataSuffix2, [prop2]: prop2Value };

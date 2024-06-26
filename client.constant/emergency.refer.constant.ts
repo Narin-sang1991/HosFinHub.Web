@@ -53,11 +53,12 @@ export function convertEditorToAer(aerOriginals: AccidentEmergencyModel[]): Acci
     const dateTypes = ["dateopd", "aedate"];
     aerOriginals.forEach(item => {
         let data: AccidentEmergencyModel;
-        Object.keys(item).forEach((prop) => {
-            let propValue = item[prop];
-            if (dateTypes.includes(prop)) propValue = moment(propValue).format(dateInterfaceFormat)
+        Object.keys(item).forEach(key => { 
+            // if (!item.hasOwnProperty(key)) return;
+            let propValue = item[key as keyof AccidentEmergencyModel];
+            if (dateTypes.includes(key)) propValue = moment(propValue).format(dateInterfaceFormat)
             // if (prop == 'aetime') propValue = moment(propValue).format(timeInterfaceFormat)
-            data = { ...data, [prop]: propValue };
+            data = { ...data, [key]: propValue };
         });
         results.push({ ...item });
     });

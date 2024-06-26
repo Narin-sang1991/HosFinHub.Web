@@ -33,9 +33,10 @@ export const feeAdditionalSlice = createAppSlice({
         pending: (state) => {
           state.searchDrugStatus = "loading";
         },
-        fulfilled: (state, action: PayloadAction<FeeDrugModel[]>) => {
+        fulfilled: (state, action) => {
+          const payload = action.payload as unknown as FeeDrugModel[]
           state.searchDrugStatus = "idle";
-          state.searchDrugResult = action.payload;
+          state.searchDrugResult = payload;
         },
         rejected: (state) => {
           state.searchDrugStatus = "failed";
@@ -52,9 +53,10 @@ export const feeAdditionalSlice = createAppSlice({
         pending: (state) => {
           state.searchFeeStatus = "loading";
         },
-        fulfilled: (state, action: PayloadAction<FeeScheduleModel[]>) => {
+        fulfilled: (state, action) => {
+          const payload = action.payload as unknown as FeeScheduleModel[]
           state.searchFeeStatus = "idle";
-          state.searchFeeResult = action.payload;
+          state.searchFeeResult = payload;
         },
         rejected: (state) => {
           state.searchFeeStatus = "failed";

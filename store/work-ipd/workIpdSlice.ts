@@ -40,9 +40,10 @@ export const workIpdSlice = createAppSlice({
         pending: (state) => {
           state.searchStatus = "loading";
         },
-        fulfilled: (state, action: PayloadAction<IpdSearchReponse>) => {
+        fulfilled: (state, action) => { 
+          const payload = action.payload as unknown as IpdSearchReponse;
           state.searchStatus = "idle";
-          state.searchResult = action.payload;
+          state.searchResult = payload;
           // state.tableResult = action.payload.data;
         },
         rejected: (state) => {
@@ -60,10 +61,11 @@ export const workIpdSlice = createAppSlice({
         pending: (state) => {
           state.getStatus = "loading";
         },
-        fulfilled: (state, action: PayloadAction<IpdResponse>) => {
+        fulfilled: (state, action) => {
+          const payload = action.payload as unknown as IpdResponse;
           state.getStatus = "idle";
-          state.getResult = action.payload.data;
-          state.getValid = action.payload.error;
+          state.getResult = payload.data;
+          state.getValid = payload.error;
         },
         rejected: (state) => {
           state.getStatus = "failed";
