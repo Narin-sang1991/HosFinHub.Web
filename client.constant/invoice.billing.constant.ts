@@ -297,7 +297,7 @@ export function convertEditorToCha(chaEditors: InvoiceItemEditorModel[], visitDe
   let results: InvoiceItemModel[] = [];
   let chaItems: InvoiceItemEditorModel[] = [...chaEditors].filter(t => t.seq != '0');
   let excludeProps = ['dummyKey', 'isDurty', 'totalAmount', 'overAmount', 'chargeDetail', 'status', 'valid'];
-  chaItems.forEach(item => {
+  chaItems.forEach((item: any) => {
     let overAmount: number = Number(item.overAmount.toString());
     // let totalAmount: number = overAmount > 0 ? Number(item.totalAmount.toString()) - overAmount : Number(item.totalAmount.toString());
     let totalAmount: number = Number(item.totalAmount.toString());

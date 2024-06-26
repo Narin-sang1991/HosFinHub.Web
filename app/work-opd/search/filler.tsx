@@ -8,13 +8,13 @@ import React from "react";
 
 const Fillter = () => {
   const dispatch = useAppDispatch();
-  const searchResult = useAppSelector(selectResult);
+  const searchResult = useAppSelector(selectResult) as unknown as any[];
 
   const findOnFillterHn: SearchProps['onSearch'] = (hn: string, _e, info) => {
     if (hn === '') {
       reloadData()
     } else {
-        const setTable = searchResult.filter(item => {
+      const setTable = searchResult.filter(item => {
         const index = item.hn.indexOf(hn)
         if (index > -1) {
           return item
@@ -22,7 +22,7 @@ const Fillter = () => {
           return null
         }
       })
-      
+
       dispatch(fillterAsync(setTable))
     }
   }
@@ -39,7 +39,7 @@ const Fillter = () => {
           return null
         }
       })
-      
+
       dispatch(fillterAsync(setTable))
     }
   }

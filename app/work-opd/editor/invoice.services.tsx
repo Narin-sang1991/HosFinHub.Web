@@ -151,9 +151,9 @@ const InvoiceServices: React.FC<InvoiceServicesProps> = ({ modelServiceOpen, mod
       width: 20,
       ellipsis: true,
       render: (_: any, record: AdditPaymentModelEditorModel) => {
-        return record.validError?.map((i) => {
+        return record.validError?.map((i, key: number) => {
           return (
-            <Tooltip title={`${i.code_error}: ${i.code_error_descriptions}`} >
+            <Tooltip key={key} title={`${i.code_error}: ${i.code_error_descriptions}`} >
               <WarningTwoTone twoToneColor="#ffab00" style={{ fontSize: '20px' }} />
             </Tooltip>
           );

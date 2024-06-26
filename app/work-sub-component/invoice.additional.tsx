@@ -381,11 +381,11 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ visitDetail, addition
       width: 10,
       ellipsis: true,
       render: (_: any, record: AdditPaymentModelEditorModel) => {
-        return record.validError?.map((i) => {
+        return record.validError?.map((i, key: number) => {
           return (
-            <Tooltip title={`${i.code_error}: ${i.code_error_descriptions}`} >
+            <Tooltip title={`${i.code_error}: ${i.code_error_descriptions}`} key={key} >
               <WarningTwoTone twoToneColor="#ffab00" style={{ fontSize: '20px' }} />
-            </Tooltip>
+            </Tooltip >
           );
         });
       },
@@ -436,13 +436,13 @@ const InvoiceAdditionalPage = function InvoiceAdditional({ visitDetail, addition
                 placement="bottom"
                 onConfirm={() => deleteItem(record.id)}
               > */}
-                <Button
-                  onClick={() => deleteItem(record.id)}
-                  disabled={!viewMode}
-                  type="text" size="small" block
-                  danger
-                  icon={<DeleteOutlined />}
-                />
+              <Button
+                onClick={() => deleteItem(record.id)}
+                disabled={!viewMode}
+                type="text" size="small" block
+                danger
+                icon={<DeleteOutlined />}
+              />
               {/* </Popconfirm> */}
             </Tooltip>
           </Space>

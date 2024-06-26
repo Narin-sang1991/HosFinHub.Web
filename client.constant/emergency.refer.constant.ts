@@ -51,7 +51,7 @@ export function getUcase(uCase?: string) {
 export function convertEditorToAer(aerOriginals: AccidentEmergencyModel[]): AccidentEmergencyModel[] {
     let results: AccidentEmergencyModel[] = [];
     const dateTypes = ["dateopd", "aedate"];
-    aerOriginals.forEach(item => {
+    aerOriginals.forEach((item:any) => {
         let data: AccidentEmergencyModel;
         Object.keys(item).forEach((prop) => {
             let propValue = item[prop];

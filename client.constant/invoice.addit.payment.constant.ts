@@ -99,7 +99,7 @@ export function convertEditorToAdp(adtEditors: AdditPaymentModelEditorModel[]): 
   let results: AdditionalPaymentModel[] = [];
   let excludeProps = ['dummyKey', 'isDurty', 'freeDrug', 'feeSchedule', 'feeEditor', 'isFeeDrug',
     'typeDisplay', 'typeEditor', 'validError', 'hasError'];
-  adtEditors.forEach(item => {
+  adtEditors.forEach((item: any) => {
     let data: AdditionalPaymentModel = {
       id: "",
       hn: "",
@@ -130,7 +130,7 @@ export function convertEditorToAdp(adtEditors: AdditPaymentModelEditorModel[]): 
     };
     Object.keys(item).forEach((prop) => {
       if (excludeProps.includes(prop)) return;
-      
+
       let propValue = item[prop];
       if (prop == 'dateopd') propValue = moment(item[prop]).format(dateInterfaceFormat);
 

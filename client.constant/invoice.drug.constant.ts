@@ -25,7 +25,7 @@ export function genarateDrugEditors(drugItems: InvoiceDrugModel[], validItems: O
       if (druError.dru.length > 0) {
         itemDruError = druError.dru
       }
-  
+
     }
 
   }
@@ -108,7 +108,10 @@ export async function recalcDrugCharges({
 export function convertEditorToDru(druEditors: InvoiceDrugEditorModel[]): InvoiceDrugModel[] {
   let results: InvoiceDrugModel[] = [];
   let excludeProps = ['dummyKey', 'isDurty', 'hasError', 'validError'];
-  druEditors.forEach((item) => {
+
+
+  for (let a in druEditors) {
+    let item: any = a
     let data: InvoiceDrugModel;
     Object.keys(item).forEach((prop) => {
       if (excludeProps.includes(prop)) return;
@@ -117,8 +120,12 @@ export function convertEditorToDru(druEditors: InvoiceDrugEditorModel[]): Invoic
       if (prop == 'date_serv') propValue = moment(item[prop]).format(dateInterfaceFormat);
 
       data = { ...data, [prop]: propValue };
+      results.push(data);
     });
-    results.push(data);
-  });
+  }
+  // druEditors.forEach((item: any) => {
+
+  // });
+
   return results;
 }

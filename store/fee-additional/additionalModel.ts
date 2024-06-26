@@ -18,7 +18,7 @@ export interface AdditionalPaymentModel {
     dose?: string;
     ca_type?: string;
     serialno?: string;
-    totcopay: number = 0.0; // total amount of exclude cliaming
+    totcopay: number | 0.0; // total amount of exclude cliaming
     use_status?: string;
     total: number;
     tmltcode?: string;
