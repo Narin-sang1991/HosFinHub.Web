@@ -134,8 +134,8 @@ const AccidentEmergencyTab = function AccidentEmergency({
         const item = tmpItems[index];
         tmpItems.splice(index, 1, {
             ...item,
-            aedate: dayjs(row.aedate, dateInterfaceFormat).format(dateInterfaceFormat),
-            aetime: dayjs(row.aetime, timeInterfaceFormat).format(timeInterfaceFormat),
+            aedate: row.aedate ? dayjs(row.aedate, dateInterfaceFormat).format(dateInterfaceFormat) : undefined,
+            aetime: row.aedate ? dayjs(row.aetime, timeInterfaceFormat).format(timeInterfaceFormat) : undefined,
             authae: row.authae,
             ucae: row.ucae,
             emtype: row.emtype,
@@ -220,6 +220,7 @@ const AccidentEmergencyTab = function AccidentEmergency({
                 options={emTypes.map(t => { return { label: t.text, value: t.key.toString() } })}
             />,
             editable: true,
+            required: true,
             render: (emtype?: string) => emtype ? getEmTypes(emtype) : "",
         },
         {
@@ -311,6 +312,7 @@ const AccidentEmergencyTab = function AccidentEmergency({
                 dataIndex: col.dataIndex,
                 title: col.title,
                 editing: isEditing(record),
+                isRequired: col.required,
                 selectorNode: col.selectorNode
             }),
         } as TableColumnProps<AccidentEmergencyModel>;

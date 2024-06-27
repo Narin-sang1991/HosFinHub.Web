@@ -7,6 +7,7 @@ import {
 
 export interface EditableCellProps<T> extends React.HTMLAttributes<HTMLElement> {
     editing: boolean;
+    isRequired?: boolean;
     dataIndex: string;
     title: any;
     inputType: 'number' | 'text' | 'selector' | 'date' | 'time';
@@ -19,6 +20,7 @@ export interface EditableCellProps<T> extends React.HTMLAttributes<HTMLElement> 
 
 export function EditableCell<T>({
     editing,
+    isRequired,
     dataIndex,
     title,
     inputType,
@@ -40,8 +42,8 @@ export function EditableCell<T>({
                     style={{ margin: 0 }}
                     rules={[
                         {
-                            required: true,
-                            message: `Please Input ${title}!`,
+                            required: isRequired,
+                            message: `ต้องระบุ ${title}!`,
                         },
                     ]}
                 >
