@@ -139,8 +139,8 @@ export function convertEditorToDru(druEditors: InvoiceDrugEditorModel[]): Invoic
       if (prop == 'date_serv') propValue = moment(item[prop]).format(dateInterfaceFormat);
 
       data = { ...data, [prop]: propValue };
-      results.push(data);
     });
+    results.push(data);
   });
 
   return results;
