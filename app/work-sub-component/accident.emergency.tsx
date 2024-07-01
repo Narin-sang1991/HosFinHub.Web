@@ -23,8 +23,8 @@ import AccidentEmergencyEditor from "./accident.emergency.editor";
 import ReferInfo from "./refer.info";
 import { AccidentEmergencyModel } from '@/store/refer/accidentEmergencyModel'
 import { VisitDetailModel } from "@/store/work/workEditorModel";
-import { dateDisplayFormat, dateInterfaceFormat, dateTimeDisplayFormat, timeDisplayFormat, timeInterfaceFormat, timeZoneOffset } from "@/client.constant/format.constant";
-import { aeTypes, defaultReferObjective, emTypes, getAeTypes, getEmTypes, getUcase, uCaseItems } from "@/client.constant/emergency.refer.constant";
+import { dateDisplayFormat, dateInterfaceFormat, dateTimeDisplayFormat, timeInterfaceFormat, timeZoneOffset } from "@/client.constant/format.constant";
+import { aeTypes, defaultReferObjective, emTypes, getAeTypes, getEmTypes, getUcase, suffixNewItem, uCaseItems } from "@/client.constant/emergency.refer.constant";
 import { EditableCell } from "@/client.component/antd.table.editable";
 import { primaryColor } from "@/client.constant/styles..component.constant";
 
@@ -78,7 +78,7 @@ const AccidentEmergencyTab = function AccidentEmergency({
     //#region Local Filter & Function
     function addItem(): void {
         let newItem: AccidentEmergencyModel = {
-            id: newUid(),
+            id: newUid() + suffixNewItem,
             hn: visitDetail?.hn || "0",
             an: visitDetail ? (visitDetail.isIPD == true ? visitDetail.an : "") : "0",
             dateopd: visitDetail?.visitDate || currentDateTime,

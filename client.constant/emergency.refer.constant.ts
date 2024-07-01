@@ -4,6 +4,8 @@ import { AccidentEmergencyModel } from "@/store/refer/accidentEmergencyModel";
 
 const defaultStrEmpty: string = "-";
 export const defaultReferObjective = "0000";
+export const suffixNewItem = "#new";
+
 
 export const aeTypes = [
     { key: 'V', text: "ใช้ พรบ. ผู้ประสบภัยจากรถ" },
@@ -52,6 +54,7 @@ export function convertEditorToAer(aerOriginals: AccidentEmergencyModel[]): Acci
     let results: AccidentEmergencyModel[] = [];
     const dateTypes = ["dateopd", "aedate"];
     aerOriginals.forEach((item: any) => {
+        const isNewItem = item.id.includes(suffixNewItem);
         let data: AccidentEmergencyModel = {
             id: "",
             hn: "",
@@ -71,11 +74,12 @@ export function convertEditorToAer(aerOriginals: AccidentEmergencyModel[]): Acci
 
             let propValue = item[key as keyof AccidentEmergencyModel];
             if (dateTypes.includes(key) && propValue) propValue = moment(propValue).format(dateInterfaceFormat)
-           
+
             if (propValue == undefined || propValue == null) propValue = "";
 
             data = { ...data, [key]: propValue };
         });
+        data.id = isNewItem ? "" : data.id;
         results.push(data);
     });
     return results;
