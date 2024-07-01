@@ -51,16 +51,32 @@ export function getUcase(uCase?: string) {
 export function convertEditorToAer(aerOriginals: AccidentEmergencyModel[]): AccidentEmergencyModel[] {
     let results: AccidentEmergencyModel[] = [];
     const dateTypes = ["dateopd", "aedate"];
-    aerOriginals.forEach((item:any) => {
-        let data: AccidentEmergencyModel;
-        Object.keys(item).forEach(key => { 
-            // if (!item.hasOwnProperty(key)) return;
+    aerOriginals.forEach((item: any) => {
+        let data: AccidentEmergencyModel = {
+            id: "",
+            hn: "",
+            an: "",
+            dateopd: new Date(),
+            refer_no: "",
+            refmaini: "",
+            ireftype: "",
+            refmaino: "",
+            oreftype: "",
+            seq: "",
+            aestatus: "",
+            dalert: "",
+            talert: ""
+        };
+        Object.keys(item).forEach(key => {
+
             let propValue = item[key as keyof AccidentEmergencyModel];
-            if (dateTypes.includes(key)) propValue = moment(propValue).format(dateInterfaceFormat)
-            // if (prop == 'aetime') propValue = moment(propValue).format(timeInterfaceFormat)
+            if (dateTypes.includes(key) && propValue) propValue = moment(propValue).format(dateInterfaceFormat)
+           
+            if (propValue == undefined || propValue == null) propValue = "";
+
             data = { ...data, [key]: propValue };
         });
-        results.push({ ...item });
+        results.push(data);
     });
     return results;
 }
