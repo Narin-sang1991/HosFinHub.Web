@@ -163,7 +163,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
       pat: patData,
       iop: editingData?.procedureItems || []
     };
-    console.log("savedata=>", savedata);
+    console.log("savedata-ipd=>", savedata);
     (async () => {
       await dispatch(saveAsync({ ...savedata }));
     })();
