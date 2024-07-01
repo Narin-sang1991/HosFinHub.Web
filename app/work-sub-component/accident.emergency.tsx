@@ -87,7 +87,7 @@ const AccidentEmergencyTab = function AccidentEmergency({
             ireftype: "",
             refmaino: "",
             oreftype: "",
-            seq: visitDetail?.seq || "0",
+            seq: visitDetail ? (visitDetail.isIPD == true ? "" : visitDetail.seq) : "",
             aestatus: "",
             dalert: "",
             talert: ""
