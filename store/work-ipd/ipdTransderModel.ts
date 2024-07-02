@@ -1,12 +1,12 @@
-interface PatIns {
+export interface PatIns {
     id: string
     cid: string
     inscl: string
     subtype: string
-
+    an: string
 }
 
-interface IpdPat {
+export interface IpdPat {
     id: string
     hn: string
     title: string

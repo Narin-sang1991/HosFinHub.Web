@@ -10,7 +10,7 @@ import { dateDisplayFormat, } from "@/client.constant/format.constant";
 import { getPatientID } from "@/client.constant/patient.constant";
 // import Fillter from '../search/filler';
 import { claimIpd } from '@/services/send.fhd.prioviver';
-import { IpdTransferMode } from '@/store/work-ipd/ipdTransderModel';
+import { IpdPat, IpdTransferMode } from '@/store/work-ipd/ipdTransderModel';
 
 const IpdTransfer = () => {
   const dispatch = useAppDispatch();
@@ -26,13 +26,11 @@ const IpdTransfer = () => {
   }, [ipdTransferReady])
 
   const getReadyData = () => {
-    console.log(ipdTransferReady);
-
     setReadyTable(ipdTransferReady)
   }
 
   function getPatientName(record: IpdTransferMode) {
-    if (record.work_pat !== undefined) {
+    if (record?.work_pat !== undefined) {
       let patient = record.work_pat;
       return `${patient.title}${patient.fname}  ${patient.lname}`;
     }
@@ -40,21 +38,21 @@ const IpdTransfer = () => {
   }
 
   function getRecordPatientID(record: IpdTransferMode) {
-    if (record.work_pat !== undefined) {
+    if (record?.work_pat !== undefined) {
       let patient = record.work_pat;
       return getPatientID(patient.person_id);
     }
     return "";
   }
 
-  function getRecordPatientInscl(record: IpdTransferMode): string {
-    if (record.work_pat !== undefined) {
+  function getRecordPatientInscl(record: IpdPat): string | undefined {
 
-      if (record.work_pat.pat_ins === undefined) {
+    if (record?.pat_ins !== undefined) {
+      if (record.pat_ins === undefined) {
         return ""
       } else {
-        const patientInscl = record.work_pat.pat_ins.find((i) => i.cid === record.work_pat.person_id)
-        return patientInscl?.inscl ?? "";
+        const patientInscl = record.pat_ins.find((i) => i.an === record.pat_ins[0].an)
+        return patientInscl?.inscl
       }
     } else {
       return "";
@@ -99,11 +97,11 @@ const IpdTransfer = () => {
     },
     {
       title: "สิทธิ.",
-      dataIndex: "inscl",
-      key: "inscl",
+      dataIndex: "work_pat",
+      key: "work_pat",
       width: 40,
       ellipsis: true,
-      render: (record: IpdTransferMode) => <>{getRecordPatientInscl(record)}</>
+      render: (record: IpdPat) => <>{getRecordPatientInscl(record)}</>
     },
     {
       title: "AN.",
@@ -118,7 +116,7 @@ const IpdTransfer = () => {
       key: 'ipd_claim_log',
       width: 40,
       ellipsis: true,
-      render: (record: IpdTransferMode) => <div>{record.claim_log.map(i => i.status.description)[0]}</div>
+      render: (record: IpdTransferMode) => <div>{record?.claim_log.map(i => i.status.description)[0]}</div>
     }
   ]
 

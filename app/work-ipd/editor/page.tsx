@@ -544,7 +544,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
                             <Space align="start" size="small">
                               <Text type="secondary">เวลา admit :</Text>
                               <Text type="warning">
-                                {`${editingData?.ipdDetail.timeadm.substring(0, 2)}:${editingData?.ipdDetail.timeadm.substring(2, 4)}`}
+                                {`${editingData?.ipdDetail?.timeadm?.substring(0, 2)}:${editingData?.ipdDetail?.timeadm?.substring(2, 4)}`}
                               </Text>
                             </Space>
                           ),
@@ -579,7 +579,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
                             <Space align="start" size="small">
                               <Text type="secondary">เวลาจำหน่าย :</Text>
                               <Text type="warning">
-                                {`${editingData?.ipdDetail.timedsc.substring(0, 2)}:${editingData?.ipdDetail.timedsc.substring(2, 4)}`}
+                                {`${editingData?.ipdDetail?.timedsc?.substring(0, 2)}:${editingData?.ipdDetail?.timedsc?.substring(2, 4)}`}
                               </Text>
                             </Space>
                           ),
