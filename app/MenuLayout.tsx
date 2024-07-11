@@ -35,11 +35,8 @@ function getItem(
     type,
   } as MenuItem;
 }
-const MenuLayout = function MenuLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+
+const MenuLayout = function MenuLayout({ children, }: { children: React.ReactNode; }) {
   const { token: { colorBgContainer, borderRadiusLG }, } = theme.useToken();
   const [collapsed, setCollapsed] = useState(false);
   const [visitType, setVisitType] = useState('opd');
@@ -155,7 +152,7 @@ const MenuLayout = function MenuLayout({
   );
 
   return (
-    <Layout>
+    <Layout>      
       <Sider
         style={{ background: colorBgContainer }}
         theme="light"

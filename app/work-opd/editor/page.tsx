@@ -5,12 +5,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import moment from "moment";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import {
-  Card, Form, Row, Col,
-  Tabs, Space, Avatar, Typography,
-  Collapse, Skeleton, Button,
-  Divider, Statistic, Popconfirm
-} from "antd";
+import { Card, Form, Row, Col, Tabs, Space, Avatar, Typography, Collapse, Skeleton, Button, Divider, Statistic, Popconfirm, Tag } from "antd";
 import {
   ManOutlined, WomanOutlined, MehOutlined,
   IdcardOutlined, TruckOutlined, ExperimentOutlined,
@@ -62,6 +57,7 @@ import { AccidentEmergencyModel } from "@/store/refer/accidentEmergencyModel";
 import { primaryColor } from "@/client.constant/styles..component.constant";
 import withTheme from "../../../theme";
 import "@/app/globals.css";
+import dayjs from "dayjs";
 //#endregion
 
 interface OpdEditorProps { }
@@ -387,8 +383,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
           <Space>
             <Button type="primary" shape="round" ghost style={{ fontSize: '15px' }}
               onClick={reCalculation} disabled={status === "loading" || saveState === "loading" || reProcessState === "loading"}
-              icon={<RetweetOutlined style={{ fontSize: '18px' }} />}
-            >{"คำนวนราคา"}</Button>
+              icon={<RetweetOutlined style={{ fontSize: '18px' }} />}>{"คำนวนราคา"}</Button>
             <Divider type="vertical" style={{ height: 20 }} />
             <Statistic value={originTotalInvoice}
               title="จำนวนเงินตั้งต้น" precision={2}
@@ -443,6 +438,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         >
           <Collapse
             size="small"
+            activeKey={'1'}
             style={{ margin: 5 }}
             items={[
               {
@@ -485,7 +481,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                   </Row>
                 ),
                 children: (
-                  <Row justify="space-around" align="top">
+                  <Row justify="space-around" align="middle">
                     <Col
                       key={"hn"}
                       xs={{ flex: "100%" }}
@@ -493,8 +489,8 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                       md={{ flex: "18%" }}
                       lg={{ flex: "13%" }}
                     >
-                      <Space direction="vertical" align="center" size="small">
-                        <Avatar
+                      <Space direction="vertical" align="center" size="middle">
+                        {/* <Avatar
                           shape="square"
                           size={48}
                           icon={
@@ -506,9 +502,9 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                               <MehOutlined />
                             )
                           }
-                        />
-                        <Text strong keyboard>{`HN:${editingData?.opdDetail.hn || "N/A"
-                          }`}</Text>
+                        /> */}
+                        <Tag color="success">{`HN:${editingData?.opdDetail.hn || "N/A"}`}</Tag >
+                        <Tag color="processing">{`VN:${editingData?.opdDetail.seq || "N/A"}`}</Tag >
                       </Space>
                     </Col>
                     <Col
@@ -585,9 +581,24 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                             <Space align="start" size="small">
                               <Text type="secondary">วันที่รับบริการ :</Text>
                               <Text type="warning">
-                                {moment(editingData?.opdDetail.dateopd).format(
+                                {/* {moment(editingData?.opdDetail.dateopd).format(
                                   dateDisplayFormat
-                                )}
+                                )} */}
+                                {dayjs(editingData?.opdDetail.dateopd).format('DD-MMMM-YYYY')}
+                              </Text>
+                            </Space>
+                          ),
+                        })}
+                        {getColResponsive({
+                          key: "rr",
+                          children: (
+                            <Space align="start" size="small">
+                              <Text type="secondary">เวลาเข้ารับบริการ :</Text>
+                              <Text type="warning">
+                                {/* {moment(editingData?.opdDetail.dateopd).format(
+                                  dateDisplayFormat
+                                )} */}
+                                {(editingData?.opdDetail.timeopd.substring(0,2)+':'+editingData?.opdDetail.timeopd.substring(2,4))}
                               </Text>
                             </Space>
                           ),

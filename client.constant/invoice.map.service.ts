@@ -59,27 +59,31 @@ export const allServicePayment: ServicePayment[] = [
         paymentFileCode: "F",
         chargeItemType: ["13"]
     },
+    // {
+    //     paymentName: "",
+    //     paymentFileCode: "G",
+    //     chargeItemType: [""]
+    // },
     {
-        paymentName: "",
-        paymentFileCode: "G",
-        chargeItemType: [""]
-    }, {
-        paymentName: "",
+        paymentName: "ค่าธรรมเนียมบุคลกรทางการแพทย์",
         paymentFileCode: "H",
-        chargeItemType: [""]
+        chargeItemType: ["17"]
     },
+
+    // {
+    //     paymentName: "",
+    //     paymentFileCode: "I",
+    //     chargeItemType: ["null"]
+    // },
     {
-        paymentName: "",
-        paymentFileCode: "I",
-        chargeItemType: ["null"]
-    }, {
         paymentName: "บริการอื่นๆที่ไม่ได้จัดหมวดหมู่",
         paymentFileCode: "J",
         chargeItemType: ["1", "3", "4", "5", "6", "7", "8"]
-    }, {
-        paymentName: "",
-        paymentFileCode: "K",
-        chargeItemType: ["null"]
     },
+    // {
+    //     paymentName: "",
+    //     paymentFileCode: "K",
+    //     chargeItemType: ["null"]
+    // },
 ]
 
