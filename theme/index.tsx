@@ -18,7 +18,6 @@ const withTheme = (node: JSX.Element) => (
       locale={thTh}
       theme={{
         token: {
-
           "borderRadius": 16,
           "colorPrimary": "#13c2c2",
           "colorInfo": "#13c2c2",

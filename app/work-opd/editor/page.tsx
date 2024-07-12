@@ -455,7 +455,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
           layout="vertical"
           form={formEditor}
         >
-          <Collapse
+          <Collapse 
             size="small"
             activeKey={'1'}
             style={{ margin: 5 }}
