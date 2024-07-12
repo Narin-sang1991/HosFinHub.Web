@@ -43,7 +43,7 @@ const History = () => {
     </React.Fragment>
   )
 }
-const Historys = () => {
-  return withTheme(<History />);
-}
-export default Historys
+// const Historys = () => {
+//   return withTheme(<History />);
+// }
+export default History

@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import Image from 'next/image'
 import { Card, Form, Row, Col, Tabs, Space, Typography, Collapse, Skeleton, Button, Divider, Statistic, Popconfirm, Tag } from "antd";
 import {
-  SwapOutlined,  IdcardOutlined, TruckOutlined, ExperimentOutlined,
+  SwapOutlined, IdcardOutlined, TruckOutlined, ExperimentOutlined,
   MedicineBoxOutlined, DollarOutlined,
   RetweetOutlined, HistoryOutlined, CalculatorOutlined,
   WarningOutlined
@@ -379,7 +379,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
           <Space>
             <Button type="primary" shape="round" ghost style={{ fontSize: '15px' }}
               onClick={reCalculation} disabled={status === "loading" || saveState === "loading" || reProcessState === "loading"}
-              icon={<RetweetOutlined style={{ fontSize: '18px' }} />}>{"คำนวนราคา"}</Button>
+              icon={<DollarOutlined style={{ fontSize: '18px' }} />}>{"คำนวนราคา"}</Button>
             <Divider type="vertical" style={{ height: 20 }} />
             <Statistic value={originTotalInvoice}
               title="จำนวนเงินตั้งต้น" precision={2}
@@ -454,8 +454,9 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
           name="workOpdEditor"
           layout="vertical"
           form={formEditor}
+           size="small"
         >
-          <Collapse 
+          <Collapse
             size="small"
             activeKey={'1'}
             style={{ margin: 5 }}
@@ -599,7 +600,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                           children: (
                             <Space align="start" size="small">
                               <Text type="secondary">วันที่รับบริการ :</Text>
-                              <Text type="warning">
+                              <Text type="success">
                                 {moment(editingData?.opdDetail.dateopd).format(
                                   dateDisplayFormat
                                 )}
@@ -612,7 +613,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                           children: (
                             <Space align="start" size="small">
                               <Text type="secondary">เวลาเข้ารับบริการ :</Text>
-                              <Text type="warning">
+                              <Text type="success">
                                 {/* {moment(editingData?.opdDetail.dateopd).format(
                                   dateDisplayFormat
                                 )} */}
@@ -628,14 +629,14 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
               },
             ]}
           />
-          <Tabs items={tabItems} />
+          <Tabs items={tabItems} size="small" />
         </Form>
       </Skeleton >
     </>
   );
 };
 
-const OpdEditorPage = () => {
-  return withTheme(<OpdEditor />);
-};
-export default OpdEditorPage;
+// const OpdEditorPage = () => {
+//   return withTheme(<OpdEditor />);
+// };
+export default OpdEditor;

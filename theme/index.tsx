@@ -2,13 +2,15 @@
 
 import React from "react";
 import { ConfigProvider } from "antd";
-import { primaryColor } from "@/client.constant/styles..component.constant";
 import thTh from 'antd/locale/th_TH'
-import dayjs from 'dayjs';
+
 import 'dayjs/locale/th'
+import dayjs from 'dayjs';
+
 
 import 'moment/locale/th'
 import moment from "moment";
+
 moment.locale('th')
 dayjs.locale('th')
 
@@ -28,15 +30,6 @@ const withTheme = (node: JSX.Element) => (
         },
       }}
     >
-      {/* <ConfigProvider
-        theme={{
-          token: {
-            : 16,
-          },
-        }}
-      >
-     
-    </ConfigProvider> */}
       {node}
     </ConfigProvider>
   </>

@@ -170,8 +170,8 @@ const IpdSearch = function IpdSearch(props: IpdSearchProps) {
   );
 };
 
-const IpdSearchPage = () => {
-  return withTheme(<IpdSearch />);
-};
+// const IpdSearchPage = () => {
+//   return withTheme(<IpdSearch />);
+// };
 
-export default IpdSearchPage;
+export default IpdSearch;

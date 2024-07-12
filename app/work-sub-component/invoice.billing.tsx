@@ -339,7 +339,7 @@ const InvoiceBillingTab = function InvoiceBilling({ visitDetail, patientData, in
         size="small"
         className={"MasterBackground"}
         pagination={false}
-        style={{ margin: -10, width: "99%" }}
+        style={{ margin: 0, width: "99%" }}
         sticky
         scroll={{ x: 500 }}
       />

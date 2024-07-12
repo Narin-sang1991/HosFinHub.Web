@@ -44,7 +44,7 @@ const History = () => {
   )
 }
 
-const HistoryIpd = () => {
-  return withTheme(<History />);
-};
-export default HistoryIpd
+// const HistoryIpd = () => {
+//   return withTheme(<History />);
+// };
+export default History

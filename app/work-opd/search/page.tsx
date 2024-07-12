@@ -224,8 +224,8 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
   );
 };
 
-const OpdSearchPage = () => {
-  return withTheme(<OpdSearch />);
-};
+// const OpdSearchPage = () => {
+//   return withTheme(<OpdSearch />);
+// };
 
-export default OpdSearchPage;
+export default OpdSearch;

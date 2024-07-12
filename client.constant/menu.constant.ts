@@ -1,9 +1,5 @@
-
 import { v4 as uuidv4 } from "uuid";
-import {
-    HomeOutlined, ReconciliationOutlined,
-    ClusterOutlined, BookOutlined,
-} from "@ant-design/icons";
+import { ReconciliationOutlined, ClusterOutlined, BookOutlined, DashboardOutlined } from "@ant-design/icons";
 
 export interface MenuModel {
     id: string;
@@ -21,8 +17,8 @@ export const menuList: MenuModel[] = [
         id: uuidv4(),
         ordinal: 1,
         groupId: 1,
-        icon: HomeOutlined,
-        label: "Task",
+        icon: DashboardOutlined,
+        label: "Dashboard",
         path: "/",
         breadcrumb: '/'
     },

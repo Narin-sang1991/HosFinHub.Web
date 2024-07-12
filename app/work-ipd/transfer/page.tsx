@@ -194,8 +194,8 @@ const IpdTransfer = () => {
   )
 }
 
-const IpdTransfers = () => {
-  return withTheme(<IpdTransfer />);
-};
-export default IpdTransfers
+// const IpdTransfers = () => {
+//   return withTheme(<IpdTransfer />);
+// };
+export default IpdTransfer
 

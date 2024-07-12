@@ -650,7 +650,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
   );
 };
 
-const IpdEditorPage = () => {
-  return withTheme(<IpdEditor />);
-};
-export default IpdEditorPage;
+// const IpdEditorPage = () => {
+//   return withTheme(<IpdEditor />);
+// };
+export default IpdEditor;

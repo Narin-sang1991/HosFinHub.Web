@@ -196,8 +196,8 @@ const OpdTransfer = () => {
     </React.Fragment>
   )
 }
-const OpdTransfers = () => {
-  return withTheme(<OpdTransfer />);
-};
-export default OpdTransfers
+// const OpdTransfers = () => {
+//   return withTheme(<OpdTransfer />);
+// };
+export default OpdTransfer
 
