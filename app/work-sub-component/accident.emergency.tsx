@@ -118,12 +118,13 @@ const AccidentEmergencyTab = function AccidentEmergency({
     // let aetime = moment(recordTime).utcOffset(timeZoneOffset).format(dateTimeDisplayFormat);
 
 
-    const date = dayjs(record.aedate).format('YYYYMMDD')
-    const time = dayjs(record.aetime).format('HHmm')
+    const dateTime = dayjs(record.aedate + ' ' + record.aetime).format('YYYY-MM-DD HH:mm')
+    console.log(dateTime.split(' ')[1]);
+
     formEmergencyEditor.setFieldsValue({
       ...record,
-      aedate: date === 'Invalid Date' ? '' : dayjs(date),
-      aetime: time === 'Invalid Date' ? '' : dayjs(time)
+      aedate: dateTime === 'Invalid Date' ? '' : dayjs(dateTime.split(' ')[0]),
+      aetime: dateTime === 'Invalid Date' ? '' : dayjs(dateTime.split(' ')[1], 'HH:mm')
     });
 
 
