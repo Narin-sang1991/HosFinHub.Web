@@ -4,6 +4,7 @@ import React from 'react'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { searchAsynch, selectStatus, selectResult } from '@/store/history/historyIpdSlice'
 import ClaimHistory from './claim.history'
+import withTheme from '@/theme'
 
 const History = () => {
   const dispatch = useAppDispatch();
@@ -43,4 +44,7 @@ const History = () => {
   )
 }
 
-export default History
+const HistoryIpd = () => {
+  return withTheme(<History />);
+};
+export default HistoryIpd

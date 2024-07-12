@@ -10,6 +10,7 @@ import { dateDisplayFormat, } from "@/client.constant/format.constant";
 import { getPatientID } from "@/client.constant/patient.constant";
 import Fillter from '../search/filler';
 import { claimOpd } from '@/services/send.fhd.prioviver';
+import withTheme from '@/theme';
 
 const OpdTransfer = () => {
   const dispatch = useAppDispatch();
@@ -195,6 +196,8 @@ const OpdTransfer = () => {
     </React.Fragment>
   )
 }
-
-export default OpdTransfer
+const OpdTransfers = () => {
+  return withTheme(<OpdTransfer />);
+};
+export default OpdTransfers
 

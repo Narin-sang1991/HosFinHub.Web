@@ -11,6 +11,7 @@ import { getPatientID } from "@/client.constant/patient.constant";
 // import Fillter from '../search/filler';
 import { claimIpd } from '@/services/send.fhd.prioviver';
 import { IpdPat, IpdTransferMode } from '@/store/work-ipd/ipdTransderModel';
+import withTheme from '@/theme';
 
 const IpdTransfer = () => {
   const dispatch = useAppDispatch();
@@ -193,5 +194,8 @@ const IpdTransfer = () => {
   )
 }
 
-export default IpdTransfer
+const IpdTransfers = () => {
+  return withTheme(<IpdTransfer />);
+};
+export default IpdTransfers
 

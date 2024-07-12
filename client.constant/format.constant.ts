@@ -1,6 +1,6 @@
 
 
-export const dateDisplayFormat: string = "DD MMM YYYY";
+export const dateDisplayFormat: string = "DD MMMM YYYY";
 export const dateCalcFormat: string = "YYYY/MM/DD";
 export const dateInterfaceFormat: string = "YYYYMMDD";
 export const dateTimeDisplayFormat: string = "DD MMM YYYY, HH:mm";

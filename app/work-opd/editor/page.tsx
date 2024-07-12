@@ -3,27 +3,21 @@
 //#region Import
 import React, { useEffect, useState, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import moment from "moment";
+import moment from "moment"
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { Card, Form, Row, Col, Tabs, Space, Avatar, Typography, Collapse, Skeleton, Button, Divider, Statistic, Popconfirm, Tag } from "antd";
+import Image from 'next/image'
+import { Card, Form, Row, Col, Tabs, Space, Typography, Collapse, Skeleton, Button, Divider, Statistic, Popconfirm, Tag } from "antd";
 import {
-  ManOutlined, WomanOutlined, MehOutlined,
-  IdcardOutlined, TruckOutlined, ExperimentOutlined,
+  SwapOutlined,  IdcardOutlined, TruckOutlined, ExperimentOutlined,
   MedicineBoxOutlined, DollarOutlined,
-  SaveTwoTone, CloseCircleTwoTone,
   RetweetOutlined, HistoryOutlined, CalculatorOutlined,
-  WarningOutlined, CloudSyncOutlined
+  WarningOutlined
 } from "@ant-design/icons";
 import {
   getAsync, getResult, getStatus, getValid,
   saveAsync, saveStatus, reProcessAsync, reProcessStatus
 } from "@/store/work-opd/workOpdSlice";
-import type {
-  OpdDataModel,
-  OpdDetailModel,
-  OpdEditorModel,
-  OpdValidModel
-} from "@/store/work-opd/opdEditorModel";
+import type { OpdDataModel, OpdDetailModel, OpdEditorModel, OpdValidModel } from "@/store/work-opd/opdEditorModel";
 import type { PatientDetailModel } from "@/store/patient/patientModel";
 import {
   getPatientID,
@@ -57,7 +51,9 @@ import { AccidentEmergencyModel } from "@/store/refer/accidentEmergencyModel";
 import { primaryColor } from "@/client.constant/styles..component.constant";
 import withTheme from "../../../theme";
 import "@/app/globals.css";
-import dayjs from "dayjs";
+import IconSave from '@/assets/diskette.png';
+import IconExit from '@/assets/logout.png'
+
 //#endregion
 
 interface OpdEditorProps { }
@@ -407,26 +403,49 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
         <Col>
           <Space>
             <Popconfirm okText="ใช่" cancelText="ไม่"
-              title="แน่ใจการ[Re-process] ?"
+              title="แน่ใจการดึงข้อมูลจากHISใหม่?"
               placement="bottom"
               onConfirm={onReProcess}
             >
-              <Button type="text" loading={reProcessState === "loading"}
+              <Button type="dashed" loading={reProcessState === "loading"}
                 disabled={status === "loading" || saveState === "loading"}
-                icon={<CloudSyncOutlined style={{ fontSize: '30px', color: '#dfa111' }} />}
-              />
+                size="large"
+                icon={<SwapOutlined />}
+              >{"โหลดข้อมูลใหม่"}</Button>
             </Popconfirm>
             <Divider type="vertical" style={{ height: 20 }} />
-            <Button type="text" onClick={onSave}
-              loading={saveState === "loading"}
-              disabled={status === "loading" || reProcessState === "loading"}
-              style={{ display: 'inline-flex', alignItems: 'center' }}
-              icon={<SaveTwoTone twoToneColor={primaryColor} style={{ fontSize: '30px' }} />}
-            />
+            <Card
+              hoverable
+              bordered
+              bodyStyle={{ marginBottom: '-25px' }}
+              onClick={onSave}
+              size="small"
+              cover={
+                <Image
+                  style={{ borderRadius: '1px' }}
+                  src={IconSave}
+                  width={35}
+                  alt="Picture of the Exit"
+                />
+              }
+            >
+            </Card>
             <Divider type="vertical" style={{ height: 20 }} />
-            <Button type="text" onClick={onClose}
-              icon={<CloseCircleTwoTone twoToneColor={'#f5222d'} style={{ fontSize: '30px' }} />}
-            />
+            <Card
+              hoverable
+              bodyStyle={{ marginBottom: '-25px' }}
+              onClick={onClose}
+              size="small"
+              cover={
+                <Image
+                  style={{ borderRadius: '1px' }}
+                  src={IconExit}
+                  width={40}
+                  alt="Picture of the Exit"
+                />
+              }
+            >
+            </Card>
           </Space>
         </Col>
       </Row>
@@ -581,10 +600,9 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                             <Space align="start" size="small">
                               <Text type="secondary">วันที่รับบริการ :</Text>
                               <Text type="warning">
-                                {/* {moment(editingData?.opdDetail.dateopd).format(
+                                {moment(editingData?.opdDetail.dateopd).format(
                                   dateDisplayFormat
-                                )} */}
-                                {dayjs(editingData?.opdDetail.dateopd).format('DD-MMMM-YYYY')}
+                                )}
                               </Text>
                             </Space>
                           ),
@@ -598,7 +616,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
                                 {/* {moment(editingData?.opdDetail.dateopd).format(
                                   dateDisplayFormat
                                 )} */}
-                                {(editingData?.opdDetail.timeopd.substring(0,2)+':'+editingData?.opdDetail.timeopd.substring(2,4))}
+                                {(editingData?.opdDetail.timeopd.substring(0, 2) + ':' + editingData?.opdDetail.timeopd.substring(2, 4))}
                               </Text>
                             </Space>
                           ),
