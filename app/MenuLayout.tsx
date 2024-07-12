@@ -7,6 +7,7 @@ import { Breadcrumb, Col, Input, Layout, Menu, Row, Select, theme, Space } from 
 import type { MenuProps } from "antd";
 import { MenuModel, menuList } from "@/client.constant/menu.constant";
 import "@/app/globals.css";
+import withTheme from "@/theme";
 
 const { Header, Content, Sider } = Layout;
 const { Option } = Select;
@@ -36,7 +37,7 @@ function getItem(
   } as MenuItem;
 }
 
-const MenuLayout = function MenuLayout({ children, }: { children: React.ReactNode; }) {
+const MenuLayout = function MenuLayout({ children }: { children: React.ReactNode }) {
   const { token: { colorBgContainer, borderRadiusLG }, } = theme.useToken();
   const [collapsed, setCollapsed] = useState(false);
   const [visitType, setVisitType] = useState('opd');
@@ -152,7 +153,7 @@ const MenuLayout = function MenuLayout({ children, }: { children: React.ReactNod
   );
 
   return (
-    <Layout>      
+    <Layout>
       <Sider
         style={{ background: colorBgContainer }}
         theme="light"
@@ -229,7 +230,8 @@ const MenuLayout = function MenuLayout({ children, }: { children: React.ReactNod
   );
 };
 
-// const MenuLayout = () => {
-//     return withTheme(<MenuAntd />);
-//   }
-export default MenuLayout;
+const MenuLayouts = ({ children }: { children: React.ReactNode }) => {
+  return withTheme(<MenuLayout>{children}</MenuLayout>);
+}
+
+export default MenuLayouts;

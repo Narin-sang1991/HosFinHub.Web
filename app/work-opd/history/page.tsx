@@ -4,6 +4,7 @@ import React from 'react'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { searchAsync, selectResult, selectStatus, } from '@/store/history/historyOpdSlice'
 import ClaimHistory from './claim.history'
+import withTheme from '@/theme'
 
 const History = () => {
   const dispatch = useAppDispatch();
@@ -42,5 +43,7 @@ const History = () => {
     </React.Fragment>
   )
 }
-
-export default History
+const Historys = () => {
+  return withTheme(<History />);
+}
+export default Historys

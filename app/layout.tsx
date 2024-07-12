@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google'
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { StoreProvider } from './store.provider'
 import MenuLayout from './MenuLayout'
+import withTheme from '@/theme';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -30,3 +31,4 @@ export default function RootLayout({
     </StoreProvider>
   )
 }
+

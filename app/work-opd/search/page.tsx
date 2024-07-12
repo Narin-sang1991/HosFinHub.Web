@@ -202,7 +202,7 @@ const OpdSearch = function OpdSearch(props: OpdSearchProps) {
           </Form.Item>
         </Form>
       </Card>
-      <Fillter />
+      {/* <Fillter /> */}
       <Table
         rowKey={(record) => record.seq}
         loading={status === "loading"}

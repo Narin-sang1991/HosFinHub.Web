@@ -7,17 +7,18 @@ import moment from "moment";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   Card, Form, Row, Col,
-  Tabs, Space, Avatar, Typography,
+  Tabs, Space, Typography,
   Collapse, Skeleton, Button,
-  Divider, Statistic, Popconfirm
+  Divider, Statistic, Popconfirm,
+  Tag
 } from "antd";
 import {
-  ManOutlined, WomanOutlined, MehOutlined,
   IdcardOutlined, TruckOutlined, ExperimentOutlined,
   MedicineBoxOutlined, DollarOutlined,
   SaveTwoTone, CloseCircleTwoTone,
   RetweetOutlined, HistoryOutlined, CalculatorOutlined,
-  WarningOutlined, CloudSyncOutlined
+  WarningOutlined, CloudSyncOutlined,
+  SwapOutlined
 } from "@ant-design/icons";
 import {
   getAsync, getResult, getStatus, getValid,
@@ -61,7 +62,10 @@ import { InvoiceItemEditorModel } from "@/store/financial/invoiceItemModel";
 import { AccidentEmergencyModel } from "@/store/refer/accidentEmergencyModel";
 import { primaryColor } from "@/client.constant/styles..component.constant";
 import withTheme from "../../../theme";
+import IconSave from '@/assets/diskette.png';
+import IconExit from '@/assets/logout.png'
 import "@/app/globals.css";
+import Image from 'next/image'
 //#endregion
 
 interface IpdEditorProps { }
@@ -404,28 +408,50 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
         </Col>
         <Col>
           <Space>
-            <Popconfirm okText="ใช่" cancelText="ไม่"
-              title="แน่ใจการ[Re-process] ?"
+          <Popconfirm okText="ใช่" cancelText="ไม่"
+              title="แน่ใจการดึงข้อมูลจากHISใหม่?"
               placement="bottom"
               onConfirm={onReProcess}
             >
-              <Button type="text" loading={reProcessState === "loading"}
+              <Button type="dashed" loading={reProcessState === "loading"}
                 disabled={status === "loading" || saveState === "loading"}
-                icon={<CloudSyncOutlined style={{ fontSize: '30px', color: '#dfa111' }} />}
-              />
+                size="large"
+                icon={<SwapOutlined />}
+              >{"โหลดข้อมูลใหม่"}</Button>
             </Popconfirm>
-            <Divider type="vertical" style={{ height: 20 }} />
-            <Button type="text"
+            <Divider type="vertical" style={{ height: 20 }} />                    
+            <Card
+              hoverable
+              bordered
+              bodyStyle={{ marginBottom: '-25px' }}
               onClick={onSave}
-              loading={saveState === "loading"}
-              disabled={status === "loading" || reProcessState === "loading"}
-              style={{ display: 'inline-flex', alignItems: 'center' }}
-              icon={<SaveTwoTone twoToneColor={primaryColor} style={{ fontSize: '30px' }} />}
-            />
+              size="small"
+              cover={
+                <Image
+                  style={{ borderRadius: '1px' }}
+                  src={IconSave}
+                  width={35}
+                  alt="Picture of the Exit"
+                />
+              }
+            >
+            </Card>
             <Divider type="vertical" style={{ height: 20 }} />
-            <Button type="text" onClick={onClose}
-              icon={<CloseCircleTwoTone twoToneColor={'#f5222d'} style={{ fontSize: '30px' }} />}
-            />
+            <Card
+              hoverable
+              bodyStyle={{ marginBottom: '-25px' }}
+              onClick={onClose}
+              size="small"
+              cover={
+                <Image
+                  style={{ borderRadius: '1px' }}
+                  src={IconExit}
+                  width={40}
+                  alt="Picture of the Exit"
+                />
+              }
+            >
+            </Card>
           </Space>
         </Col>
       </Row>
@@ -437,6 +463,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
         >
           <Collapse
             size="small"
+            activeKey={'1'}
             style={{ margin: 5 }}
             items={[
               {
@@ -488,7 +515,7 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
                       lg={{ flex: "13%" }}
                     >
                       <Space direction="vertical" align="center" size="small">
-                        <Avatar
+                        {/* <Avatar
                           shape="square"
                           size={48}
                           icon={
@@ -502,7 +529,9 @@ const IpdEditor = function IpdEditor(props: IpdEditorProps) {
                           }
                         />
                         <Text strong keyboard>{`HN:${editingData?.ipdDetail.hn || "N/A"
-                          }`}</Text>
+                          }`}</Text> */}
+                        <Tag color="success">{`HN:${editingData?.ipdDetail.hn || "N/A"}`}</Tag>
+                        <Tag color="processing">{`VN:${editingData?.ipdDetail.an || "N/A"}`}</Tag >
                       </Space>
                     </Col>
                     <Col
