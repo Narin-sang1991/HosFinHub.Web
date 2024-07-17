@@ -6,7 +6,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import moment from "moment"
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import Image from 'next/image'
-import { Card, Form, Row, Col, Tabs, Space, Typography, Collapse, Skeleton, Button, Divider, Statistic, Popconfirm, Tag } from "antd";
+import { Card, Form, Row, Col, Tabs, Space, Typography, Collapse, Skeleton, Button, Divider, Statistic, Popconfirm, Tag, Affix } from "antd";
 import {
   SwapOutlined, IdcardOutlined, TruckOutlined, ExperimentOutlined,
   MedicineBoxOutlined, DollarOutlined,
@@ -377,9 +377,9 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
       <Row justify="space-between" align="middle" gutter={[4, 4]}>
         <Col>
           <Space>
-            <Button type="primary" shape="round" ghost style={{ fontSize: '15px' }}
+            <Button type="primary" shape="round" ghost
               onClick={reCalculation} disabled={status === "loading" || saveState === "loading" || reProcessState === "loading"}
-              icon={<DollarOutlined style={{ fontSize: '18px' }} />}>{"คำนวนราคา"}</Button>
+              icon={<DollarOutlined style={{ fontSize: '14px' }} />}>{"คำนวนราคา"}</Button>
             <Divider type="vertical" style={{ height: 20 }} />
             <Statistic value={originTotalInvoice}
               title="จำนวนเงินตั้งต้น" precision={2}
@@ -401,52 +401,56 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
           </Space>
         </Col>
         <Col>
-          <Space>
-            <Popconfirm okText="ใช่" cancelText="ไม่"
-              title="แน่ใจการดึงข้อมูลจากHISใหม่?"
-              placement="bottom"
-              onConfirm={onReProcess}
-            >
-              <Button type="dashed" loading={reProcessState === "loading"}
-                disabled={status === "loading" || saveState === "loading"}
-                size="large"
-                icon={<SwapOutlined />}
-              >{"โหลดข้อมูลใหม่"}</Button>
-            </Popconfirm>
-            <Divider type="vertical" style={{ height: 20 }} />
-            <Card
-              hoverable
-              bordered
-              bodyStyle={{ marginBottom: '-25px' }}
-              onClick={onSave}
-              size="small"
-              cover={
-                <Image
-                  style={{ borderRadius: '1px' }}
-                  src={IconSave}
-                  width={35}
-                  alt="Picture of the Exit"
-                />
-              }
-            >
+          <Affix offsetTop={0}>
+            <Card size="small" style={{ boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px', borderRadius: '10px' }}>
+              <Space>
+                <Popconfirm okText="ใช่" cancelText="ไม่"
+                  title="แน่ใจการดึงข้อมูลจากHISใหม่?"
+                  placement="bottom"
+                  onConfirm={onReProcess}
+                >
+                  <Button type="dashed" loading={reProcessState === "loading"}
+                    disabled={status === "loading" || saveState === "loading"}
+
+                    icon={<SwapOutlined />}
+                  >{"โหลดข้อมูลใหม่"}</Button>
+                </Popconfirm>
+                <Divider type="vertical" style={{ height: 20 }} />
+                <Card
+                  hoverable
+                  bordered
+                  bodyStyle={{ marginBottom: '-25px' }}
+                  onClick={onSave}
+                  size="small"
+                  cover={
+                    <Image
+                      style={{ borderRadius: '1px' }}
+                      src={IconSave}
+                      width={25}
+                      alt="Picture of the Exit"
+                    />
+                  }
+                >
+                </Card>
+                <Divider type="vertical" style={{ height: 20 }} />
+                <Card
+                  hoverable
+                  bodyStyle={{ marginBottom: '-25px' }}
+                  onClick={onClose}
+                  size="small"
+                  cover={
+                    <Image
+                      style={{ borderRadius: '1px' }}
+                      src={IconExit}
+                      width={30}
+                      alt="Picture of the Exit"
+                    />
+                  }
+                >
+                </Card>
+              </Space>
             </Card>
-            <Divider type="vertical" style={{ height: 20 }} />
-            <Card
-              hoverable
-              bodyStyle={{ marginBottom: '-25px' }}
-              onClick={onClose}
-              size="small"
-              cover={
-                <Image
-                  style={{ borderRadius: '1px' }}
-                  src={IconExit}
-                  width={40}
-                  alt="Picture of the Exit"
-                />
-              }
-            >
-            </Card>
-          </Space>
+          </Affix>
         </Col>
       </Row>
       <Skeleton active loading={status === "loading" || saveState === "loading" || reProcessState === "loading"} >
@@ -454,7 +458,7 @@ const OpdEditor = function OpdEditor(props: OpdEditorProps) {
           name="workOpdEditor"
           layout="vertical"
           form={formEditor}
-           size="small"
+          size="small"
         >
           <Collapse
             size="small"
