@@ -17,7 +17,7 @@ interface ProcesResponse {
 
 const { RangePicker } = DatePicker;
 
-const socket = io("http://183.88.219.85:5200", {
+const socket = io("http://192.168.101.243:5201", {
   path: "/app.io/",
   transports: ["websocket"],
 });
