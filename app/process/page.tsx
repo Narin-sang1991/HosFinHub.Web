@@ -57,7 +57,7 @@ const Process: React.FC = () => {
     if (value.dateProcess === undefined) return
     const startDate = new Date(value.dateProcess[0].$d).toLocaleDateString('fr-CA', { year: 'numeric', month: '2-digit', day: "2-digit" })
     const endDate = new Date(value.dateProcess[1].$d).toLocaleDateString('fr-CA', { year: 'numeric', month: '2-digit', day: "2-digit" })
-    const url = `http://183.88.219.85:5200/process/new-processing?dateStart=${startDate}&dateEnd=${endDate}`;
+    const url = `http://192.168.101.243:5201/process/new-processing?dateStart=${startDate}&dateEnd=${endDate}`;
     fetch(url, {
       method: "get",
     });
