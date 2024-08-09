@@ -11,21 +11,8 @@ const ClaimStatusTypeSelector = () => {
   const status = useAppSelector(selectClaimStatus);
   const [itemOptions, setItemOptions] = useState<{ 'value': string, 'label': string }[]>([])
 
-  useEffect(() => {
-    dispatch(getClaimStatus({}))
-    setItem()
-  }, [])
 
-  const setItem = () => {
-    const getStats = status.claimStatus.map(i => {
-      const obj = { value: i.fdh_status_process, label: i.fdh_status_process_th }
-      return obj
-    })
-    console.log();
 
-    setItemOptions(getStats)
-
-  }
   return (
     <React.Fragment>
       <Select
