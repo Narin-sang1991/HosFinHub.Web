@@ -3,8 +3,8 @@ import { message } from 'antd';
 
 
 
-//const hosBaseDomain: string = 'http://192.168.101.243:5201/'
-const hosBaseDomain: string = 'http://183.88.219.85:5200/'
+const hosBaseDomain: string = 'http://192.168.101.243:5201/'
+//const hosBaseDomain: string = 'http://183.88.219.85:5200/'
 const configHosBase: AxiosRequestConfig = {
     baseURL: hosBaseDomain,
     // mode: 'cors',
