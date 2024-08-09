@@ -3,15 +3,13 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { selectIpdTransferReady, searchAsync, selectStatus } from '@/store/work-ipd/transferIpdSlice'
 import { SearchOutlined, SendOutlined } from '@ant-design/icons'
 import { Space, Button, DatePicker, Form, FormProps, message, Table } from 'antd';
-import type { TableColumnsType } from "antd";
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { dateDisplayFormat, } from "@/client.constant/format.constant";
 import { getPatientID } from "@/client.constant/patient.constant";
-// import Fillter from '../search/filler';
 import { claimIpd } from '@/services/send.fhd.prioviver';
 import { IpdPat, IpdTransferMode } from '@/store/work-ipd/ipdTransderModel';
-import withTheme from '@/theme';
+import type { TableColumnsType } from "antd";
 
 const IpdTransfer = () => {
   const dispatch = useAppDispatch();

@@ -19,8 +19,8 @@ export const menuList: MenuModel[] = [
         groupId: 1,
         icon: DashboardOutlined,
         label: "Dashboard",
-        path: "/",
-        breadcrumb: '/'
+        path: "/dashboard",
+        breadcrumb: '/dashboard'
     },
     {
         id: uuidv4(),

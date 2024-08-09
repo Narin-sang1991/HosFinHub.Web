@@ -66,3 +66,45 @@ export interface IpdClamService extends IpdModel {
   irf: IrfModel[];
   fdh: any[];
 }
+
+
+export interface RequestHsitoryClaim {
+  endDate: string
+  serviceType: "opd" | 'ipd'
+  startDate: string
+  statusProcess: string
+}
+
+export interface HistoryClaimsOpdModel {
+  dateopd: string
+  fdh_process_status: string
+  fdh_status_message: string
+  fdh_status_message_th: string
+  fname: string
+  lname: string
+  hn: string
+  inscl: string
+  opd_claim_date: string
+  seq: string
+  subinscl: string
+  subtype: string
+  timeopd: string
+  title: string
+}
+
+export interface HistoryClaimsIpdModel {
+  dateopd: string
+  fdh_process_status: string
+  fdh_status_message: string
+  fdh_status_message_th: string
+  fname: string
+  lname: string
+  hn: string
+  inscl: string
+  opd_claim_date: string
+  an: string
+  subinscl: string
+  subtype: string
+  timeopd: string
+  title: string
+}

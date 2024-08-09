@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ConfigProvider } from "antd";
+import { ConfigProvider, theme } from "antd";
 import thTh from 'antd/locale/th_TH'
 
 import 'dayjs/locale/th'
@@ -26,8 +26,7 @@ const withTheme = (node: JSX.Element) => (
           "colorSuccess": "#52c41a",
           "colorWarning": "#fadb14",
           "colorLink": "#13c29c"
-
-        },
+        }
       }}
     >
       {node}

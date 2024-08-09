@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { LeftOutlined, MenuUnfoldOutlined, } from "@ant-design/icons";
-import { Breadcrumb, Col, Input, Layout, Menu, Row, Select, theme, Space } from "antd";
+import { Breadcrumb, Col, Input, Layout, Menu, Row, Select, theme, Space, Image } from "antd";
 import type { MenuProps } from "antd";
 import { MenuModel, menuList } from "@/client.constant/menu.constant";
 import "@/app/globals.css";
@@ -48,6 +48,8 @@ const MenuLayout = function MenuLayout({ children }: { children: React.ReactNode
   const pathname = usePathname();
 
   useEffect(() => {
+  
+    if (pathname === '/') router.push('/dashboard')
     let newMenuItems: MenuProps["items"] = genarateParentMenu();
     setMenuItems(newMenuItems);
   }, [])
@@ -168,26 +170,9 @@ const MenuLayout = function MenuLayout({ children }: { children: React.ReactNode
         }
         onCollapse={(value) => setCollapsed(value)}
       >
-        {/* <div
-          style={{
-            padding: 15,
-            margin: 2,
-            textAlign: "center",
-            borderRadius: borderRadiusLG,
-            background: "green",
-            fontWeight: "bold",
-            fontSize: "18px"
-          }}
-        >
-          {"Financial Data \n HospitalOS"}
-        </div> */}
-        <div className="Center" style={{ height: collapsed ? 80 : 120 }} >
-          <img src={'/FinOsHub-TopMenu.png'}
-            style={{
-              height: collapsed ? 80 : 120,
-              marginTop: 5,
-            }}
-            className="cover" alt="fin-os-logo" />
+        <div className="Center" style={{ height: collapsed ? 80 : 140 }} >
+          <Image src={'/FinOsHub-TopMenu.png'} alt="fin-os-logo" preview={false} inlist={"true"} />
+
         </div>
         <Menu theme="light" mode="inline"
           inlineCollapsed={collapsed}
@@ -207,18 +192,19 @@ const MenuLayout = function MenuLayout({ children }: { children: React.ReactNode
         </Header>
         <Breadcrumb style={{ margin: "5px 10px" }} separator=">" >
           {
-            focusBreadcrumbs.map(item => {
-              return <Breadcrumb.Item key={item.id} href={item.href}>
+            focusBreadcrumbs.map(item => (
+              <Breadcrumb.Item key={item.id} href={item.href}>
                 {item.breadcrumbName}
               </Breadcrumb.Item>
-            })
+            )
+            )
           }
         </Breadcrumb>
         <Content
           style={{
-            margin: "0px 10px 10px 10px",
+            margin: "0px 10px 12px 10px",
             padding: "10px",
-            minHeight: '88vh',
+            minHeight: '89vh',
             background: colorBgContainer,
             borderRadius: borderRadiusLG,
           }}

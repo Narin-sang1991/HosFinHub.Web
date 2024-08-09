@@ -1,48 +1,46 @@
 import { createAppSlice } from "@/store/createAppSlice";
-import { OpdClamHistory, OpdClamService } from "./claimModel";
-import {
-    fetchHistoryNumberOpd,
-    fetchHistoryServiceOpd,
-} from "@/services/history.privider";
+import { HistoryClaimsOpdModel, OpdClamHistory, OpdClamService, RequestHsitoryClaim } from "./claimModel";
+import { fetchHistoryNumberOpd, fetchHistoryServiceOpd, } from "@/services/history.privider";
+import { resultHistoryClaims } from "@/services/claim.status";
+import { stat } from "fs";
 
 export interface ClamHistoryOpdSliceState {
-    searchResult: OpdClamHistory[];
+    opdHistoryClaims: HistoryClaimsOpdModel[];
     searchStatus: "idle" | "loading" | "failed";
-    opdClamService: OpdClamService[];
+    //   opdClamService: OpdClamService[];
 }
 
 const initialState: ClamHistoryOpdSliceState = {
-    searchResult: [],
+    opdHistoryClaims: [],
     searchStatus: "idle",
-    opdClamService: [],
 };
 
 export const historyOpdSlice = createAppSlice({
     name: "historyOpd",
     initialState,
     reducers: (create) => ({
-        searchAsync: create.asyncThunk(
-            async (body: { startDate: string; endDate: string }) => {
-                const response = await fetchHistoryNumberOpd(body);
-                return response;
-            },
-            {
-                pending: (state) => {
-                    state.searchStatus = "loading";
-                },
-                fulfilled: (state, action) => {
-                    state.searchStatus = "idle";
-                    state.searchResult = (action.payload as unknown as OpdClamHistory[]).sort((a, b) => a.sent_date < b.sent_date ? 1 : (b.sent_date < a.sent_date ? -1 : 0))
-                },
-                rejected: (state) => {
-                    state.searchStatus = "failed";
-                },
-            }
-        ),
+        // searchAsync: create.asyncThunk(
+        //     async (body: RequestHsitoryClaim) => {
+        //         const response = await resultHistoryClaims(body);
+        //         return response;
+        //     },
+        //     {
+        //         pending: (state) => {
+        //             state.searchStatus = "loading";
+        //         },
+        //         fulfilled: (state, action) => {
+        //             state.searchStatus = "idle";
+        //             state.opdClaims = action.payload as unknown as HistoryClaimsOpdModel[]
+        //         },
+        //         rejected: (state) => {
+        //             state.searchStatus = "failed";
+        //         },
+        //     }
+        // ),
 
         getOpdClaim: create.asyncThunk(
-            async (body: { seq: string[] }) => {
-                const response = await fetchHistoryServiceOpd(body);
+            async (body: RequestHsitoryClaim) => {
+                const response = await resultHistoryClaims(body);
                 return response;
             },
             {
@@ -50,7 +48,7 @@ export const historyOpdSlice = createAppSlice({
                     state.searchStatus = "loading";
                 },
                 fulfilled: (state, action) => {
-                    state.opdClamService = action.payload as unknown as OpdClamService[]
+                    state.opdHistoryClaims = action.payload as unknown as HistoryClaimsOpdModel[]
                     state.searchStatus = "idle";
                 },
                 rejected: (state) => {
@@ -60,12 +58,10 @@ export const historyOpdSlice = createAppSlice({
         ),
     }),
     selectors: {
-        selectResult: (historyOpd) => historyOpd.searchResult,
         selectStatus: (historyOpd) => historyOpd.searchStatus,
-        selectClaimService: (historyOpd) => historyOpd.opdClamService,
+        selectOpdHistoryClaims: (historyOpd) => historyOpd.opdHistoryClaims,
     },
 });
 
-export const { searchAsync, getOpdClaim } = historyOpdSlice.actions;
-export const { selectResult, selectStatus, selectClaimService } =
-    historyOpdSlice.selectors;
+export const { getOpdClaim } = historyOpdSlice.actions;
+export const { selectStatus, selectOpdHistoryClaims } = historyOpdSlice.selectors;
