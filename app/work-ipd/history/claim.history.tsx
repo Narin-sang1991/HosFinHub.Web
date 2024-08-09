@@ -1,95 +1,76 @@
 'use client'
 
-import { IpdClamHistory, IpdClamService } from "@/store/history/claimModel";
-import { Badge, Card, Col, Row, Tag, Tooltip, Table } from "antd";
-import type { TableColumnsType } from "antd";
+import { HistoryClaimsIpdModel } from "@/store/history/claimModel";
+import { Tag, Table } from "antd";
 import React, { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { getIpdClaim, selectClaimService, selectStatus } from "@/store/history/historyIpdSlice";
+import { useAppSelector } from '@/store/hooks'
+import dayjs from "dayjs";
+import Link from "next/link";
+import { ClaimItemsModel } from "./history.entity";
+import { selectIpdHistoryClaims, selectStatus } from "@/store/history/historyIpdSlice";
 
-interface ClaimHistoryProps {
-  ipdHistory: IpdClamHistory[]
-}
-
-interface ClaimServiceType {
-  hn: string,
-  vn: string,
-  patien: string,
-  inscl: string,
-  moneyClaim: string
-  moneyNotClaim: string
-  fdh: any[]
-}
-
-const ClaimHistory = (props: ClaimHistoryProps) => {
-  const dispatch = useAppDispatch()
-  const claimService = useAppSelector(selectClaimService)
+const ClaimHistory = () => {
+  const claimHistory = useAppSelector(selectIpdHistoryClaims)
   const claimStatus = useAppSelector(selectStatus)
-  const [dataClaimService, setDataClaimService] = useState<ClaimServiceType[]>([])
+  const [dataClaimService, setDataClaimService] = useState<ClaimItemsModel[]>([])
 
   useEffect(() => {
-    setColumnDataClaimService(claimService)
-  }, [claimService])
+    setColumnDataClaimService(claimHistory)
+  }, [claimHistory])
 
-  const setColumnDataClaimService = (claimService: IpdClamService[]) => {
-    const ListObjClaim: ClaimServiceType[] = []
-    if (claimService.length > 0) {
-      claimService.forEach(item => {
-
-        const claimTotal = item.cht.reduce((pre, cur) => +(cur.total) + +(pre), 0).toString()
-        const paid = item.cht.reduce((pre, cur) => +(cur.paid) + +(pre), 0).toString()
-        const setObjClaim: ClaimServiceType = {
-          hn: item.hn,
-          vn: item.an,
-          patien: item.pat[0]?.namepat,
-          inscl: item.ins[0]?.inscl,
-          moneyClaim: claimTotal,
-          moneyNotClaim: paid,
-          fdh: item.fdh
-        }
-
-        ListObjClaim.push(setObjClaim)
-      })
-    }
-    setDataClaimService(ListObjClaim)
-  }
-
-  const onSelectRow = async (record: any) => {
-    const getAn = { 'an': record.service.map((i: any) => i.an) }
-    await dispatch(getIpdClaim(getAn))
-  }
-
-  const columnClaimNumber: TableColumnsType<IpdClamHistory> = [
-    {
-      title: 'HOS CALIM',
-      key: 'ipd_claim_number',
-      dataIndex: 'ipd_claim_number',
-      render: (row: any, record: IpdClamHistory) => (<a onClick={() => onSelectRow(record)}>{row}</a>)
-    }, {
-      title: 'จำนวน',
-      key: 'service',
-      dataIndex: 'service',
-      render: (_: any, rec: any) => (<>{_.length}</>)
-
-    }, {
-      title: 'วันที่ส่งเคลม',
-      key: 'sent_date',
-      dataIndex: 'sent_date',
-      render: (value: string) => {
-        const newDate = new Date((value.substr(0, 4) + '-' + value.substr(4, 2) + '-' + value.substr(6, 2))).toLocaleDateString('th-TH')
-        return (
-          <>{newDate}</>
-        )
+  const setColumnDataClaimService = (claimService: HistoryClaimsIpdModel[]) => {
+    const setDataClaimSerivce: ClaimItemsModel[] = claimService.map(item => {
+      const dataSourceData = {
+        hn: item.hn,
+        vn: item.an,
+        patien: `${item.title} ${item.fname} ${item.lname}`,
+        inscl: item.inscl,
+        fdh_status_message_th: item.fdh_status_message_th,
+        fdh_status_message: item.fdh_status_message,
+        fdh_process_status: item.fdh_process_status,
+        datedsc: dayjs(item.dateopd).format('DD/MM/YYYY')
       }
 
-    }, {
-      title: 'ผู้ส่ง',
-      key: 'staff_number_claim',
-      dataIndex: 'staff_number_claim',
-    }
-  ]
+      return dataSourceData
+    })
 
-  const columnClaimOpdList = [
+    setDataClaimService(setDataClaimSerivce)
+  }
+
+
+  const onSearchSeq = (item: ClaimItemsModel) => {
+    if (item.vn == undefined || item.vn == "") return;
+
+    let setLink = (color: string, vn?: string) => {
+      if (vn !== undefined) {
+        return (
+          <Link href={{ pathname: `editor`, query: { id: vn } }} legacyBehavior replace>
+            <a target="_blank"> <Tag color={color}>{item.fdh_status_message_th}</Tag></a>
+          </Link>)
+      } else {
+        return <Tag color={color}>{item.fdh_status_message_th}</Tag>
+      }
+    }
+
+    switch (item.fdh_process_status) {
+      case '1':
+        return setLink('processing')
+      case '2':
+        return setLink('processing')
+      case '3':
+        return setLink('error', item.vn)
+      case '4':
+        return setLink('processing')
+      case '5':
+        return setLink('success')
+      case '6':
+        return setLink('success')
+      default:
+        return setLink('')
+    }
+  }
+
+  const columnClaimOpdfdh = [
     {
       title: 'HN',
       key: 'hn',
@@ -103,81 +84,20 @@ const ClaimHistory = (props: ClaimHistoryProps) => {
       key: 'patien',
       dataIndex: 'patien',
     }, {
-      title: 'สิทธิ์',
-      key: 'inscl',
-      dataIndex: 'inscl',
-    }, {
-      title: 'เบิกได้',
-      key: 'moneyClaim',
-      dataIndex: 'moneyClaim',
-    },
-    {
-      title: 'เบิกไม่ได้',
-      key: 'moneyNotClaim',
-      dataIndex: 'moneyNotClaim',
+      title: 'วันที่จำหน่าย',
+      key: 'datedsc',
+      dataIndex: 'datedsc',
     }, {
       title: 'สถานะ',
-      key: 'fdh',
-      dataIndex: 'fdh',
-      render: (fdh: any[]) => {
-        const list = fdh.slice(-1).pop()
-        let color = ''
-        if (list?.process_status === "0") {
-          color = 'processing'
-        } else if (list?.process_status === "1") {
-          color = 'processing'
-        } else if (list?.process_status === "2") {
-          color = 'warning'
-        } else if (list?.process_status === "3") {
-          color = 'lime'
-        } else if (list?.process_status === "4") {
-          color = 'success'
-        } else if (list?.process_status === "5") {
-          color = 'lime'
-        } else if (list?.process_status === "6") {
-          color = 'success'
-        }
-        else {
-          color = 'error'
-        }
-        return <Tooltip title={list.reject_list !== undefined ? list.reject_list.slice(-1).pop().description : 'success'}>
-          <Badge count={fdh.length}>
-            <Tag color={color}>{list === undefined ? 'ไม่พบข้อมูล' : list.status_message_th}</Tag>
-          </Badge>
-        </Tooltip>
-
-      }
+      key: 'vn',
+      dataIndex: 'vn',
+      render: (_: any, fdh: any) => onSearchSeq(fdh)
     }
   ]
 
   return (
     <React.Fragment>
-      <Row gutter={[8, 8]}>
-        <Col sm={{ span: 24 }} xl={{ span: 8 }}>
-          <Card size="small">
-            <Table
-              columns={columnClaimNumber}
-              size='small'
-              dataSource={props.ipdHistory}
-              rowKey={'opd_claim_number'}
-              // rowHoverable={true}
-              loading={claimStatus === 'loading' ? true : false}
-            />
-          </Card>
-        </Col>
-        <Col sm={{ span: 24 }} xl={{ span: 16 }}>
-          <Card size="small">
-            <Table
-              size='small'
-              columns={columnClaimOpdList}
-              dataSource={dataClaimService}
-              pagination={false}
-              loading={claimStatus === 'loading' ? true : false}
-            />
-          </Card>
-        </Col>
-      </Row>
-
+      <Table size="small" bordered columns={columnClaimOpdfdh} dataSource={dataClaimService} rowKey={item => item.vn} />
     </React.Fragment>
   )
 }

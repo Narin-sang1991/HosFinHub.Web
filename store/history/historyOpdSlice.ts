@@ -1,8 +1,6 @@
 import { createAppSlice } from "@/store/createAppSlice";
-import { HistoryClaimsOpdModel, OpdClamHistory, OpdClamService, RequestHsitoryClaim } from "./claimModel";
-import { fetchHistoryNumberOpd, fetchHistoryServiceOpd, } from "@/services/history.privider";
+import { HistoryClaimsOpdModel,   RequestHsitoryClaim } from "./claimModel";
 import { resultHistoryClaims } from "@/services/claim.status";
-import { stat } from "fs";
 
 export interface ClamHistoryOpdSliceState {
     opdHistoryClaims: HistoryClaimsOpdModel[];
@@ -19,25 +17,6 @@ export const historyOpdSlice = createAppSlice({
     name: "historyOpd",
     initialState,
     reducers: (create) => ({
-        // searchAsync: create.asyncThunk(
-        //     async (body: RequestHsitoryClaim) => {
-        //         const response = await resultHistoryClaims(body);
-        //         return response;
-        //     },
-        //     {
-        //         pending: (state) => {
-        //             state.searchStatus = "loading";
-        //         },
-        //         fulfilled: (state, action) => {
-        //             state.searchStatus = "idle";
-        //             state.opdClaims = action.payload as unknown as HistoryClaimsOpdModel[]
-        //         },
-        //         rejected: (state) => {
-        //             state.searchStatus = "failed";
-        //         },
-        //     }
-        // ),
-
         getOpdClaim: create.asyncThunk(
             async (body: RequestHsitoryClaim) => {
                 const response = await resultHistoryClaims(body);

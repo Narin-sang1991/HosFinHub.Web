@@ -6,11 +6,10 @@ import { getOpdClaim, selectStatus, } from '@/store/history/historyOpdSlice'
 import ClaimHistory from './claim.history'
 import { ClaimStatusModel, getClaimStatus, selectClaimStatus } from '@/store/claim-status/claimStatusSlice'
 import { RequestHsitoryClaim } from '@/store/history/claimModel'
-import OpdEditor from '@/app/work-opd/editor/page'
+
 const History = () => {
   const dispatch = useAppDispatch();
   const status = useAppSelector(selectStatus);
-  // const claimNumber = useAppSelector(selectResult)
   const claimStatus = useAppSelector(selectClaimStatus) as unknown as ClaimStatusModel[]
 
   useEffect(() => {
@@ -18,7 +17,6 @@ const History = () => {
   }, [])
 
   const onSearch = async (value: any) => {
-
     if (value.date === undefined || value.status_process === undefined) {
       message.warning("ระบุข้อมูลก่อน")
     } else {
@@ -74,7 +72,6 @@ const History = () => {
             </Form>
 
           </Col>
-
           <Col lg={{ span: 24 }}>
             <ClaimHistory />
           </Col>

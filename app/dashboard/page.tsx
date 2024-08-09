@@ -1,34 +1,40 @@
-import React from "react"
-import Dashboard, { DashboardModel } from "../dashboard-sub-component/dashboard.component"
+'use client'
+import React, { useEffect, useState } from "react"
+import Dashboard from "./dashboard.component"
+import { DashboardModel } from "@/store/dashboard/dashboard.entity"
+import { useAppDispatch, useAppSelector } from "@/store/hooks"
+import { getDashboardOpd, getDashboardIod, selectIpdDashboard, selectOpdDashboard, selectStatus } from "@/store/dashboard/dashboardSlice"
 
 const DashboardPage = () => {
+  const [opd, setOpd] = useState<DashboardModel[]>([])
+  const [ipd, setIpd] = useState<DashboardModel[]>([])
+  const getOpdDashboard = useAppSelector(selectOpdDashboard)
+  const getIpdDashboard = useAppSelector(selectIpdDashboard)
+  const dispatch = useAppDispatch()
 
-  const dataOpd:DashboardModel={
-    data:{
-      title:'OPD',
-      fdn:10,
-      approved:20,
-      cut_off_batch:0,
-      received:102,
-      rejected:5,
-      settled:3
-    }
+  const getOpd = () => {
+    setOpd(getOpdDashboard)
   }
-  const dataIpd:DashboardModel={
-    data:{
-      title:'IPD',
-      fdn:1,
-      approved:220,
-      cut_off_batch:10,
-      received:14,
-      rejected:50,
-      settled:13
-    }
+
+  const getIpd = () => {
+    setIpd(getIpdDashboard);
   }
+
+  useEffect(() => {
+    getOpd()
+    getIpd()
+  }, [getOpdDashboard, getIpdDashboard])
+
+
+  useEffect(() => {
+    dispatch(getDashboardOpd(null))
+    dispatch(getDashboardIod(null))
+  }, [])
+
   return (
     <React.Fragment>
-      <Dashboard data={dataOpd.data} />
-      <Dashboard data={dataIpd.data} />
+      <Dashboard type="opd" dashboardList={opd} />
+      <Dashboard type="ipd" dashboardList={ipd} />
     </React.Fragment>
   )
 }
