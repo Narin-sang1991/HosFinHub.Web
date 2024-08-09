@@ -18,8 +18,8 @@ const Dashboard = (props: DashboardTypeModel) => {
         <Row gutter={[8, 8]}>
 
           {
-            props.dashboardList.map(item => (
-              <Col lg={{ span: 6 }}>
+            props.dashboardList.map((item, index) => (
+              <Col lg={{ span: 6 }} key={index}>
                 <Card>
                   <Statistic title={item.fdh_status_message_th + " / " + item.fdh_status_message} value={item.vn} prefix={<UserOutlined />} suffix="ราย" />
                 </Card>
